@@ -6,8 +6,9 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/ico" href="http://cdn.hackerdojo.com/favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="static/style.css" />
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.min.css">
+	<link rel="stylesheet" type="text/css" href="static/style.css" />
 
 	<title>Room Reservation</title>
 </head>	
@@ -68,8 +69,13 @@
 </body>	
 
 <script src="static/jquery-1.11.0.js"></script>
+
 <!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
 <script type="text/javascript" src="static/date.js"></script>
+
+<<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.min.js" type="text/javascript"></script>
+<!-- <script src="http://silviomoreto.github.io/bootstrap-select/javascripts/bootstrap-select.js"></script> -->
+
 
 <script>
 
@@ -141,130 +147,140 @@
 	// -------------------------------------------------- //
 	// Book slot Ajax call
 	// -------------------------------------------------- //
-	var updateSlot = function($slotObject, datesArray, roomParam, userName, action) {
-		//$slotObject.text(userName);
+	var updateSlot = function(slotObjArray, datesArray, roomParam, userName, action) {
 
 		var dateParam =  "";
 		var slotParam = "";
 		var fullDateParam = ""; // Shows full date string -Karen
-		// set parameters to send in the Ajax call
-		var slotWeekDay = $slotObject.data("day");
-		slotParam = $slotObject.closest("tr").data("hour");
 
-		switch (slotWeekDay) {
-			case 0:
-				dateParam = convertDateToString(datesArray[0]);
-				fullDateParam = datesArray[0];
-				break;
-			case 1:
-				dateParam = convertDateToString(datesArray[1]);
-				fullDateParam = datesArray[1];
-				break;
-			case 2:
-				dateParam = convertDateToString(datesArray[2]);
-				fullDateParam = datesArray[2];
-				break;
-			case 3:
-				dateParam = convertDateToString(datesArray[3]);
-				fullDateParam = datesArray[3];
-				break;
-			case 4:
-				dateParam = convertDateToString(datesArray[4]);
-				fullDateParam = datesArray[4];
-				break;
-			case 5:
-				dateParam = convertDateToString(datesArray[5]);
-				fullDateParam = datesArray[5];
-				break;
-			case 6:
-				dateParam = convertDateToString(datesArray[6]);
-				fullDateParam = datesArray[6];
-				break;	
-			default:
-				dateParam = "";				
-				fullDateParam = "";
-				break;	
-		}
+		// Loop through slots array
+		var slotsArrayLength = slotObjArray.length;
+ 		console.log("In updateSlot... slotObjArray[] length:" + slotObjArray.length);
+ 		console.log("In updateSlot... slotObjArray[0].data('day'): " + slotObjArray[0].data('day'));
 
-		switch (action) {
-			case "add":
-				// make AJAX call to add slot
-				// Add "deny add" change here instead so ajax call does not go through. -Karen
+		for (i=0;i<slotsArrayLength;i++) {
 
-				var compareDate = Date.compare(Date.today(), fullDateParam);
-				//console.log(Date.today()); //debug code  -Karen
-				//console.log(fullDateParam); //debug code -Karen
-				//console.log(compareDate); //debug code  -Karen
-				if (compareDate === (0 || -1)) {
-						$.ajax({
-						url: '/api/v1/add',
-						type: 'POST',
-						data: {slot: slotParam, date: dateParam, room: roomParam},
-						success: function(resp) {
-						  var data =  JSON.parse(resp);
-							if (data.status) {
-								$slotObject.text(userName);
-								updateSlotStyle($slotObject, "display");
-								return true;
-							} else {
-								// display error message
-								// alert(data.message);
-								errorMessage(data.message);
+			var $slotObject = slotObjArray[i];	
+
+			// set parameters to send in the Ajax call
+			var slotWeekDay = $slotObject.data("day");
+			slotParam = $slotObject.closest("tr").data("hour");
+
+			switch (slotWeekDay) {
+				case 0:
+					dateParam = convertDateToString(datesArray[0]);
+					fullDateParam = datesArray[0];
+					break;
+				case 1:
+					dateParam = convertDateToString(datesArray[1]);
+					fullDateParam = datesArray[1];
+					break;
+				case 2:
+					dateParam = convertDateToString(datesArray[2]);
+					fullDateParam = datesArray[2];
+					break;
+				case 3:
+					dateParam = convertDateToString(datesArray[3]);
+					fullDateParam = datesArray[3];
+					break;
+				case 4:
+					dateParam = convertDateToString(datesArray[4]);
+					fullDateParam = datesArray[4];
+					break;
+				case 5:
+					dateParam = convertDateToString(datesArray[5]);
+					fullDateParam = datesArray[5];
+					break;
+				case 6:
+					dateParam = convertDateToString(datesArray[6]);
+					fullDateParam = datesArray[6];
+					break;	
+				default:
+					dateParam = "";				
+					fullDateParam = "";
+					break;	
+			}
+
+			switch (action) {
+				case "add":
+					// make AJAX call to add slot
+					// Add "deny add" change here instead so ajax call does not go through. -Karen
+
+					var compareDate = Date.compare(Date.today(), fullDateParam);
+					//console.log(Date.today()); //debug code  -Karen
+					//console.log(fullDateParam); //debug code -Karen
+					//console.log(compareDate); //debug code  -Karen
+					if (compareDate === (0 || -1)) {
+							$.ajax({
+							url: '/api/v1/add',
+							type: 'POST',
+							data: {slot: slotParam, date: dateParam, room: roomParam},
+							success: function(resp) {
+							  var data =  JSON.parse(resp);
+								if (data.status) {
+									$slotObject.text(userName);
+									updateSlotStyle($slotObject, "display");
+									return true;
+								} else {
+									// display error message
+									// alert(data.message);
+									errorMessage(data.message);
+									return false;
+								}
+							},
+							error: function(req, status, err) {
+								// alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
+								errorMessage("Not able to book slot. Error message: " + err);
 								return false;
 							}
-						},
-						error: function(req, status, err) {
-							// alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
-							errorMessage("Not able to book slot. Error message: " + err);
-							return false;
-						}
 
-						});
-				} else {
-					// display error message
-					// alert("This date occurs in the past.");
-					errorMessage("This date occurs in the past.");					
-					return false;
-				}
-				break;
+							});
+					} else {
+						// display error message
+						// alert("This date occurs in the past.");
+						errorMessage("This date occurs in the past.");					
+						return false;
+					}
+					break;
 
-			case "delete":
-				// make AJAX call to delete slot
-				var compareDate = Date.compare(Date.today(), fullDateParam);
-				//console.log(Date.today()); //debug code  -Karen
-				//console.log(fullDateParam); //debug code -Karen
-				//console.log(compareDate); //debug code  -Karen
-				if (compareDate === (0 || -1)) {	
-					$.ajax({
-						url: '/api/v1/remove',
-						type: 'POST',
-						data: {slot: slotParam, date: dateParam},
-						success: function(resp) {
-						  var data = JSON.parse(resp);
-							if (data.status) {
-								$slotObject.text("");
-								updateSlotStyle($slotObject, "display");
-								return true;
-							} else {
-								// alert(data.message);
-								errorMessage(data.message);
+				case "delete":
+					// make AJAX call to delete slot
+					var compareDate = Date.compare(Date.today(), fullDateParam);
+					//console.log(Date.today()); //debug code  -Karen
+					//console.log(fullDateParam); //debug code -Karen
+					//console.log(compareDate); //debug code  -Karen
+					if (compareDate === (0 || -1)) {	
+						$.ajax({
+							url: '/api/v1/remove',
+							type: 'POST',
+							data: {slot: slotParam, date: dateParam},
+							success: function(resp) {
+							  var data = JSON.parse(resp);
+								if (data.status) {
+									$slotObject.text("");
+									updateSlotStyle($slotObject, "display");
+									return true;
+								} else {
+									// alert(data.message);
+									errorMessage(data.message);
+									return false;
+									}
+							},
+							error: function(req, status, err) {
+								// alert("Not able to delete slot. Error message: " + err); // Added by Giovanna 7/16
+								errorMessage("Not able to delete slot. Error message: " + err);
 								return false;
-								}
-						},
-						error: function(req, status, err) {
-							// alert("Not able to delete slot. Error message: " + err); // Added by Giovanna 7/16
-							errorMessage("Not able to delete slot. Error message: " + err);
-							return false;
-						}
-					});
-				} else {
-					// display error message
-					// alert("This date occurs in the past.");
-					errorMessage("This date occurs in the past.");
-					return false;
-				}
-				break;	
-		}
+							}
+						});
+					} else {
+						// display error message
+						// alert("This date occurs in the past.");
+						errorMessage("This date occurs in the past.");
+						return false;
+					}
+					break;	
+			}
+		}	
 		return false;
 	}
 
@@ -565,16 +581,31 @@
 		}	
 	});
 
+	// Enable Bootstrap selectpicker functionality
+/*	$("body").on("click", ".selectpicker", function(){
+		$(this).selectpicker({
+		   style: 'btn-info',
+		   size: 4
+		});
+	});
+*/
+
 	// Slot "click" action
 	$(".hd-schedule td").click(function(){                     
 		var response;
+
+		var slotObjArray = [];
+		slotObjArray[0] = $(this);
+ 		console.log("On click... slotObjArray[] length:" + slotObjArray.length);
+ 		console.log("On click... slotObjArray[0].data('day'): " + slotObjArray[0].data("day"));
+
 		if ($(this).text() === "") {
 			// book/add slot
-			response = updateSlot($(this), datesArray, room, userName, "add");
+			displayPopup(slotObjArray[0], datesArray, room, userName);
 		} else {
 			// remove reservation
 			if (userName === $(this).text()) {
-				response = updateSlot($(this), datesArray, room, userName, "delete");
+				response = updateSlot(slotObjArray, datesArray, room, userName, "delete");
 			} else {
 				// display error message
 				errorMessage("Cannot delete slots from different owner");
@@ -589,7 +620,7 @@
   function errorMessage(message){
     $('<div class="lightbox">' +
         '<div class="lightboxOverlay"></div>' +
-        '<div class="lightboxDialog">' +
+        '<div class="lightboxError">' +
           '<p></p>' +
           '<button onclick="$(this).parents(\'.lightbox\').remove();return false;">Close</button>' +
         '</div>' +
@@ -597,7 +628,51 @@
     ).appendTo('body');
     $(".lightbox p").text(message);
   }
+
+
+  // -------------------------------------------------- //
+  // Booking popup window
+  // -------------------------------------------------- //
+  function displayPopup($slotObj, datesArray, room, userName){
+    $('<div class="lightboxPopup container">' +
+        '<div class="lightboxOverlayPopup"></div>' +
+        '<div class="lightboxPopup">' +
+        	'<div class="row custom-elem-row">' +
+    			'<p>How long do you need the room for? </p>' +
+			    '<select class="selectpicker">' +
+				    '<option>1/2 hour</option>' +
+				    '<option>1 hour</option>' +
+				    '<option>1 1/2 hours</option>' +
+				    '<option>2 hours</option>' +    
+			    '</select>' +
+		    '</div>' +
+        	'<div class="row custom-elem-row">' +
+        		'<div class="col-md-3 col-md-offset-3">' + 
+          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+          		'</div>' +	
+        		'<div class="col-md-3">' + 
+          			'<button class="okButton btn btn-default">Ok</button>' +          	
+				'</div>' +          		
+          	'</div>' +		    
+		'</div>' +
+	'</div>'	   
+    ).appendTo('body');
+    $(".selectpicker").selectpicker();
+
+    $(".lightboxPopup").on('click','.okButton', function() {
+
+		var slotObjArray = [];
+		slotObjArray[0] = $slotObj;
+
+ 		console.log("In displayPopup... slotObjArray[] length:" + slotObjArray.length);
+ 		console.log("In displayPopup... slotObjArray[0].data('day'): " + slotObjArray[0].data("day"));
+
+    	response = updateSlot(slotObjArray, datesArray, room, userName, "add");
+    	$(".lightboxPopup").remove();
+    });
+  }
+
+
 </script>
 
 </html>    
-

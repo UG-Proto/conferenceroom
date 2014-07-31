@@ -75,7 +75,7 @@
     z-index:1000;
 }
 
-.lightboxDialog {
+.lightboxError {
     background-color: white;
     border: 1px #000000 solid;
     border-radius: 5px;
@@ -99,3 +99,52 @@
     display:block;
     margin: 1em auto auto auto;
 }
+
+
+/* Booking slot popup */
+
+.lightboxOverlayPopup {
+    background-color:#000;
+    opacity: 0.3;
+    bottom:0px;
+    left:0px;"
+    overflow:auto;
+    position:fixed;
+    right:0px;
+    top:0px;
+    z-index:1000;
+}
+
+.lightboxPopup {
+    background-color: white;
+    border: 1px #000000 solid;
+    border-radius: 5px;
+    left:0;
+    margin-left:auto;
+    margin-right:auto;
+    padding:20px;
+    right:0;
+    top:30%;
+    width: 30%;
+    max-width: 90%;
+    z-index:1001;
+    position:fixed;
+    font-color: #999999;
+    font-family: arial;
+    text-align: center;
+}
+
+.custom-elem-row {
+    padding: 1em;
+}
+
+.custom-elem-row p, .custom-elem-row select {
+    display: inline-block;
+}
+
+.okButton {
+    background-color:#40AB49 !important;
+    color: #FFFFFF;
+}
+
+
