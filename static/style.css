@@ -1,13 +1,15 @@
 
-.hd-logo {
+.hd-logo, .hd-genee-logo {
     background: transparent;   
-    margin: 2em 4em 1em 4em;
+    margin: 2em 1em 1em 2em;
+    display: inline-block;
 }
+
 .header {
-    border-bottom: 0.5em solid #a3203f;
+    border-bottom: 0.5em solid #40AB49; /*-> Genee green*/  /* #a3203f; -> red */
 } 
 
-#hd-logo, #hd-username {
+.hd-logo-section, .hd-username {
    text-align: center;
    line-height: 8em;
 }
@@ -24,6 +26,12 @@
 .hd-week-nav {
     display: inline-block;
 }
+
+.hd-nav-button {
+    background-color:#40AB49 !important;
+    color: #FFFFFF;
+}
+
 
 .hd-display-week {
     font-size: 120%;
@@ -42,24 +50,20 @@
     cursor: default;
 }
 .displayBookedSlot {
-    background-color: #E0CAAE;  /* light tan */
+    background-color: #8CCD92; /* -> Light green */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
 }
-.mouseOverEmptySlot {
-    background-color: #FFFFFF; /* light tan */
-    cursor: pointer;
-}
-.mouseOverBookedSlotOwner {
-    background-color: #E0CAAE;  /* light tan */
-    cursor: pointer;
-    padding: 0px  !important;
-}
-.mouseOverBookedSlotNoOwner {
-    background-color: #E0CAAE;  /* light tan */
+.displayBookedOtherOwnerSlot {
+    background-color: #FFFFA3; /* -> yellow */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
 }
+.displayDisabledSlot {
+    background-color: #E6E6E6;  /* gray */
+    cursor: not-allowed;
+}
+
 
 
 /* Lightbox */
@@ -136,6 +140,7 @@
 
 .custom-elem-row {
     padding: 1em;
+    padding bottom: 3em;
 }
 
 .custom-elem-row p, .custom-elem-row select {

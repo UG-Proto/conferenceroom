@@ -1,5 +1,5 @@
 application: conferenceroom
-module: default
+# module: default
 version: live
 runtime: python27
 api_version: 1
