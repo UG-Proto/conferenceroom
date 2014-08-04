@@ -145,6 +145,67 @@
 		}	
 	}
 
+	// -------------------------------------------------- //
+	// fill slot with corresponding user name (Ajax call)
+	// -------------------------------------------------- //
+	var fillOutSlotFromGenee = function(datesArray, roomParam) {
+
+		// --------------------------------------------
+		// "meetingtime": "2014-08-01T09:00:00-07:00",
+		// "meetingduration": 60,
+		// "Are we planning to store HackerDojo userid? How to enforce only hackerDojo users reserve the room?"
+		// What are the parameters I should send in this call?
+		// ---------------------------------------------
+
+		// make AJAX call
+		var datesArrayLength = datesArray.length;
+		var weekDay = " ";
+		var dateParam = " ";
+		var respLength = 0;
+		var slotCell = " ";
+		var slotDay = " ";
+		var slotDate;
+
+		// Clear all content from calendar
+		$("table.hd-schedule td").text("").each( function() {
+			updateSlotStyle($(this), "display");
+		});
+
+		for (i=0;i<datesArrayLength;i++) {
+			if (typeof (datesArray[i]) === "undefined") 
+			continue;	
+			dateParam = convertDateToString(datesArray[i]);
+
+			$.ajax({
+				url: '/api/v1/schedule',
+				type: 'GET',
+				data: {date: dateParam, room: roomParam},
+				dataType: 'json',
+				success: function(resp) {
+
+					respLength = resp.length;
+					for (i=0;i<respLength;i++) {
+						// var mydate = new Date(resp[i].date);
+						var mydate = Date.parse(resp[i].date);						
+						weekDay = mydate.getDay();
+
+						if (resp[i].slot !== "") {	
+							// Locate the slot and add owner name to that slot
+							var $currentSlotObj = $("tr[data-hour='" + resp[i].slot + "']").find("td[data-day='" + weekDay + "']");
+							// $currentSlotObj.text(resp[i].owner);
+							$currentSlotObj.text(resp[i].owner.split("@")[0]);
+							updateSlotStyle($currentSlotObj, "display");
+						}
+					}	
+					
+				},
+				error: function(req, status, err) {
+					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
+
+				}
+			});
+		}	
+	}
 
 	// -------------------------------------------------- //
 	// Book slot Ajax call
@@ -282,7 +343,11 @@
 				if (mins === 0) {
 					var slotNumForCurrentTime = hourIn24format * 2;
 				} else {
-					var slotNumForCurrentTime = hourIn24format * 2 + 1;				
+					if (mins < 30) { 
+						var slotNumForCurrentTime = hourIn24format * 2 + 1;	
+					} else {
+						var slotNumForCurrentTime = hourIn24format * 2 + 2;							
+					} 				
 				}
 
 				if (slotNum >= slotNumForCurrentTime) {
