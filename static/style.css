@@ -55,7 +55,7 @@
     padding: 0px  !important;
 }
 .displayBookedOtherOwnerSlot {
-    background-color: #FFFFA3; /* -> yellow */  /* #E0CAAE -> light tan */
+    background-color: #E0CAAE; /* #FFFFA3 -> yellow */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
 }

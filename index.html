@@ -260,39 +260,43 @@
 	// -------------------------------------------------- //
 	var isSlotAvailable = function($slotObject) {
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
-		var compareDate = Date.compare(Date.today(), slotDateObj);
+		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
 
-		// if (compareDate === (-1 || 0)) { // today is less than or equal to slotDateObj 
 		if (compareDate === 1) { // slot is in the past 
 
 			return false;
 
-		} else if (compareDate === 0) {  // slot is within today
+		} else {
 
-			console.log("compareDate:" + compareDate);	
+			//console.log(" ");
+			//console.log("Date.today():" + Date.today() + "slotDateObj:" + slotDateObj + "compareDate:" + compareDate);
 
-			// determine if slot selected is earlier than current time
-			var slotNum = $slotObject.closest("tr").data("hour");
-			var hourIn24format = new Date().toString("H");
-			var mins = new Date().toString("m ");
+			if (compareDate === 0) {  // slot is within today
 
-			console.log("In isSlotAvailable... slotNum:" + slotNum + ", hourIn24format:" + hourIn24format + ", mins:" + mins);
-			if (mins === 0) {
-				var slotNumForCurrentTime = hourIn24format * 2;
-			} else {
-				var slotNumForCurrentTime = hourIn24format * 2 + 1;				
-			}
+				// determine if slot selected is earlier than current time
+				var slotNum = $slotObject.closest("tr").data("hour");
+				var hourIn24format = new Date().toString("H");
+				var mins = new Date().toString("m ");
+				console.log("In isSlotAvailable... slotNum:" + slotNum + ", hourIn24format:" + hourIn24format + ", mins:" + mins);
 
-			if (slotNum >= slotNumForCurrentTime) {
+				if (mins === 0) {
+					var slotNumForCurrentTime = hourIn24format * 2;
+				} else {
+					var slotNumForCurrentTime = hourIn24format * 2 + 1;				
+				}
+
+				if (slotNum >= slotNumForCurrentTime) {
+					return true;
+				} else {
+					return false;
+				}
+
+			} else if (compareDate === -1) { // slot is in the future
+
 				return true;
-			} else {
-				return false;
+
 			}
-		} else if (compareDate === -1) { // slot is in the future
-
-			return true;
-
-		}
+		}	
 	}	
 
 
