@@ -10,7 +10,8 @@ from google.appengine.ext import ndb
 
 from models import Slot
 
-import requests
+import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I guess isn't allowing this to be imported in a virtualenv.  So, I manually made a link to requests
+                # Within the application directory pointing to the requests install in the virtualenv
 # Converts iso formatted dates to a date object.
 
 def make_date(date_string):
