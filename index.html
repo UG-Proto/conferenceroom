@@ -166,22 +166,17 @@
 		var slotArrayLength = 0;
 
 
-		// Clear all content from calendar
-		$("table.hd-schedule td").text("").each( function() {
-			updateSlotStyle($(this), "display");
-		});
-
-		for (i=0;i<datesArrayLength;i++) {
-			if (typeof (datesArray[i]) === "undefined") 
+		for (d=0;d<datesArrayLength;d++) {
+			if (typeof (datesArray[d]) === "undefined") 
 			continue;	
-			dateParam = convertDateToString(datesArray[i]);
+			dateParam = convertDateToString(datesArray[d]);
 
 			$.ajax({
 				//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
-			        url: '/api/v1/roomschedule',	
-                                type: 'GET',
-                                crossDomain: true,
-                                headers: {'Access-Control-Allow-Origin':'*'},
+		        url: '/api/v1/roomschedule',	
+                type: 'GET',
+                crossDomain: true,
+                headers: {'Access-Control-Allow-Origin':'*'},
 				data: {},
 				dataType: 'json',
 				success: function(resp) {
@@ -191,13 +186,17 @@
 
 						// Determine the first slot
 						var meetingDateTime = Date.parse(resp[i].meetingtime);
-						var slotNum = getSlotNumFromDateTime(meetingDateTime);						
+						var slotNum = getSlotNumFromDateTime(meetingDateTime);
 						var weekDay = meetingDateTime.getDay();
+						var weekDayDate = getDateFromWeekDayNum(weekDay);
 						var index = 0;
 						var slotObjArray = [];
 						var meetingId = resp[i].meetingid;
+						var slotOwner = "";
 
-						if (typeof (meetingDateTime) !== "undefined") {
+						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
+
+						if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
 							// Locate the first slot
 							var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
 							slotObjArray[index] = $slotObj;
@@ -214,21 +213,26 @@
 							}
 
 							// Get array of attendees, concatenate them
-							var inviteesArray = resp.invitees;
+							var inviteesArray = resp[i].invitees;
 							var inviteesArrayLength = inviteesArray.length;
-							for (i=0;i<inviteesArrayLength;i++) {
+
+							for (j=0;j<inviteesArrayLength;j++) {
 								// concatenation of attendees names
-								slotOwner = slotOwner + ", " + inviteesArray[i].name;  
+								if (slotOwner === "") {
+									slotOwner = inviteesArray[j].name;  
+								} else {
+									slotOwner = slotOwner + ", " + inviteesArray[j].name;  
+								}
 							}	
 
 							// Loop through array of slots and paint them on the calendar
 							slotArrayLength = slotObjArray.length;
 
-							for (i=0;i<slotArrayLength;i++) {
-								slotObjArray[i].text(slotOwner);
+							for (k=0;k<slotArrayLength;k++) {
+								slotObjArray[k].text(slotOwner);
 								// store Genee meeting Id as an attribute "data-meetingId"
-								slotObjArray[i].attr("data-meetingId", meetingId);								
-								updateSlotStyle(slotObjArray[i], "display");
+								slotObjArray[k].attr("data-meetingId", meetingId);								
+								updateSlotStyle(slotObjArray[k], "display");
 							}
 						}
 
@@ -356,8 +360,8 @@
 	// -------------------------------------------------- //
 	var getSlotNumFromDateTime = function(dateTimeObj) {
 	
-		var hourIn24format = dateTimeObj.toString("H");
-		var mins = dateTimeObj.toString("m ");
+		var hourIn24format = Number(dateTimeObj.toString("H"));
+		var mins = Number(dateTimeObj.toString("m "));
 		var slotNumFromDateTime;
 
 		if (mins === 0) {
@@ -379,52 +383,6 @@
 	// Is slot available function
 	// -------------------------------------------------- //
 
-/*	var isSlotAvailable = function($slotObject) {
-		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
-		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
-
-		if (compareDate === 1) { // slot is in the past 
-
-			return false;
-
-		} else {
-
-			//console.log(" ");
-			//console.log("Date.today():" + Date.today() + "slotDateObj:" + slotDateObj + "compareDate:" + compareDate);
-
-			if (compareDate === 0) {  // slot is within today
-
-				// determine if slot selected is before current time
-				var slotNum = $slotObject.closest("tr").data("hour");  // slot selected
-				var hourIn24format = new Date().toString("H");
-				var mins = new Date().toString("m ");
-				console.log("In isSlotAvailable... slotNum:" + slotNum + ", hourIn24format:" + hourIn24format + ", mins:" + mins);
-
-				if (mins === 0) {
-					var slotNumForCurrentTime = hourIn24format * 2;
-				} else {
-					if (mins < 30) { 
-						var slotNumForCurrentTime = hourIn24format * 2 + 1;	
-					} else {
-						var slotNumForCurrentTime = hourIn24format * 2 + 2;							
-					} 				
-				}
-
-				if (slotNum >= slotNumForCurrentTime) {
-					return true;
-				} else {
-					return false;
-				}
-
-			} else if (compareDate === -1) { // slot is in the future
-
-				return true;
-
-			}
-		}	
-	}	
-*/
-
 	var isSlotAvailable = function($slotObject) {
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
 		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
@@ -434,9 +392,6 @@
 			return false;
 
 		} else {
-
-			//console.log(" ");
-			//console.log("Date.today():" + Date.today() + "slotDateObj:" + slotDateObj + "compareDate:" + compareDate);
 
 			if (compareDate === 0) {  // slot is within today
 
@@ -655,7 +610,13 @@
 	var updateCalendar = function(firstDayOfWeek, currentDate, datesArray, room, displayOption) {
 
 		updateDatesOnCalendar(firstDayOfWeek, currentDate, datesArray, displayOption);	
-		// fillOutSlotFromDB(datesArray, room);
+
+		// Clear all content from calendar
+		$("table.hd-schedule td").text("").each( function() {
+			updateSlotStyle($(this), "display");
+		});
+
+		fillOutSlotFromDB(datesArray, room);
 		fillOutSlotFromGenee(datesArray, room);		
 
 		// For small devices, we only display current Date
@@ -852,8 +813,6 @@
 
 		var dayNum = $slotObj.data("day");
 		var slotNum = $slotObj.closest("tr").data("hour");
-		//console.log("dayNum:" + dayNum + ", slotNum:" + slotNum);
-		//console.log('$(".timeDropdown").val() : ' + $(".timeDropdown").val());
 
 		// obtain select value
 		switch ($(".selectpicker").val()) {
@@ -871,7 +830,6 @@
 				slotObjArray[1] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
 				slotNum++;
 				slotObjArray[2] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-				//console.log("Inside 1.5 duration switch case, slotNum:" + slotNum);
 				break;
 			case "2":
 				slotObjArray[0] = $slotObj;
@@ -883,10 +841,6 @@
 				slotObjArray[3] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
 				break;
 		}
-
-		// slotObjArray[0] = $slotObj;
- 		// console.log("In displayPopup... slotObjArray[] length:" + slotObjArray.length);
- 		// console.log("In displayPopup... slotObjArray[slotObjArray.length-1].data('day'): " + slotObjArray[slotObjArray.length-1].data("day"));
 
     	response = updateSlot(slotObjArray, datesArray, room, userName, "add");
     	$(".lightboxPopup").remove();
