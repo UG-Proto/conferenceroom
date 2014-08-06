@@ -10,7 +10,10 @@ from google.appengine.ext import ndb
 
 from models import Slot
 
+import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I guess isn't allowing this to be imported in a virtualenv.  So, I manually made a link to requests
+                # Within the application directory pointing to the requests install in the virtualenv
 # Converts iso formatted dates to a date object.
+
 def make_date(date_string):
   elems = date_string.split("-")
   year = int(elems[0])
@@ -284,10 +287,21 @@ class RemoveHandler(ApiHandler):
     self._exit_handler()
     return
 
+
+# Handler for schedule requests.
+class RoomSchedule(webapp2.RequestHandler):
+  def get(self):
+    #if not self._check_authentication():
+      #return
+    results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
+
+    self.response.write(json.dumps(results.json()))
+
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
     ("/api/v1/schedule", ScheduleHandler),
     ("/api/v1/add", BookingHandler),
     ("/api/v1/remove", RemoveHandler),
+    ("/api/v1/roomschedule",RoomSchedule),
     ], debug = True)
