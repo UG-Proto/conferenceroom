@@ -159,12 +159,12 @@
 
 		// make AJAX call
 		var datesArrayLength = datesArray.length;
-		var weekDay = " ";
 		var dateParam = " ";
 		var respLength = 0;
-		var slotCell = " ";
-		var slotDay = " ";
-		var slotDate;
+		var slotOwner = " ";
+		var meetingDuration = " ";
+		var slotArrayLength = 0;
+
 
 		// Clear all content from calendar
 		$("table.hd-schedule td").text("").each( function() {
@@ -177,31 +177,66 @@
 			dateParam = convertDateToString(datesArray[i]);
 
 			$.ajax({
-				url: '/api/v1/schedule',
-				type: 'GET',
-				data: {date: dateParam, room: roomParam},
+				//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
+			        url: '/api/v1/roomschedule',	
+                                type: 'GET',
+                                crossDomain: true,
+                                headers: {'Access-Control-Allow-Origin':'*'},
+				data: {},
 				dataType: 'json',
 				success: function(resp) {
 
 					respLength = resp.length;
 					for (i=0;i<respLength;i++) {
-						// var mydate = new Date(resp[i].date);
-						var mydate = Date.parse(resp[i].date);						
-						weekDay = mydate.getDay();
 
-						if (resp[i].slot !== "") {	
-							// Locate the slot and add owner name to that slot
-							var $currentSlotObj = $("tr[data-hour='" + resp[i].slot + "']").find("td[data-day='" + weekDay + "']");
-							// $currentSlotObj.text(resp[i].owner);
-							$currentSlotObj.text(resp[i].owner.split("@")[0]);
-							updateSlotStyle($currentSlotObj, "display");
+						// Determine the first slot
+						var meetingDateTime = Date.parse(resp[i].meetingtime);
+						var slotNum = getSlotNumFromDateTime(meetingDateTime);						
+						var weekDay = meetingDateTime.getDay();
+						var index = 0;
+						var slotObjArray = [];
+						var meetingId = resp[i].meetingid;
+
+						if (typeof (meetingDateTime) !== "undefined") {
+							// Locate the first slot
+							var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
+							slotObjArray[index] = $slotObj;
+
+							// Determine rest of slots booked based on meeting duration
+							meetingDuration = resp[i].meetingduration - 30;  // the first slot was already calculated so we remove those minutes and evaluate the remaining time
+
+							while (meetingDuration > 0) {
+								slotNum++;
+								index++;
+								$slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
+								slotObjArray[index] = $slotObj;
+								meetingDuration = meetingDuration - 30;
+							}
+
+							// Get array of attendees, concatenate them
+							var inviteesArray = resp.invitees;
+							var inviteesArrayLength = inviteesArray.length;
+							for (i=0;i<inviteesArrayLength;i++) {
+								// concatenation of attendees names
+								slotOwner = slotOwner + ", " + inviteesArray[i].name;  
+							}	
+
+							// Loop through array of slots and paint them on the calendar
+							slotArrayLength = slotObjArray.length;
+
+							for (i=0;i<slotArrayLength;i++) {
+								slotObjArray[i].text(slotOwner);
+								// store Genee meeting Id as an attribute "data-meetingId"
+								slotObjArray[i].attr("data-meetingId", meetingId);								
+								updateSlotStyle(slotObjArray[i], "display");
+							}
 						}
+
 					}	
-					
+
 				},
 				error: function(req, status, err) {
 					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
-
 				}
 			});
 		}	
@@ -319,7 +354,32 @@
 	// -------------------------------------------------- //
 	// Is slot available function
 	// -------------------------------------------------- //
-	var isSlotAvailable = function($slotObject) {
+	var getSlotNumFromDateTime = function(dateTimeObj) {
+	
+		var hourIn24format = dateTimeObj.toString("H");
+		var mins = dateTimeObj.toString("m ");
+		var slotNumFromDateTime;
+
+		if (mins === 0) {
+			slotNumFromDateTime = hourIn24format * 2;
+		} else {
+			if (mins < 30) { 
+				var slotNumFromDateTime = hourIn24format * 2 + 1;	
+			} else {
+				var slotNumFromDateTime = hourIn24format * 2 + 2;							
+			} 				
+		}
+
+		return slotNumFromDateTime;
+
+	}	
+
+
+	// -------------------------------------------------- //
+	// Is slot available function
+	// -------------------------------------------------- //
+
+/*	var isSlotAvailable = function($slotObject) {
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
 		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
 
@@ -334,8 +394,8 @@
 
 			if (compareDate === 0) {  // slot is within today
 
-				// determine if slot selected is earlier than current time
-				var slotNum = $slotObject.closest("tr").data("hour");
+				// determine if slot selected is before current time
+				var slotNum = $slotObject.closest("tr").data("hour");  // slot selected
 				var hourIn24format = new Date().toString("H");
 				var mins = new Date().toString("m ");
 				console.log("In isSlotAvailable... slotNum:" + slotNum + ", hourIn24format:" + hourIn24format + ", mins:" + mins);
@@ -363,7 +423,40 @@
 			}
 		}	
 	}	
+*/
 
+	var isSlotAvailable = function($slotObject) {
+		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
+		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
+
+		if (compareDate === 1) { // slot is in the past 
+
+			return false;
+
+		} else {
+
+			//console.log(" ");
+			//console.log("Date.today():" + Date.today() + "slotDateObj:" + slotDateObj + "compareDate:" + compareDate);
+
+			if (compareDate === 0) {  // slot is within today
+
+				// determine if slot selected is before current time
+				var slotNum = $slotObject.closest("tr").data("hour");  // slot selected
+				var slotNumForCurrentTime = getSlotNumFromDateTime(new Date());
+
+				if (slotNum >= slotNumForCurrentTime) {
+					return true;
+				} else {
+					return false;
+				}
+
+			} else if (compareDate === -1) { // slot is in the future
+
+				return true;
+
+			}
+		}	
+	}	
 
 	// -------------------------------------------------- //
 	// update slot background
@@ -562,7 +655,8 @@
 	var updateCalendar = function(firstDayOfWeek, currentDate, datesArray, room, displayOption) {
 
 		updateDatesOnCalendar(firstDayOfWeek, currentDate, datesArray, displayOption);	
-		fillOutSlotFromDB(datesArray, room);
+		// fillOutSlotFromDB(datesArray, room);
+		fillOutSlotFromGenee(datesArray, room);		
 
 		// For small devices, we only display current Date
 		switch (displayOption) {
