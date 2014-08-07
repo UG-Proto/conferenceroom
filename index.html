@@ -373,17 +373,15 @@
 				var slotNumFromDateTime = hourIn24format * 2 + 2;							
 			} 				
 		}
-
 		return slotNumFromDateTime;
-
 	}	
 
 
 	// -------------------------------------------------- //
 	// Is slot available function
 	// -------------------------------------------------- //
-
 	var isSlotAvailable = function($slotObject) {
+
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
 		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
 
@@ -406,12 +404,29 @@
 				}
 
 			} else if (compareDate === -1) { // slot is in the future
-
 				return true;
-
 			}
 		}	
 	}	
+
+
+	// -------------------------------------------------- //
+	// Is slot available function
+	// -------------------------------------------------- //
+	var isUserPartOfMeeting = function($slotObject) {
+
+		var userArray = $slotObject.text().split(",");
+		var userArrayLength = userArray.length;
+		var found = false;
+		for (u=0;u<userArrayLength;u++) {
+			if ( userName === userArray[u] ) {
+				found = true;
+				break;
+			}
+		}
+		return found;
+	}	
+
 
 	// -------------------------------------------------- //
 	// update slot background
@@ -424,14 +439,14 @@
 
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
 
-					if ($slotObject.text() === "" ) { 
-						
+					if ($slotObject.text() === "" ) { 						
 							$slotObject.removeClass("displayBookedSlot");		
 							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
 							$slotObject.removeClass("displayDisabledSlot");		
 							$slotObject.addClass("displayEmptySlot");	
 					} else {
-						if (userName === $slotObject.text()) {	
+						// if (userName === $slotObject.text()) {	
+						if (isUserPartOfMeeting($slotObject)) {								
 							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
 							$slotObject.removeClass("displayDisabledSlot");		
 							$slotObject.removeClass("displayEmptySlot");	
@@ -449,8 +464,7 @@
 					$slotObject.removeClass("displayBookedOtherOwnerSlot");	
 					$slotObject.removeClass("displayEmptySlot");							
 					$slotObject.addClass("displayDisabledSlot");							
-				}	
-					
+				}						
 				break;
 		}
 	}
@@ -777,8 +791,13 @@
   // -------------------------------------------------- //
   function displayPopup($slotObj, datesArray, room, userName){
 
-  	// Logic to determine how many hours can user book at this time
+  	// Logic to determine how many hours the user can book at this time
+	var dayNum = $slotObj.data("day");
+	var slotNum = $slotObj.closest("tr").data("hour");
 
+	// Check up to 7 slots down to determine how long the user can book the room
+	var lastSlotToCheck = slotNum + 7;
+	
 
   	// Create popup window
     $('<div class="lightboxPopup container">' +
@@ -811,10 +830,7 @@
     	// create an array with slots corresponding to the duration selected by the user
 		var slotObjArray = [];
 
-		var dayNum = $slotObj.data("day");
-		var slotNum = $slotObj.closest("tr").data("hour");
-
-		// obtain select value
+		// obtain selected value
 		switch ($(".selectpicker").val()) {
 			case "0.5":
 				slotObjArray[0] = $slotObj;

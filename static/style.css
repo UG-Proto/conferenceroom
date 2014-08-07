@@ -48,21 +48,25 @@
 .displayEmptySlot {
     background-color: #FFFFFF;  /* white */
     cursor: default;
+    color: black;
 }
 .displayBookedSlot {
     background-color: #8CCD92; /* -> Light green */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
+    color: black;
 }
 .displayBookedOtherOwnerSlot {
     background-color: #999999; /* #FFFFA3 -> yellow */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
+    color: black;
 }
 .displayDisabledSlot {
     background-color: #E6E6E6;  /* gray */
     cursor: not-allowed;
     padding: 0px  !important;
+    color: black;
 }
 
 
