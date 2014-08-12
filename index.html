@@ -382,8 +382,8 @@
 						    var data =  JSON.parse(resp);
 						    console.log("data:" + data);
 							if (data.status) {
-								// $slotObject.text(userName);
-								// updateSlotStyle($slotObject, slotCount, "display");
+								$slotObject.text(userName);
+								updateSlotStyle($slotObject, slotCount, "display");
 								return true;
 							} else {
 								// display error message
@@ -1077,11 +1077,10 @@
 
 
 	// Slot "click" event
-	$(".hd-schedule td").click(function(){                     
+	$(".hd-schedule").on('click','td', function() {                   
 		var response;
 
-		var slotObjArray = [];
-		// slotObjArray[0] = $(this);
+		console.log("clicked on a slot...");
 
 		if ($(this).text() === "") {
 			if (isSlotAvailable($(this))) {
