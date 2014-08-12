@@ -330,7 +330,9 @@ class GeneeHandler(ApiHandler):
     print "genee_json: " + str(genee_json)
     
     url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
-    requests.post(url, data=json.dumps(genee_json)) 
+    
+    r=requests.post(url, data=json.dumps(genee_json)) 
+    self._exit_handler()
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),

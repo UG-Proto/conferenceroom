@@ -85,6 +85,10 @@
 
 <script>
 
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// +++++++++++++++++++++++++++++++++++++++++++ F U N C T I O N S  +++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 	// -------------------------------------------------- //
 	// Build and insert calendar HTML into the DOM
 	// -------------------------------------------------- //
@@ -131,8 +135,6 @@
 			}
 			htmlCalendar = htmlCalendar + "</tr>";
 		}
-
-		console.log("In buildCalendarDOM, htmlCalendar:" + htmlCalendar);
 
 		// Remove previous calendar
 		$("tbody").remove();
@@ -201,7 +203,6 @@
 				},
 				error: function(req, status, err) {
 					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
-
 				}
 			});
 		}	
@@ -227,76 +228,69 @@
 		var meetingDuration = " ";
 		var slotArrayLength = 0;
 
+		$.ajax({
+			//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
+	        url: '/api/v1/roomschedule',	
+            type: 'GET',
+            crossDomain: true,
+            headers: {'Access-Control-Allow-Origin':'*'},
+			data: {},
+			dataType: 'json',
+			success: function(resp) {
 
-		for (d=0;d<datesArrayLength;d++) {
-			if (typeof (datesArray[d]) === "undefined") 
-			continue;	
-			dateParam = convertDateToString(datesArray[d]);
+				respLength = resp.length;
+				for (i=0;i<respLength;i++) {
 
-			$.ajax({
-				//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
-		        url: '/api/v1/roomschedule',	
-                type: 'GET',
-                crossDomain: true,
-                headers: {'Access-Control-Allow-Origin':'*'},
-				data: {},
-				dataType: 'json',
-				success: function(resp) {
+					// Determine the first slot
+					var meetingDateTime = Date.parse(resp[i].meetingtime);
+					var slotNum = getSlotNumFromDateTime(meetingDateTime);
+					var weekDay = meetingDateTime.getDay();
+					var weekDayDate = getDateFromWeekDayNum(weekDay);
+					var slotObjArray = [];
+					var meetingId = resp[i].meetingid;
+					var slotOwner = "";
+					var slotCount = 0;
 
-					respLength = resp.length;
-					for (i=0;i<respLength;i++) {
+					var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
-						// Determine the first slot
-						var meetingDateTime = Date.parse(resp[i].meetingtime);
-						var slotNum = getSlotNumFromDateTime(meetingDateTime);
-						var weekDay = meetingDateTime.getDay();
-						var weekDayDate = getDateFromWeekDayNum(weekDay);
-						var slotObjArray = [];
-						var meetingId = resp[i].meetingid;
-						var slotOwner = "";
-						var slotCount = 0;
+					if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
+						// Locate the first slot
+						var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
+						$slotObj.attr("data-meetingId", meetingId);
+						slotCount = 1;
 
-						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
+						// Determine rest of slots booked based on meeting duration
+						meetingDuration = resp[i].meetingduration - 30;  // Removing 30 mins corresponding to first slot that was taken care above
 
-						if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
-							// Locate the first slot
-							var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
-							$slotObj.attr("data-meetingId", meetingId);
-							slotCount = 1;
-
-							// Determine rest of slots booked based on meeting duration
-							meetingDuration = resp[i].meetingduration - 30;  // Removing 30 mins corresponding to first slot that was taken care above
-
-							while (meetingDuration > 0) {
-								slotNum++;
-								slotCount++;
-								meetingDuration = meetingDuration - 30;
-							}
-
-							// Get array of attendees, concatenate them
-							var inviteesArray = resp[i].invitees;
-							var inviteesArrayLength = inviteesArray.length;
-
-							for (j=0;j<inviteesArrayLength;j++) {
-								// concatenation of attendees names
-								if (slotOwner === "") {
-									slotOwner = inviteesArray[j].name;  
-								} else {
-									slotOwner = slotOwner + ", " + inviteesArray[j].name;  
-								}
-							}	
-							$slotObj.text(slotOwner);
-							updateSlotStyle($slotObj, slotCount, "display");
+						while (meetingDuration > 0) {
+							slotNum++;
+							slotCount++;
+							meetingDuration = meetingDuration - 30;
 						}
 
-					}	
+						// Get array of attendees, concatenate them
+						var inviteesArray = resp[i].invitees;
+						var inviteesArrayLength = inviteesArray.length;
 
-				},
-				error: function(req, status, err) {
-					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
-				}
-			});
-		}	
+						for (j=0;j<inviteesArrayLength;j++) {
+							// concatenation of attendees names
+							if (slotOwner === "") {
+								slotOwner = inviteesArray[j].name;  
+							} else {
+								slotOwner = slotOwner + ", " + inviteesArray[j].name;  
+							}
+						}	
+						$slotObj.text(slotOwner);
+						updateSlotStyle($slotObj, slotCount, "display");
+
+					}
+				}	
+
+			},
+			error: function(req, status, err) {
+				//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
+			}
+		});
 	}
 
 
@@ -376,17 +370,17 @@
 							return false;
 						}
 
-						});
-					
-*/
+						});					
+					*/
+
 					$.ajax({
                         timeout : 10000,
 					    url: '/api/v1/addgenee',
 					    type: 'POST',
 					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam},
-
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
+						    console.log("data:" + data);
 							if (data.status) {
 								// $slotObject.text(userName);
 								// updateSlotStyle($slotObject, slotCount, "display");
@@ -403,8 +397,6 @@
 						}
 
 					}); // end of ajax /api/v1/addgenee
-
-
 					break;
 
 				case "delete":
@@ -464,30 +456,33 @@
 	var isSlotAvailable = function($slotObject) {
 
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
-		var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
 
-		if (compareDate === 1) { // slot is in the past 
+		if (slotDateObj !== "") {
 
-			return false;
+			var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
 
-		} else {
+			if (compareDate === 1) { // slot is in the past 
+				return false;
+			} else {
 
-			if (compareDate === 0) {  // slot is within today
+				if (compareDate === 0) {  // slot is within today
 
-				// determine if slot selected is before current time
-				var slotNum = $slotObject.closest("tr").data("hour");  // slot selected
-				var slotNumForCurrentTime = getSlotNumFromDateTime(new Date());
+					// determine if slot selected is before current time
+					var slotNum = $slotObject.closest("tr").data("hour");  // slot selected
+					var slotNumForCurrentTime = getSlotNumFromDateTime(new Date());
 
-				if (slotNum >= slotNumForCurrentTime) {
+					if (slotNum >= slotNumForCurrentTime) {
+						return true;
+					} else {
+						return false;
+					}
+
+				} else if (compareDate === -1) { // slot is in the future
 					return true;
-				} else {
-					return false;
 				}
+			}	
 
-			} else if (compareDate === -1) { // slot is in the future
-				return true;
-			}
-		}	
+		}
 	}	
 
 
@@ -512,45 +507,6 @@
 	// -------------------------------------------------- //
 	// update slot background
 	// -------------------------------------------------- //
-/*	var updateSlotStyle = function($slotObject, action) {
-		switch (action) {
-			case "mouse-over":
-			case "mouse-out":
-			case "display":
-
-				if (isSlotAvailable($slotObject)) { // slot is available for booking 
-
-					if ($slotObject.text() === "" ) { 						
-							$slotObject.removeClass("displayBookedSlot");		
-							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.addClass("displayEmptySlot");	
-					} else {
-						// if (userName === $slotObject.text()) {	
-						if (isUserPartOfMeeting($slotObject)) {								
-							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.removeClass("displayEmptySlot");	
-							$slotObject.addClass("displayBookedSlot");
-						} else {
-							$slotObject.removeClass("displayBookedSlot");
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.removeClass("displayEmptySlot");	
-							$slotObject.addClass("displayBookedOtherOwnerSlot");	
-						}
-					}
-				} else {
-					// slot is disabled - slot selected is in the past
-					$slotObject.removeClass("displayBookedSlot");		
-					$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-					$slotObject.removeClass("displayEmptySlot");							
-					$slotObject.addClass("displayDisabledSlot");							
-				}						
-				break;
-		}
-	}
-*/
-
 	var updateSlotStyle = function($slotObject, slotCount, action) {
 
 		// update slot style
@@ -795,125 +751,6 @@
 	}
 
 
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	// +++++++++++++++++++++++++ M A I N ++++++++++++++++++++++++++++
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-	// Grab user information
-	var userName = "{{ username }}";
-	var userEmail = "{{ userEmail }}";
-	var userId = "{{ userId }}";
-
-	// Display username on upper right corner
-	$(".hd-username").text(userName);	
-
-	// extract the username portion before @hackerdojo.com
-	userName = userName.split("@")[0];
-
-	// Set room name
-	var room = "Room 004";
-	$(".hd-resourcename").text(room);
-
-	// Initial Display
-	var today = new Date();
-	var firstDayOfWeek = getFirstDayOfWeek(today);
-
-	// Identify screen size  -- Giovanna - July 21st
-	var height = $(window).height();
-	var width = $(window).width();
-
-	var displayOption;
-	if (width < 768) {
-		displayOption = "day";
-	} else {
-		displayOption = "week";		
-	}
-
-	var dateDisplayed = today.clone();
-
-	var datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
-	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
-
-	// refresh the view every 30 seconds
-	setInterval (function() { 
-		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
-	}, 30000);
-
-	// Initially disable prev button
-	$(".prevButton").addClass("disabled");
-
-	// Prev button logic
-	$(".prevButton").click(function(e){
-		e.preventDefault();
-		if ((today < firstDayOfWeek && displayOption === "week") || (today < dateDisplayed && displayOption === "day") ) {
-			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);			
-			dateDisplayed.setDate(dateDisplayed.getDate() - 1);
-			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
-			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
-			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-			// if (today > firstDayOfWeek) {
-			if ((today > firstDayOfWeek && displayOption === "week") || (today >= dateDisplayed && displayOption === "day") ) {
-				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-			}			
-		} 
-	});
-
-	// Next button
-	$(".nextButton").click(function(e){
-		e.preventDefault();		
-
-		// calculate date 30 days from today
-		var todayPlus30days = today.clone();
-		todayPlus30days.setDate(todayPlus30days.getDate() + 30);
-		// calculate last date of current week
-		var lastDateOfWeek = firstDayOfWeek.clone();
-		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-
-		if ((todayPlus30days > lastDateOfWeek && displayOption === "week") || (dateDisplayed <= todayPlus30days && displayOption === "day") ) {
-
-			// set firstDayOfWeek to 1 week ahead and update dates on calendar
-			firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
-			dateDisplayed.setDate(dateDisplayed.getDate() + 1);
-			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);			
-			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
-			
-			$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
-
-			// calculate last date of current week
-			lastDateOfWeek = firstDayOfWeek.clone();
-			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-
-			if ((todayPlus30days < lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
-				$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"			
-			}				
-		}	
-	});
-
-
-	// Slot "click" event
-	$(".hd-schedule td").click(function(){                     
-		var response;
-
-		var slotObjArray = [];
-		slotObjArray[0] = $(this);
-
-		if ($(this).text() === "") {
-			if (isSlotAvailable($(this))) {
-				// book/add slot only if slot is available
-				displayPopup($(this), datesArray, room, userName);				
-			}
-		} else {
-			// delete reservation
-			if (userName === $(this).text()) {
-				response = updateSlot($(this), 1, datesArray, room, userName, "delete");
-			} else {
-				// display error message
-				errorMessage("Cannot delete slots from different owner");
-			}			
-		}
-
-	});
-
 
   // -------------------------------------------------- //
   // Light Box
@@ -1142,6 +979,128 @@
 
 	}
   }
+
+
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	// Grab user information
+	var userName = "{{ username }}";
+	var userEmail = "{{ userEmail }}";
+	var userId = "{{ userId }}";
+
+	// Display username on upper right corner
+	$(".hd-username").text(userName);	
+
+	// extract the username portion before @hackerdojo.com
+	userName = userName.split("@")[0];
+
+	// Set room name
+	var room = "Room 004";
+	$(".hd-resourcename").text(room);
+
+	// Initial Display
+	var today = new Date();
+	var firstDayOfWeek = getFirstDayOfWeek(today);
+
+	// Identify screen size  -- Giovanna - July 21st
+	var height = $(window).height();
+	var width = $(window).width();
+
+	var displayOption;
+	if (width < 768) {
+		displayOption = "day";
+	} else {
+		displayOption = "week";		
+	}
+
+	var dateDisplayed = today.clone();
+
+	var datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
+	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
+
+	// refresh the view every 30 seconds
+	setInterval (function() { 
+		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
+	}, 30000);
+
+	// Initially disable prev button
+	$(".prevButton").addClass("disabled");
+
+	// Prev button logic
+	$(".prevButton").click(function(e){
+		e.preventDefault();
+		if ((today < firstDayOfWeek && displayOption === "week") || (today < dateDisplayed && displayOption === "day") ) {
+			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);			
+			dateDisplayed.setDate(dateDisplayed.getDate() - 1);
+			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
+			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
+			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+			// if (today > firstDayOfWeek) {
+			if ((today > firstDayOfWeek && displayOption === "week") || (today >= dateDisplayed && displayOption === "day") ) {
+				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+			}			
+		} 
+	});
+
+	// Next button
+	$(".nextButton").click(function(e){
+		e.preventDefault();		
+
+		// calculate date 30 days from today
+		var todayPlus30days = today.clone();
+		todayPlus30days.setDate(todayPlus30days.getDate() + 30);
+		// calculate last date of current week
+		var lastDateOfWeek = firstDayOfWeek.clone();
+		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+		if ((todayPlus30days > lastDateOfWeek && displayOption === "week") || (dateDisplayed <= todayPlus30days && displayOption === "day") ) {
+
+			// set firstDayOfWeek to 1 week ahead and update dates on calendar
+			firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
+			dateDisplayed.setDate(dateDisplayed.getDate() + 1);
+			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);			
+			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
+			
+			$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
+
+			// calculate last date of current week
+			lastDateOfWeek = firstDayOfWeek.clone();
+			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+			if ((todayPlus30days < lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
+				$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"			
+			}				
+		}	
+	});
+
+
+	// Slot "click" event
+	$(".hd-schedule td").click(function(){                     
+		var response;
+
+		var slotObjArray = [];
+		// slotObjArray[0] = $(this);
+
+		if ($(this).text() === "") {
+			if (isSlotAvailable($(this))) {
+				// book/add slot only if slot is available
+				displayPopup($(this), datesArray, room, userName);				
+			}
+		} else {
+			// delete reservation
+			if (userName === $(this).text()) {
+				response = updateSlot($(this), 1, datesArray, room, userName, "delete");
+			} else {
+				// display error message
+				errorMessage("Cannot delete slots from different owner");
+			}			
+		}
+
+	});
+
+
 
 
 </script>
