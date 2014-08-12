@@ -35,6 +35,10 @@ class HomePage(webapp2.RequestHandler):
     name = user.nickname().replace(".", " ").title()
     slot = Slot(owner = name, date = date, slot = slot)
     slot.put()
+
+    # Added on 8/11
+    userEmail = user.email();
+    userId = user.user_id();
     
     # Load last 10 slots.
     slots = Slot.query().order(-Slot.slot).fetch(10)
@@ -48,6 +52,8 @@ class HomePage(webapp2.RequestHandler):
       'days': range(0,7),
       'hours': range(0, 24),
       'username': name,
+      'userEmail': userEmail,
+      'userId': userId
     }
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))

@@ -176,6 +176,9 @@ class BookingHandler(ApiHandler):
       return
     
     params = self._get_parameters("slot", "date", "room")
+
+    print "self._get_parameters from BookingHandler:" + str(self._get_parameters("date", "slot", "room"))
+ 
     if not params:
       return
     slot = int(params[0])
@@ -297,11 +300,44 @@ class RoomSchedule(webapp2.RequestHandler):
 
     self.response.write(json.dumps(results.json()))
 
+
+
+class GeneeHandler(ApiHandler):
+  def get(self):
+      self.post()  
+      
+  def post(self):
+    #print "AddGenee Called."
+    if not self._check_authentication():
+      return
+   
+    params = self._get_parameters("slot", "date", "slotcount","userNameParam")   
+    if not params:
+      return
+   
+    #print "Params: " + str(params)
+    
+    slot = int(params[0])
+    meetdate = make_date(params[1])
+    slotcount=int(params[2])
+    userNameParam=params[3]
+    
+    # lm note: OK, now lets update Genee. 
+    meetingtime=str(meetdate)+" "+str(datetime.timedelta(minutes=slotcount*60))
+    meetingduration = slotcount*30  
+
+    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Testing Add API for Conference Room", "user_id": 2 ,"username":userNameParam} 
+    print "genee_json: " + str(genee_json)
+    
+    url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
+    requests.post(url, data=json.dumps(genee_json)) 
+
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
     ("/api/v1/schedule", ScheduleHandler),
     ("/api/v1/add", BookingHandler),
+    ("/api/v1/addgenee", GeneeHandler),
     ("/api/v1/remove", RemoveHandler),
     ("/api/v1/roomschedule",RoomSchedule),
     ], debug = True)
