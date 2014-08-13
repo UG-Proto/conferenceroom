@@ -342,12 +342,10 @@
 	// -------------------------------------------------- //
 	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userName, action) {
 
-		// var slotcount = slotObjArray.length;
-		// var $slotObject = slotObjArray[0];	
-
 		// set parameters to send in the Ajax call
 		var slotWeekDay = $slotObject.attr("data-day");
 		var slotParam = $slotObject.closest("tr").attr("data-hour");
+
 		var dateParam = convertDateToString(getDateFromWeekDayNum(slotWeekDay));
 		var slotCountParam = slotCount;
 		var userNameParam = userName;
