@@ -388,7 +388,7 @@
                         timeout : 10000,
 					    url: '/api/v1/addgenee',
 					    type: 'POST',
-					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam},
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam,userEmailParam:userEmailParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 						    console.log("data:" + data);

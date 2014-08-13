@@ -311,7 +311,7 @@ class GeneeHandler(ApiHandler):
     if not self._check_authentication():
       return
    
-    params = self._get_parameters("slot", "date", "slotcount","userNameParam")   
+    params = self._get_parameters("slot", "date", "slotcount","userNameParam","userEmailParam")   
     if not params:
       return
    
@@ -321,12 +321,15 @@ class GeneeHandler(ApiHandler):
     meetdate = make_date(params[1])
     slotcount=int(params[2])
     userNameParam=params[3]
+    userEmailParam=params[4]
     
     # lm note: OK, now lets update Genee. 
-    meetingtime=str(meetdate)+" "+str(datetime.timedelta(minutes=slotcount*60))
+    #print "Slot: " + str(slot)
+    from datetime import timedelta
+    meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
     meetingduration = slotcount*30  
-
-    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Testing Add API for Conference Room", "user_id": 2 ,"username":userNameParam} 
+    #print "Meeting Time: " +str(meetingtime)
+    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam} 
     print "genee_json: " + str(genee_json)
     
     url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
