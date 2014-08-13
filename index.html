@@ -250,13 +250,15 @@
 					var meetingId = resp[i].meetingid;
 					var slotOwner = "";
 					var slotCount = 0;
+					var attendees = "";
 
 					var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 					if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
 						// Locate the first slot
 						var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
-						$slotObj.attr("data-meetingId", meetingId);
+						// Store meeting id
+						$slotObj.attr("data-meetingid", meetingId);
 						slotCount = 1;
 
 						// Determine rest of slots booked based on meeting duration
@@ -279,8 +281,16 @@
 							} else {
 								slotOwner = slotOwner + ", " + inviteesArray[j].name;  
 							}
+							// concatenation of attendees emails
+							if (attendees === "") {
+								attendees = inviteesArray[j].email;  
+							} else {
+								attendees = attendees + "," + inviteesArray[j].email;  
+							}
 						}	
 						$slotObj.text(slotOwner);
+						$slotObj.attr("data-attendees", attendees);
+
 						updateSlotStyle($slotObj, slotCount, "display");
 
 					}
@@ -336,13 +346,14 @@
 		// var $slotObject = slotObjArray[0];	
 
 		// set parameters to send in the Ajax call
-		var slotWeekDay = $slotObject.data("day");
-		var slotParam = $slotObject.closest("tr").data("hour");
+		var slotWeekDay = $slotObject.attr("data-day");
+		var slotParam = $slotObject.closest("tr").attr("data-hour");
 		var dateParam = convertDateToString(getDateFromWeekDayNum(slotWeekDay));
 		var slotCountParam = slotCount;
 		var userNameParam = userName;
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
+		console.log("userName:" + userName + ", userEmail:" + userEmail + ", userId:" + userId);
 
 			switch (action) {
 				case "add":
@@ -491,11 +502,13 @@
 	// -------------------------------------------------- //
 	var isUserPartOfMeeting = function($slotObject) {
 
-		var userArray = $slotObject.text().split(",");
+		var userArray = $slotObject.attr("data-attendees").split(",");		
 		var userArrayLength = userArray.length;
 		var found = false;
+
 		for (u=0;u<userArrayLength;u++) {
-			if ( userName === userArray[u] ) {
+			// if ( userName === userArray[u] ) {
+			if ( userEmail === userArray[u] ) {				
 				found = true;
 				break;
 			}
@@ -546,8 +559,8 @@
 		}
 
 		// Remove the rest of slots that are part of the same meeting
-		var slotWeekDay = $slotObject.data("day");
-		var slotNum = $slotObject.closest("tr").data("hour");
+		var slotWeekDay = $slotObject.attr("data-day");
+		var slotNum = $slotObject.closest("tr").attr("data-hour");
 
 		if (slotCount > 1) {
 			var i;
@@ -773,11 +786,28 @@
   // -------------------------------------------------- //
   function displayPopup($slotObj, datesArray, room, userName){
 
-  	// Logic to determine how many hours the user can book at this time
-  	// get weekday and slotnumber from the selected slot
-	var dayNum = $slotObj.data("day");
-	var slotNum = $slotObj.closest("tr").data("hour");
+ 	// get weekday and slotnumber from the selected slot
+	var dayNum = $slotObj.attr("data-day");
+	var slotNum = $slotObj.closest("tr").attr("data-hour");
+	var slotNumToCheck = Number(slotNum) - 1;
 
+  	// Check that the same user didn't book previous slot
+/*
+	$slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
+	if (isUserPartOfMeeting($slotObjToCheck)) {								
+				
+	} else {
+		
+	}	
+*/
+
+
+	//errorMessage("User did not leave enough space between blocks.");
+	//displayPopUp = false;
+
+
+  	// Logic to determine how many hours the user can book at this time
+ 
 	// Check up to 7 slots down to determine how long the user can book the room
 	var lastSlotToCheck = slotNum + 7;
 	var availableSlotsCount = 0;
@@ -1021,9 +1051,9 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-	setInterval (function() { 
-		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
-	}, 30000);
+	//setInterval (function() { 
+	//	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
+	//}, 30000);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
