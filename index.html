@@ -379,7 +379,7 @@
 					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam,userEmailParam:userEmailParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
-						    console.log("data:" + data);
+						    // console.log("data:" + data);
 							if (data.status) {
 								$slotObject.text(userName);
 								$slotObject.attr("data-attendees", userEmail);
@@ -407,15 +407,17 @@
 						//data: {slot: slotParam, date: dateParam},
 						data: {meeting_id: meetingidParam},  // Giovanna you need to pass in the meeting id the user clicks here
 						success: function(resp) {
-						    var data = JSON.parse(resp);
+/*						    var data = JSON.parse(resp);
 							if (data.status) {
+*/
 								$slotObject.text("");
 								updateSlotStyle($slotObject, slotCount, "delete");
 								return true;
-							} else {
+/*							} else {
 								errorMessage(data.message);
 								return false;
 								}
+*/
 						},
 						error: function(req, status, err) {
 							errorMessage("Not able to delete slot. Error message: " + err);
@@ -550,17 +552,17 @@
 				break;
 		}
 
+		var slotWeekDay = $slotObject.attr("data-day");
+		var slotNum = $slotObject.closest("tr").attr("data-hour");
+		var i;
+		var nextSlot = Number(slotNum) + 1;
+
 		switch (action) {
 			case "book":
 			case "display":
 
 				// Remove the rest of slots that are part of the same meeting
-				var slotWeekDay = $slotObject.attr("data-day");
-				var slotNum = $slotObject.closest("tr").attr("data-hour");
-
 				if (slotCount > 1) {
-					var i;
-					var nextSlot = Number(slotNum) + 1;
 
 					// Loop through the rest of slots and remove them
 					for (i=1;i<=slotCount - 1;i++) {
@@ -570,11 +572,26 @@
 					}
 				}			
 
-				// change slot rowspan as many slots sent in "slotCount" variable
+				// change slot rowspan to expand the slot to as many slots needed
 				$slotObject.attr("rowspan", slotCount);
 				break;
 			case "delete":
 
+				// Insert the rest of slots that were part of the same meeting
+				if (slotCount > 1) {
+
+					// change slot rowspan to 1
+					$slotObject.attr("rowspan", 1).removeAttr("data-meetingid").removeAttr("data-attendees");
+					var prevSlot = Number(slotWeekDay) - 1;
+
+					// Loop through the rest of slots and add them
+					for (i=1;i<=slotCount - 1;i++) {
+						$prevSlotObj = $("tr[data-hour='" + nextSlot  + "']").find("td[data-day='" + prevSlot + "']");
+						$prevSlotObj.after('<td data-day="' + slotWeekDay + '" class="displayEmptySlot" rowspan="1"></td>');
+						nextSlot++;			
+					}
+
+				}			
 				break;
 		}						
 	}
@@ -852,7 +869,6 @@
 			break;
 		}	
 	}
-	console.log("availableSlotsCount:" + availableSlotsCount);
 
 	if (availableSlotsCount < 4 ) { 
 		if (isUserPartOfNextMeeting) {
@@ -1006,7 +1022,6 @@
 					break;
 			}
 
-			console.log("displayPopup... slotCount:" + slotCount);
 			response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
 	    	$(".lightboxPopup").remove();
 	    });
@@ -1055,10 +1070,10 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-	setInterval (function() { 
+/*	setInterval (function() { 
 		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
 	}, 30000);
-
+*/
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
@@ -1102,8 +1117,6 @@
 			// calculate last date of current week
 			lastDateOfWeek = firstDayOfWeek.clone();
 			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-
-			console.log("todayPlus30days:" + todayPlus30days + ", lastDateOfWeek:" + lastDateOfWeek);
 
 			if ((todayPlus30days <= lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
 				$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"			
