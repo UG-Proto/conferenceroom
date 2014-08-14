@@ -343,6 +343,7 @@
 		var userNameParam = userName;
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
+		var meetingidParam = meeting_id;
 
 			switch (action) {
 				case "add":
@@ -402,9 +403,10 @@
 				case "delete":
 					// make AJAX call to delete slot
 					$.ajax({
-						url: '/api/v1/remove',
+						url: '/api/v1/removegenee',
 						type: 'POST',
-						data: {slot: slotParam, date: dateParam},
+						//data: {slot: slotParam, date: dateParam},
+						data: {meeting_id:meeting_id}  // Giovanna you need to pass in the meeting id the user clicks here
 						success: function(resp) {
 						  var data = JSON.parse(resp);
 							if (data.status) {
