@@ -43,6 +43,7 @@
     font-size: 0.8em;
     vertical-align: middle !important;
     text-align: center;
+    min-height: 1px !important;
 }
 
 .displayEmptySlot {

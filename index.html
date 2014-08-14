@@ -250,13 +250,15 @@
 					var meetingId = resp[i].meetingid;
 					var slotOwner = "";
 					var slotCount = 0;
+					var attendees = "";
 
 					var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 					if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
 						// Locate the first slot
 						var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
-						$slotObj.attr("data-meetingId", meetingId);
+						// Store meeting id
+						$slotObj.attr("data-meetingid", meetingId);
 						slotCount = 1;
 
 						// Determine rest of slots booked based on meeting duration
@@ -279,8 +281,16 @@
 							} else {
 								slotOwner = slotOwner + ", " + inviteesArray[j].name;  
 							}
+							// concatenation of attendees emails
+							if (attendees === "") {
+								attendees = inviteesArray[j].email;  
+							} else {
+								attendees = attendees + "," + inviteesArray[j].email;  
+							}
 						}	
 						$slotObj.text(slotOwner);
+						$slotObj.attr("data-attendees", attendees);
+
 						updateSlotStyle($slotObj, slotCount, "display");
 
 					}
@@ -332,18 +342,24 @@
 	// -------------------------------------------------- //
 	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userName, action) {
 
-		// var slotcount = slotObjArray.length;
-		// var $slotObject = slotObjArray[0];	
-
 		// set parameters to send in the Ajax call
+		//var slotWeekDay = $slotObject.attr("data-day");
+		//var slotParam = $slotObject.closest("tr").attr("data-hour");
+
 		var slotWeekDay = $slotObject.data("day");
 		var slotParam = $slotObject.closest("tr").data("hour");
+
+
 		var dateParam = convertDateToString(getDateFromWeekDayNum(slotWeekDay));
 		var slotCountParam = slotCount;
 		var userNameParam = userName;
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
+<<<<<<< HEAD
 		var meetingidParam = meeting_id;
+=======
+		console.log("userName:" + userName + ", userEmail:" + userEmail + ", userId:" + userId);
+>>>>>>> 153aebab47edf309dc4323f44d79544a7a2399a7
 
 			switch (action) {
 				case "add":
@@ -384,6 +400,7 @@
 						    console.log("data:" + data);
 							if (data.status) {
 								$slotObject.text(userName);
+								$slotObject.attr("data-attendees", userEmail);
 								updateSlotStyle($slotObject, slotCount, "display");
 								return true;
 							} else {
@@ -493,11 +510,13 @@
 	// -------------------------------------------------- //
 	var isUserPartOfMeeting = function($slotObject) {
 
-		var userArray = $slotObject.text().split(",");
+		var userArray = $slotObject.attr("data-attendees").split(",");		
 		var userArrayLength = userArray.length;
 		var found = false;
+
 		for (u=0;u<userArrayLength;u++) {
-			if ( userName === userArray[u] ) {
+			// if ( userName === userArray[u] ) {
+			if ( userEmail === userArray[u] ) {				
 				found = true;
 				break;
 			}
@@ -548,8 +567,8 @@
 		}
 
 		// Remove the rest of slots that are part of the same meeting
-		var slotWeekDay = $slotObject.data("day");
-		var slotNum = $slotObject.closest("tr").data("hour");
+		var slotWeekDay = $slotObject.attr("data-day");
+		var slotNum = $slotObject.closest("tr").attr("data-hour");
 
 		if (slotCount > 1) {
 			var i;
@@ -561,10 +580,11 @@
 				$otherSlotObj.remove();
 				nextSlot++;			
 			}
-		}	
+		}			
 
 		// change slot rowspan as many slots sent in "slotCount" variable
 		$slotObject.attr("rowspan", slotCount);
+
 	}
 
 
@@ -775,11 +795,29 @@
   // -------------------------------------------------- //
   function displayPopup($slotObj, datesArray, room, userName){
 
-  	// Logic to determine how many hours the user can book at this time
-  	// get weekday and slotnumber from the selected slot
+ 	// get weekday and slotnumber from the selected slot
+	//var dayNum = $slotObj.attr("data-day");
+	//var slotNum = $slotObj.closest("tr").attr("data-hour");
 	var dayNum = $slotObj.data("day");
 	var slotNum = $slotObj.closest("tr").data("hour");
 
+	var slotNumToCheck = Number(slotNum) - 1;
+
+  	// Check that the same user didn't book previous slot
+/*
+	$slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
+	if (isUserPartOfMeeting($slotObjToCheck)) {								
+				
+	} else {
+		
+	}	
+*/
+	//errorMessage("User did not leave enough space between blocks.");
+	//displayPopUp = false;
+
+
+  	// Logic to determine how many hours the user can book at this time
+ 
 	// Check up to 7 slots down to determine how long the user can book the room
 	var lastSlotToCheck = slotNum + 7;
 	var availableSlotsCount = 0;
@@ -822,6 +860,7 @@
 			break;
 		}	
 	}
+	console.log("availableSlotsCount:" + availableSlotsCount);
 
 	if (availableSlotsCount < 4 ) { 
 		if (isUserPartOfNextMeeting) {
@@ -975,7 +1014,8 @@
 					break;
 			}
 
-	    	response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
+			console.log("displayPopup... slotCount:" + slotCount);
+			response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
 	    	$(".lightboxPopup").remove();
 	    });
 
@@ -1023,9 +1063,9 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-	//setInterval (function() { 
-	//	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
-	//}, 30000);
+	setInterval (function() { 
+		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
+	}, 30000);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
