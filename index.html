@@ -791,8 +791,11 @@
   function displayPopup($slotObj, datesArray, room, userName){
 
  	// get weekday and slotnumber from the selected slot
-	var dayNum = $slotObj.attr("data-day");
-	var slotNum = $slotObj.closest("tr").attr("data-hour");
+	//var dayNum = $slotObj.attr("data-day");
+	//var slotNum = $slotObj.closest("tr").attr("data-hour");
+	var dayNum = $slotObj.data("day");
+	var slotNum = $slotObj.closest("tr").data("hour");
+
 	var slotNumToCheck = Number(slotNum) - 1;
 
   	// Check that the same user didn't book previous slot
@@ -1055,10 +1058,10 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-/*	setInterval (function() { 
+	setInterval (function() { 
 		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
 	}, 30000);
-*/
+
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
