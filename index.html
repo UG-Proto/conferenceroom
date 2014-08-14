@@ -343,8 +343,12 @@
 	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userName, action) {
 
 		// set parameters to send in the Ajax call
-		var slotWeekDay = $slotObject.attr("data-day");
-		var slotParam = $slotObject.closest("tr").attr("data-hour");
+		//var slotWeekDay = $slotObject.attr("data-day");
+		//var slotParam = $slotObject.closest("tr").attr("data-hour");
+
+		var slotWeekDay = $slotObject.data("day");
+		var slotParam = $slotObject.closest("tr").data("hour");
+
 
 		var dateParam = convertDateToString(getDateFromWeekDayNum(slotWeekDay));
 		var slotCountParam = slotCount;
@@ -392,6 +396,7 @@
 						    console.log("data:" + data);
 							if (data.status) {
 								$slotObject.text(userName);
+								$slotObject.attr("data-attendees", userEmail);
 								updateSlotStyle($slotObject, slotCount, "display");
 								return true;
 							} else {
@@ -570,10 +575,11 @@
 				$otherSlotObj.remove();
 				nextSlot++;			
 			}
-		}	
+		}			
 
 		// change slot rowspan as many slots sent in "slotCount" variable
 		$slotObject.attr("rowspan", slotCount);
+
 	}
 
 
@@ -798,8 +804,6 @@
 		
 	}	
 */
-
-
 	//errorMessage("User did not leave enough space between blocks.");
 	//displayPopUp = false;
 
@@ -848,6 +852,7 @@
 			break;
 		}	
 	}
+	console.log("availableSlotsCount:" + availableSlotsCount);
 
 	if (availableSlotsCount < 4 ) { 
 		if (isUserPartOfNextMeeting) {
@@ -1001,7 +1006,8 @@
 					break;
 			}
 
-	    	response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
+			console.log("displayPopup... slotCount:" + slotCount);
+			response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
 	    	$(".lightboxPopup").remove();
 	    });
 
@@ -1049,10 +1055,10 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-	setInterval (function() { 
+/*	setInterval (function() { 
 		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
 	}, 30000);
-
+*/
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
