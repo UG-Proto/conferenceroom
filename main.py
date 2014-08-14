@@ -53,7 +53,7 @@ class HomePage(webapp2.RequestHandler):
       'hours': range(0, 24),
       'username': name,
       'userEmail': userEmail,
-      'userId': userId
+      'userId': userId    
     }
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))

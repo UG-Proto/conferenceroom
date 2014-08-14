@@ -156,7 +156,7 @@
 	// -------------------------------------------------- //
 	// fill slot with corresponding user name (Ajax call)
 	// -------------------------------------------------- //
-	var fillOutSlotFromDB = function(datesArray, roomParam) {
+/*	var fillOutSlotFromDB = function(datesArray, roomParam) {
 		// make AJAX call
 		var datesArrayLength = datesArray.length;
 		var weekDay = " ";
@@ -165,13 +165,6 @@
 		var slotCell = " ";
 		var slotDay = " ";
 		var slotDate;
-
-		// Clear all content from calendar
-		/*
-		$("table.hd-schedule td").text("").each( function() {
-			updateSlotStyle($(this), 1, "display");
-		});
-		*/
 
 		for (i=0;i<datesArrayLength;i++) {
 			if (typeof (datesArray[i]) === "undefined") 
@@ -207,18 +200,12 @@
 			});
 		}	
 	}
+*/
 
 	// -------------------------------------------------- //
 	// fill slot with corresponding user name (Ajax call)
 	// -------------------------------------------------- //
 	var fillOutSlotFromGenee = function(datesArray) {
-
-		// --------------------------------------------
-		// "meetingtime": "2014-08-01T09:00:00-07:00",
-		// "meetingduration": 60,
-		// "Are we planning to store HackerDojo userid? How to enforce only hackerDojo users reserve the room?"
-		// What are the parameters I should send in this call?
-		// ---------------------------------------------
 
 		// make AJAX call
 		var datesArrayLength = datesArray.length;
@@ -343,23 +330,18 @@
 	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userName, action) {
 
 		// set parameters to send in the Ajax call
+
 		//var slotWeekDay = $slotObject.attr("data-day");
 		//var slotParam = $slotObject.closest("tr").attr("data-hour");
-
 		var slotWeekDay = $slotObject.data("day");
 		var slotParam = $slotObject.closest("tr").data("hour");
-
 
 		var dateParam = convertDateToString(getDateFromWeekDayNum(slotWeekDay));
 		var slotCountParam = slotCount;
 		var userNameParam = userName;
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
-<<<<<<< HEAD
-		var meetingidParam = meeting_id;
-=======
-		console.log("userName:" + userName + ", userEmail:" + userEmail + ", userId:" + userId);
->>>>>>> 153aebab47edf309dc4323f44d79544a7a2399a7
+		var meetingidParam = $slotObject.attr("data-meetingid");
 
 			switch (action) {
 				case "add":
@@ -374,7 +356,7 @@
 						    var data =  JSON.parse(resp);
 							if (data.status) {
 								$slotObject.text(userName);
-								updateSlotStyle($slotObject, 1, "display");
+								updateSlotStyle($slotObject, 1, "book");
 								return true;
 							} else {
 								// display error message
@@ -401,7 +383,7 @@
 							if (data.status) {
 								$slotObject.text(userName);
 								$slotObject.attr("data-attendees", userEmail);
-								updateSlotStyle($slotObject, slotCount, "display");
+								updateSlotStyle($slotObject, slotCount, "book");
 								return true;
 							} else {
 								// display error message
@@ -423,12 +405,12 @@
 						url: '/api/v1/removegenee',
 						type: 'POST',
 						//data: {slot: slotParam, date: dateParam},
-						data: {meeting_id:meeting_id}  // Giovanna you need to pass in the meeting id the user clicks here
+						data: {meeting_id: meetingidParam},  // Giovanna you need to pass in the meeting id the user clicks here
 						success: function(resp) {
-						  var data = JSON.parse(resp);
+						    var data = JSON.parse(resp);
 							if (data.status) {
 								$slotObject.text("");
-								updateSlotStyle($slotObject, 1, "display");
+								updateSlotStyle($slotObject, slotCount, "delete");
 								return true;
 							} else {
 								errorMessage(data.message);
@@ -437,6 +419,8 @@
 						},
 						error: function(req, status, err) {
 							errorMessage("Not able to delete slot. Error message: " + err);
+							$slotObject.text("");
+							updateSlotStyle($slotObject, slotCount, "delete");
 							return false;
 						}
 					});
@@ -532,8 +516,8 @@
 
 		// update slot style
 		switch (action) {
-			case "mouse-over":
-			case "mouse-out":
+			case "book":
+			case "delete":
 			case "display":
 
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
@@ -566,25 +550,33 @@
 				break;
 		}
 
-		// Remove the rest of slots that are part of the same meeting
-		var slotWeekDay = $slotObject.attr("data-day");
-		var slotNum = $slotObject.closest("tr").attr("data-hour");
+		switch (action) {
+			case "book":
+			case "display":
 
-		if (slotCount > 1) {
-			var i;
-			var nextSlot = Number(slotNum) + 1;
+				// Remove the rest of slots that are part of the same meeting
+				var slotWeekDay = $slotObject.attr("data-day");
+				var slotNum = $slotObject.closest("tr").attr("data-hour");
 
-			// Loop through the rest of slots and remove them
-			for (i=1;i<=slotCount - 1;i++) {
-				$otherSlotObj = $("tr[data-hour='" + nextSlot  + "']").find("td[data-day='" + slotWeekDay + "']");
-				$otherSlotObj.remove();
-				nextSlot++;			
-			}
-		}			
+				if (slotCount > 1) {
+					var i;
+					var nextSlot = Number(slotNum) + 1;
 
-		// change slot rowspan as many slots sent in "slotCount" variable
-		$slotObject.attr("rowspan", slotCount);
+					// Loop through the rest of slots and remove them
+					for (i=1;i<=slotCount - 1;i++) {
+						$otherSlotObj = $("tr[data-hour='" + nextSlot  + "']").find("td[data-day='" + slotWeekDay + "']");
+						$otherSlotObj.remove();
+						nextSlot++;			
+					}
+				}			
 
+				// change slot rowspan as many slots sent in "slotCount" variable
+				$slotObject.attr("rowspan", slotCount);
+				break;
+			case "delete":
+
+				break;
+		}						
 	}
 
 
@@ -750,7 +742,7 @@
 
 		updateDatesOnCalendar(firstDayOfWeek, currentDate, datesArray, displayOption);	
 
-		fillOutSlotFromDB(datesArray, room);
+		//fillOutSlotFromDB(datesArray, room);  //replaced old getSChedule with Genee API below
 		fillOutSlotFromGenee(datesArray);		
 
 		// For small devices, we only display current Date
@@ -1111,7 +1103,9 @@
 			lastDateOfWeek = firstDayOfWeek.clone();
 			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
 
-			if ((todayPlus30days < lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
+			console.log("todayPlus30days:" + todayPlus30days + ", lastDateOfWeek:" + lastDateOfWeek);
+
+			if ((todayPlus30days <= lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
 				$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"			
 			}				
 		}	
@@ -1121,6 +1115,7 @@
 	// Slot "click" event
 	$(".hd-schedule").on('click','td', function() {                   
 		var response;
+		var numberOfSlots = 1;
 
 		console.log("clicked on a slot...");
 
@@ -1131,14 +1126,19 @@
 			}
 		} else {
 			// delete reservation
-			if (userName === $(this).text()) {
-				response = updateSlot($(this), 1, datesArray, room, userName, "delete");
+			// if (userName === $(this).text()) {
+			if (isUserPartOfMeeting($(this))) {	
+				numberOfSlots = $(this).attr("rowspan");	
+
+				// call updateSlot only if numberOfSlots is a valid number
+				if (!isNaN(numberOfSlots)) {						
+				response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
+				}
 			} else {
 				// display error message
 				errorMessage("Cannot delete slots from different owner");
 			}			
 		}
-
 	});
 
 
