@@ -322,8 +322,9 @@ class GeneeHandler(ApiHandler):
         print "genee_json: " + str(genee_json)
         url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
             
-        r=requests.post(url, data=json.dumps(genee_json)) 
-        self._exit_handler()
+        response=requests.post(url, data=json.dumps(genee_json))
+        self.response.out.write(json.dumps(response.json()))
+        return
         
     if not params:
       return
@@ -347,8 +348,9 @@ class GeneeHandler(ApiHandler):
     
     url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
     
-    r=requests.post(url, data=json.dumps(genee_json)) 
-    self._exit_handler()
+    response=requests.post(url, data=json.dumps(genee_json))
+    self.response.out.write(json.dumps(response.json()))
+    return
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
