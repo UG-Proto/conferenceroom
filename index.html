@@ -1132,26 +1132,30 @@
 
 		console.log("clicked on a slot...");
 
-		if ($(this).text() === "") {
-			if (isSlotAvailable($(this))) {
-				// book/add slot only if slot is available
-				displayPopup($(this), datesArray, room, userName);				
-			}
-		} else {
-			// delete reservation
-			// if (userName === $(this).text()) {
-			if (isUserPartOfMeeting($(this))) {	
-				numberOfSlots = $(this).attr("rowspan");	
+		if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
 
-				// call updateSlot only if numberOfSlots is a valid number
-				if (!isNaN(numberOfSlots)) {						
-				response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
+			if ($(this).text() === "") {
+				if (isSlotAvailable($(this))) {
+					// book/add slot only if slot is available
+					displayPopup($(this), datesArray, room, userName);				
 				}
 			} else {
-				// display error message
-				errorMessage("Cannot delete slots from different owner");
-			}			
-		}
+				// delete reservation
+				// if (userName === $(this).text()) {
+				if (isUserPartOfMeeting($(this))) {	
+					numberOfSlots = $(this).attr("rowspan");	
+
+					// call updateSlot only if numberOfSlots is a valid number
+					if (!isNaN(numberOfSlots)) {						
+					response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
+					}
+				} else {
+					// display error message
+					errorMessage("Cannot delete slots from different owner");
+				}			
+			}
+
+		}	
 	});
 
 
