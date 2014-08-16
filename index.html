@@ -277,7 +277,7 @@
 						$slotObj.text(slotOwner);
 						$slotObj.attr("data-attendees", attendees);
 
-						console.log("In fillOutSlotFromGenee... meetingDateTime:" + meetingDateTime + ", weekDayDate:" + weekDayDate + ", meetingId:" + meetingId + ", slotCount:" + slotCount + ", slotOwner:" + slotOwner + ", slotNum:" + slotNum + ", weekDay:" + weekDay);
+						//console.log("In fillOutSlotFromGenee... meetingDateTime:" + meetingDateTime + ", weekDayDate:" + weekDayDate + ", meetingId:" + meetingId + ", slotCount:" + slotCount + ", slotOwner:" + slotOwner + ", slotNum:" + slotNum + ", weekDay:" + weekDay);
 
 						updateSlotStyle($slotObj, slotCount, "display");
 
@@ -380,7 +380,7 @@
 					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam,userEmailParam:userEmailParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
-							if (data.status === "created") {
+							if (data.status) {
 								$slotObject.text(userName);
 								$slotObject.attr("data-attendees", userEmail);
 								$slotObject.attr("data-meetingid", data.meetingid);								
@@ -406,24 +406,23 @@
 						url: '/api/v1/removegenee',
 						type: 'POST',
 						//data: {slot: slotParam, date: dateParam},
-						data: {meeting_id: meetingidParam},  // Giovanna you need to pass in the meeting id the user clicks here
+						data: {meeting_id: meetingidParam},  
 						success: function(resp) {
-/*						    var data = JSON.parse(resp);
+						    var data = JSON.parse(resp);
 							if (data.status) {
-*/
 								$slotObject.text("");
 								updateSlotStyle($slotObject, slotCount, "delete");
 								return true;
-/*							} else {
-								errorMessage(data.message);
+							} else {
+								errorMessage(data.UserMessage);
 								return false;
 								}
-*/
+
 						},
 						error: function(req, status, err) {
 							errorMessage("Not able to delete slot. Error message: " + err);
-							$slotObject.text("");
-							updateSlotStyle($slotObject, slotCount, "delete");
+							// $slotObject.text("");
+							// updateSlotStyle($slotObject, slotCount, "delete");
 							return false;
 						}
 					});
@@ -517,7 +516,7 @@
 	// -------------------------------------------------- //
 	var updateSlotStyle = function($slotObject, slotCount, action) {
 
-		console.log("In updateSlotStyle... $slotObject.text():" + $slotObject.text() + ", slotCount:" + slotCount + ", action:" + action);
+		//console.log("In updateSlotStyle... $slotObject.text():" + $slotObject.text() + ", slotCount:" + slotCount + ", action:" + action);
 
 		// update slot style
 		switch (action) {
@@ -1137,7 +1136,7 @@
 			dateDisplayed.setDate(dateDisplayed.getDate() + 1);
 			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
 
-			console.log("Before calling updateCalendar... " + firstDayOfWeek + ", dateDisplayed:" + dateDisplayed + ", displayOption:" + displayOption);			
+			//console.log("Before calling updateCalendar... " + firstDayOfWeek + ", dateDisplayed:" + dateDisplayed + ", displayOption:" + displayOption);			
 			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 			
 			$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled

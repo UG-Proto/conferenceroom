@@ -302,7 +302,7 @@ class RoomSchedule(webapp2.RequestHandler):
 
 
 
-class GeneeHandler(ApiHandler):
+class GeneeAdd(ApiHandler):
   def get(self):
       self.post()  
       
@@ -311,25 +311,10 @@ class GeneeHandler(ApiHandler):
     if not self._check_authentication():
       return
    
-    params = self._get_parameters("slot", "date", "slotcount","userNameParam","userEmailParam")   
+    params = self._get_parameters("slot", "date", "slotcount","userNameParam","userEmailParam")      
     
     if not params:
-      # Gets called if nothing else but meeting_id is present.
-      params = self._get_parameters("meeting_id")
-      if params:
-        meeting_id = int(params[0])
-        genee_json = {"initiator_id":14,"meeting_id":meeting_id}
-        print "genee_json: " + str(genee_json)
-        url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
-            
-        response=requests.post(url, data=json.dumps(genee_json))
-        self.response.out.write(json.dumps(response.json()))
-        return
-        
-    if not params:
       return
-   
-    #print "Params: " + str(params)
     
     slot = int(params[0])
     meetdate = make_date(params[1])
@@ -350,15 +335,40 @@ class GeneeHandler(ApiHandler):
     
     response=requests.post(url, data=json.dumps(genee_json))
     self.response.out.write(json.dumps(response.json()))
-    return
+    
+
+class GeneeRemove(ApiHandler):
+  def get(self):
+      self.post()  
+      
+  def post(self):
+    #print "AddGenee Called."
+    if not self._check_authentication():
+      return
+   
+     
+    params = self._get_parameters("meeting_id")
+    if params:
+        meeting_id = int(params[0])
+        genee_json = {"initiator_id":14,"meeting_id":meeting_id}
+        print "genee_json: " + str(genee_json)
+        url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
+            
+        response=requests.post(url, data=json.dumps(genee_json))
+        self.response.out.write(json.dumps(response.json()))
+        return
+
+    self._exit_handler()
+    return  
+    
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
     ("/api/v1/schedule", ScheduleHandler),
     ("/api/v1/add", BookingHandler),
-    ("/api/v1/addgenee", GeneeHandler),
-    ("/api/v1/removegenee", GeneeHandler),
+    ("/api/v1/addgenee", GeneeAdd),
+    ("/api/v1/removegenee", GeneeRemove),
     ("/api/v1/remove", RemoveHandler),
     ("/api/v1/roomschedule",RoomSchedule),
     ], debug = True)
