@@ -292,6 +292,7 @@ class RemoveHandler(ApiHandler):
 
 
 # Handler for schedule requests.
+'''
 class RoomSchedule(webapp2.RequestHandler):
   def get(self):
     #if not self._check_authentication():
@@ -299,6 +300,31 @@ class RoomSchedule(webapp2.RequestHandler):
     results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
 
     self.response.write(json.dumps(results.json()))
+'''
+# Handler for schedule requests.
+class RoomSchedule(ApiHandler):
+  def post(self):
+    #if not self._check_authentication():
+    #  return
+    
+    params = self._get_parameters("start_date","end_date")      
+       
+    if not params:
+      return
+    
+    start_date = params[0]
+    end_date= params[1]
+    
+    genee_json={ "start_date": start_date, "end_date": end_date} 
+    print "genee_json: " + str(genee_json)
+    
+    url="http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14"
+    
+    response=requests.get(url, data=json.dumps(genee_json))
+    self.response.out.write(json.dumps(response.json()))    
+    # First version:
+    #results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
+    #self.response.write(json.dumps(results.json()))
 
 
 

@@ -213,14 +213,16 @@
 		var slotOwner = " ";
 		var meetingDuration = " ";
 		var slotArrayLength = 0;
+		var start_date_param = convertDateToString(datesArray[0]);
+		var end_date_param = convertDateToString(datesArray[6]);
 
 		$.ajax({
 			//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
 	        url: '/api/v1/roomschedule',	
-            type: 'GET',
+            type: 'POST',
             crossDomain: true,
             headers: {'Access-Control-Allow-Origin':'*'},
-			data: {},
+			data: {start_date: start_date_param, end_date: end_date_param},
 			dataType: 'json',
 			success: function(resp) {
 
