@@ -30,7 +30,7 @@
 		<div class="hd-resourcename"></div>
 		<div class="container">
 			<div class="row hd-week-nav-container">
-				<div class="col-xs-10 col-md-4 col-xs-offset-1 col-md-offset-4 text-center">
+				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
 					<div class="text-center hd-week-nav"><a href="" class="prevButton btn btn-default hd-nav-button" role="button"> < </a></div>
 					<div class="hd-display-week text-center hd-week-nav"></div>
 					<div class="text-center hd-week-nav"><a href="" class="nextButton btn btn-default hd-nav-button" role="button"> > </a></div>
@@ -38,38 +38,40 @@
 			</div>	
 		</div>
 		
-		<table class="hd-schedule table table-bordered table-responsive">
-			<thead>
-				<tr>
-					<th></th>
-					<th id="sun" data-day="0" class="text-center">Sun</th>
-					<th id="mon" data-day="1" class="text-center">Mon</th>
-					<th id="tue" data-day="2" class="text-center">Tue</th>
-					<th id="wed" data-day="3" class="text-center">Wed</th>
-					<th id="thu" data-day="4" class="text-center">Thu</th>
-					<th id="fri" data-day="5" class="text-center">Fri</th>
-					<th id="sat" data-day="6" class="text-center">Sat</th>
-				</tr>
-			</thead>
-			<tbody>
+		<div class="table-responsive">
+			<table class="hd-schedule table table-bordered">
+				<thead>
+					<tr>
+						<th></th>
+						<th id="sun" data-day="0" class="text-center">Sun</th>
+						<th id="mon" data-day="1" class="text-center">Mon</th>
+						<th id="tue" data-day="2" class="text-center">Tue</th>
+						<th id="wed" data-day="3" class="text-center">Wed</th>
+						<th id="thu" data-day="4" class="text-center">Thu</th>
+						<th id="fri" data-day="5" class="text-center">Fri</th>
+						<th id="sat" data-day="6" class="text-center">Sat</th>
+					</tr>
+				</thead>
+				<tbody>
 
-				<!--
-				{% for hour in hours %}
-					<tr data-hour="{{hour*2}}">
-						<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
-						{% for d in days %}
-							<td data-day="{{d}}"></td>
-						{% endfor %}
-					</tr>
-					<tr data-hour="{{hour*2+1}}">
-						{% for d in days %}
-							<td data-day="{{d}}"></td>
-						{% endfor %}
-					</tr>
-				{% endfor %}
-			-->	
-			</tbody>		
-		</table>
+					<!--
+					{% for hour in hours %}
+						<tr data-hour="{{hour*2}}">
+							<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
+							{% for d in days %}
+								<td data-day="{{d}}"></td>
+							{% endfor %}
+						</tr>
+						<tr data-hour="{{hour*2+1}}">
+							{% for d in days %}
+								<td data-day="{{d}}"></td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				-->	
+				</tbody>		
+			</table>
+		</div>	
 	</div>  	
 </body>	
 
@@ -152,55 +154,6 @@
 		return dateString;
 	}
 	
-	
-	// -------------------------------------------------- //
-	// fill slot with corresponding user name (Ajax call)
-	// -------------------------------------------------- //
-/*	var fillOutSlotFromDB = function(datesArray, roomParam) {
-		// make AJAX call
-		var datesArrayLength = datesArray.length;
-		var weekDay = " ";
-		var dateParam = " ";
-		var respLength = 0;
-		var slotCell = " ";
-		var slotDay = " ";
-		var slotDate;
-
-		for (i=0;i<datesArrayLength;i++) {
-			if (typeof (datesArray[i]) === "undefined") 
-			continue;	
-			dateParam = convertDateToString(datesArray[i]);
-
-			$.ajax({
-				url: '/api/v1/schedule',
-				type: 'GET',
-				data: {date: dateParam, room: roomParam},
-				dataType: 'json',
-				success: function(resp) {
-
-					respLength = resp.length;
-					for (i=0;i<respLength;i++) {
-						// var mydate = new Date(resp[i].date);
-						var mydate = Date.parse(resp[i].date);						
-						weekDay = mydate.getDay();
-
-						if (resp[i].slot !== "") {	
-							// Locate the slot and add owner name to that slot
-							var $currentSlotObj = $("tr[data-hour='" + resp[i].slot + "']").find("td[data-day='" + weekDay + "']");
-							// $currentSlotObj.text(resp[i].owner);
-							$currentSlotObj.text(resp[i].owner.split("@")[0]);
-							updateSlotStyle($currentSlotObj, 1, "display");
-						}
-					}	
-					
-				},
-				error: function(req, status, err) {
-					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
-				}
-			});
-		}	
-	}
-*/
 
 	// -------------------------------------------------- //
 	// fill slot with corresponding user name (Ajax call)
@@ -349,32 +302,6 @@
 			switch (action) {
 				case "add":
 					// make AJAX call to add slot
-					
-					/*
-					$.ajax({
-						url: '/api/v1/add',
-						type: 'POST',
-						data: {slot: slotParam, date: dateParam, room: roomParam},
-						success: function(resp) {
-						    var data =  JSON.parse(resp);
-							if (data.status) {
-								$slotObject.text(userName);
-								updateSlotStyle($slotObject, 1, "book");
-								return true;
-							} else {
-								// display error message
-								errorMessage(data.message);
-								return false;
-							}
-						},
-						error: function(req, status, err) {
-							errorMessage("Not able to book slot. Error message: " + err);
-							return false;
-						}
-
-						});					
-					*/
-
 					$.ajax({
                         timeout : 10000,
 					    url: '/api/v1/addgenee',
@@ -390,7 +317,7 @@
 								return true;
 							} else {
 								// display error message
-								errorMessage(data.message);
+								errorMessage(data.Message);
 								return false;
 							}
 						},
@@ -423,8 +350,6 @@
 						},
 						error: function(req, status, err) {
 							errorMessage("Not able to delete slot. Error message: " + err);
-							// $slotObject.text("");
-							// updateSlotStyle($slotObject, slotCount, "delete");
 							return false;
 						}
 					});
@@ -494,22 +419,28 @@
 
 
 	// -------------------------------------------------- //
-	// Is slot available function
+	// Is user part of meeting function
 	// -------------------------------------------------- //
 	var isUserPartOfMeeting = function($slotObject) {
 
-		var userArray = $slotObject.attr("data-attendees").split(",");		
-		var userArrayLength = userArray.length;
-		var found = false;
+		var attendeesString = $slotObject.attr("data-attendees");	
+		console.log("attendeesString:" + attendeesString + ", typeof attendeesString:" + typeof attendeesString);
 
-		for (u=0;u<userArrayLength;u++) {
-			// if ( userName === userArray[u] ) {
-			if ( userEmail === userArray[u] ) {				
-				found = true;
-				break;
+		if (typeof attendeesString !== "undefined") {
+			var userArray = attendeesString.split(",");				
+			var userArrayLength = userArray.length;
+			var found = false;
+
+			for (u=0;u<userArrayLength;u++) {
+				if ( userEmail === userArray[u] ) {				
+					found = true;
+					break;
+				}
 			}
+			return found;
+		} else {
+			return false;	
 		}
-		return found;
 	}	
 
 
@@ -517,8 +448,6 @@
 	// update slot background
 	// -------------------------------------------------- //
 	var updateSlotStyle = function($slotObject, slotCount, action) {
-
-		//console.log("In updateSlotStyle... $slotObject.text():" + $slotObject.text() + ", slotCount:" + slotCount + ", action:" + action);
 
 		// update slot style
 		switch (action) {
@@ -646,28 +575,6 @@
 	// -------------------------------------------------- //
 	// calculate each date of the week
 	// -------------------------------------------------- //
-/*	var getWeekDaysArray = function(firstDayOfWeek, dateObj, displayOption) {
-
-		 var datesArray = [];
-
-		 switch (displayOption) {
-		 case "week":
-		 	var newDate = firstDayOfWeek.clone();
-
-		 	// populate each day of the week in datesArray
-		 	for (i=0;i<=6;i++) {
-				datesArray[i] = newDate.clone();
-				newDate.setDate(newDate.getDate() + 1);
-		 	}
-		 	break;		 	
-		 
-		 case "day":
-		 	datesArray[dateObj.getDay()] = dateObj;
-		}
-
-		 return datesArray;
-	}
-*/
 	var getWeekDaysArray = function(firstDayOfWeek, dateObj, displayOption) {
 
 		 var datesArray = [];
@@ -794,7 +701,6 @@
 			case "day":
 				var weekDay = currentDate.getDay();
 				// Hide the header row for columns that are different from the date to display
-				// $("thead th[data-day][data-day!='" + weekDay + "']").hide();  --> it seems that '!=' inside the selector doesn't work all the time.
 				$("thead th[data-day]").hide();
 				$("thead th[data-day][data-day='" + weekDay + "']").show();
 
@@ -832,153 +738,154 @@
 	//var slotNum = $slotObj.closest("tr").attr("data-hour");
 	var dayNum = $slotObj.data("day");
 	var slotNum = $slotObj.closest("tr").data("hour");
-
-	var slotNumToCheck = Number(slotNum) - 1;
-
-  	// Check that the same user didn't book previous slot
-/*
-	$slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
-	if (isUserPartOfMeeting($slotObjToCheck)) {								
-				
-	} else {
-		
-	}	
-*/
-	//errorMessage("User did not leave enough space between blocks.");
-	//displayPopUp = false;
-
-
-  	// Logic to determine how many hours the user can book at this time
- 
-	// Check up to 7 slots down to determine how long the user can book the room
-	var lastSlotToCheck = slotNum + 7;
-	var availableSlotsCount = 0;
-	var options = "";
-	var dropdownHTML = "";
-	var isUserPartOfNextMeeting;
+	var slotCountBetweeMeetings = 0;
 	var displayPopUp = true;
 
+  	// Check that the same user didn't book previous slot
+  	for (n=1; n<=8; n++) {
 
-	var dropdownHTML_upTo30mins = '<select class="selectpicker">' +
-					    			'<option value="0.5">1/2 hour</option>' +
-				    			'</select>';
+  		var slotNumToCheck = Number(slotNum) - n;
+		var $slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
 
-	var dropdownHTML_upTo60mins = '<select class="selectpicker">' +
-					    			'<option value="0.5">1/2 hour</option>' +
-					    			'<option value="1">1 hour</option>' +
-				    			'</select>';
+		if ($slotObjToCheck.length > 0) {
 
-	var dropdownHTML_upTo90mins = '<select class="selectpicker">' +
-					    			'<option value="0.5">1/2 hour</option>' +
-					    			'<option value="1">1 hour</option>' +
-					    			'<option value="1.5">1 1/2 hours</option>' +
-				    			'</select>';
+			if (!$slotObjToCheck.hasClass("displayEmptySlot")) { //if slot is not empty
 
-	var dropdownHTML_upTo120mins = '<select class="selectpicker">' +
-					    			'<option value="0.5">1/2 hour</option>' +
-					    			'<option value="1">1 hour</option>' +
-					    			'<option value="1.5">1 1/2 hours</option>' +
-					    			'<option value="2">2 hours</option>' +    	
-				    			'</select>';
+				if (isUserPartOfMeeting($slotObjToCheck) === true) {								
 
-
-	// Loop up to 7 slots down to determine how may slots the user will be able to book		    
-	for (s=slotNum+1; s<=lastSlotToCheck; s++) {
-		$slotObjToCheck = $("tr[data-hour='" + s + "']").find("td[data-day='" + dayNum + "']");
-		if ($slotObjToCheck.text() === "" ) { 	
-			availableSlotsCount++;
-		} else {
-			isUserPartOfNextMeeting = isUserPartOfMeeting($slotObjToCheck);
-			break;
-		}	
+					// Check when previous meeting ends, there should be at least 2 hours gap btw prev and this mtg
+					if (n <=4) {
+						displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
+						errorMessage("User did not leave enough space between blocks.");
+						break;												
+					} else {
+						slotCountBetweeMeetings = n - $slotObjToCheck.attr("rowspan");
+						if (slotCountBetweeMeetings >= 4) {
+							displayPopUp = true;  // more than 4 slots were left as a gap
+							break;							
+						} else{
+							displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
+							errorMessage("User did not leave enough space between blocks.");
+							break;																		
+						}
+					}
+				} else {
+					displayPopUp = true;
+					break;							
+				}
+			}		
+		}
 	}
-
-	if (availableSlotsCount < 4 ) { 
-		if (isUserPartOfNextMeeting) {
-			errorMessage("User did not leave enough space between blocks.");
-			displayPopUp = false;
-		} else { // user is not part of the next meeting so he/she can book as many slots as available	
-			switch(availableSlotsCount) {
-				case 0: // User can only book 1 slot (1/2 hr) 
-					dropdownHTML = 	dropdownHTML_upTo30mins;				
-					break;	
-				case 1: // User can only book up to 2 slots (1 hr) 
-					dropdownHTML = 	dropdownHTML_upTo60mins;
-					break;	
-				case 2: // User can only book 3 slots (1.5 hrs) 
-					dropdownHTML = 	dropdownHTML_upTo90mins;
-					break;	
-				case 3: // user can book up to 2 hrs without restriction
-					dropdownHTML = 	dropdownHTML_upTo120mins;
-					break;
-			}
-		}
-
-	} else {
-		if (availableSlotsCount === 4 ) { // User can only book 1/2 hr
-			if (isUserPartOfNextMeeting) {	// User can only book 1 slot (1/2 hr) to leave 4 slots (2hrs) gap 
-				dropdownHTML = 	dropdownHTML_upTo30mins;
-			} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
-				dropdownHTML = 	dropdownHTML_upTo120mins;
-			}	    			
-
-	  	} else if (availableSlotsCount === 5) { 
-			if (isUserPartOfNextMeeting) {	// User can only book up to 2 slots (1 hr) to leave 4 slots (2hrs) gap 
-				dropdownHTML = 	dropdownHTML_upTo60mins;
-
-			} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
-				dropdownHTML = 	dropdownHTML_upTo120mins;
-			}	
-
-		} else if (availableSlotsCount === 6) { 	
-			if (isUserPartOfNextMeeting) {	// User can only book 3 slots (1.5 hrs) to leave 4 slots (2hrs) gap 
-				dropdownHTML = 	dropdownHTML_upTo90mins;
-
-			} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction	
-				dropdownHTML = 	dropdownHTML_upTo120mins;
-			}    			
-
-		} else if (availableSlotsCount >= 7) { // User can book up to 2 hrs
-			dropdownHTML = 	dropdownHTML_upTo120mins;
-		}
-	}	
-
-
-  	// Create popup window
-/*    $('<div class="lightboxPopup container">' +
-        '<div class="lightboxOverlayPopup"></div>' +
-        '<div class="lightboxPopup">' +
-        	'<div class="row custom-elem-row">' +
-    			'<p>How long do you need the room for? </p>' +
-			    '<select class="selectpicker">' +
-				    '<option value="0.5">1/2 hour</option>' +
-				    '<option value="1">1 hour</option>' +
-				    '<option value="1.5">1 1/2 hours</option>' +
-				    '<option value="2">2 hours</option>' +    
-			    '</select>' +
-		    '</div>' +
-        	'<div class="row custom-elem-row">' +
-        		'<div class="col-md-3 col-md-offset-3">' + 
-          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
-          		'</div>' +	
-        		'<div class="col-md-3">' + 
-          			'<button class="okButton btn btn-default">Ok</button>' +          	
-				'</div>' +          		
-          	'</div>' +		    
-		'</div>' +
-	'</div>'	   
-    ).appendTo('body');
-    $(".selectpicker").selectpicker();
-*/
 
 	if (displayPopUp) {
 
-	    $('<div class="lightboxPopup container">' +
+	  	// Logic to determine how many hours the user can book at this time
+	 
+		// Check up to 7 slots down to determine how long the user can book the room
+		var lastSlotToCheck = slotNum + 7;
+		var availableSlotsCount = 0;
+		var options = "";
+		var dropdownHTML = "";
+		var isUserPartOfNextMeeting;
+
+
+		var dropdownHTML_upTo30mins = '<select class="selectpicker">' +
+						    			'<option value="0.5">1/2 hour</option>' +
+					    			'</select>';
+
+		var dropdownHTML_upTo60mins = '<select class="selectpicker">' +
+						    			'<option value="0.5">1/2 hour</option>' +
+						    			'<option value="1">1 hour</option>' +
+					    			'</select>';
+
+		var dropdownHTML_upTo90mins = '<select class="selectpicker">' +
+						    			'<option value="0.5">1/2 hour</option>' +
+						    			'<option value="1">1 hour</option>' +
+						    			'<option value="1.5">1 1/2 hours</option>' +
+					    			'</select>';
+
+		var dropdownHTML_upTo120mins = '<select class="selectpicker">' +
+						    			'<option value="0.5">1/2 hour</option>' +
+						    			'<option value="1">1 hour</option>' +
+						    			'<option value="1.5">1 1/2 hours</option>' +
+						    			'<option value="2">2 hours</option>' +    	
+					    			'</select>';
+
+
+		// Loop up to 7 slots down to determine how may slots the user will be able to book		    
+		for (s=slotNum+1; s<=lastSlotToCheck; s++) {
+			$slotObjToCheck = $("tr[data-hour='" + s + "']").find("td[data-day='" + dayNum + "']");
+			if ($slotObjToCheck.text() === "" ) { 	
+				availableSlotsCount++;
+			} else {
+				isUserPartOfNextMeeting = isUserPartOfMeeting($slotObjToCheck);
+				break;
+			}	
+		}
+
+		if (availableSlotsCount < 4 ) { 
+			if (isUserPartOfNextMeeting) {
+				errorMessage("User did not leave enough space between blocks.");
+				displayPopUp = false;
+			} else { // user is not part of the next meeting so he/she can book as many slots as available	
+				switch(availableSlotsCount) {
+					case 0: // User can only book 1 slot (1/2 hr) 
+						dropdownHTML = 	dropdownHTML_upTo30mins;				
+						break;	
+					case 1: // User can only book up to 2 slots (1 hr) 
+						dropdownHTML = 	dropdownHTML_upTo60mins;
+						break;	
+					case 2: // User can only book 3 slots (1.5 hrs) 
+						dropdownHTML = 	dropdownHTML_upTo90mins;
+						break;	
+					case 3: // user can book up to 2 hrs without restriction
+						dropdownHTML = 	dropdownHTML_upTo120mins;
+						break;
+				}
+			}
+
+		} else {
+			if (availableSlotsCount === 4 ) { // User can only book 1/2 hr
+				if (isUserPartOfNextMeeting) {	// User can only book 1 slot (1/2 hr) to leave 4 slots (2hrs) gap 
+					dropdownHTML = 	dropdownHTML_upTo30mins;
+				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
+					dropdownHTML = 	dropdownHTML_upTo120mins;
+				}	    			
+
+		  	} else if (availableSlotsCount === 5) { 
+				if (isUserPartOfNextMeeting) {	// User can only book up to 2 slots (1 hr) to leave 4 slots (2hrs) gap 
+					dropdownHTML = 	dropdownHTML_upTo60mins;
+
+				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
+					dropdownHTML = 	dropdownHTML_upTo120mins;
+				}	
+
+			} else if (availableSlotsCount === 6) { 	
+				if (isUserPartOfNextMeeting) {	// User can only book 3 slots (1.5 hrs) to leave 4 slots (2hrs) gap 
+					dropdownHTML = 	dropdownHTML_upTo90mins;
+
+				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction	
+					dropdownHTML = 	dropdownHTML_upTo120mins;
+				}    			
+
+			} else if (availableSlotsCount >= 7) { // User can book up to 2 hrs
+				dropdownHTML = 	dropdownHTML_upTo120mins;
+			}
+		}	
+
+
+	  	// Create popup window
+	/*    $('<div class="lightboxPopup container">' +
 	        '<div class="lightboxOverlayPopup"></div>' +
 	        '<div class="lightboxPopup">' +
 	        	'<div class="row custom-elem-row">' +
 	    			'<p>How long do you need the room for? </p>' +
-				    dropdownHTML +
+				    '<select class="selectpicker">' +
+					    '<option value="0.5">1/2 hour</option>' +
+					    '<option value="1">1 hour</option>' +
+					    '<option value="1.5">1 1/2 hours</option>' +
+					    '<option value="2">2 hours</option>' +    
+				    '</select>' +
 			    '</div>' +
 	        	'<div class="row custom-elem-row">' +
 	        		'<div class="col-md-3 col-md-offset-3">' + 
@@ -992,62 +899,60 @@
 		'</div>'	   
 	    ).appendTo('body');
 	    $(".selectpicker").selectpicker();
+	*/
+
+		if (displayPopUp) {
+
+		    $('<div class="lightboxPopup container">' +
+		        '<div class="lightboxOverlayPopup"></div>' +
+		        '<div class="lightboxPopup">' +
+		        	'<div class="row custom-elem-row">' +
+		    			'<p>How long do you need the room for? </p>' +
+					    dropdownHTML +
+				    '</div>' +
+		        	'<div class="row custom-elem-row">' +
+		        		'<div class="col-md-3 col-md-offset-3">' + 
+		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		          		'</div>' +	
+		        		'<div class="col-md-3">' + 
+		          			'<button class="okButton btn btn-default">Ok</button>' +          	
+						'</div>' +          		
+		          	'</div>' +		    
+				'</div>' +
+			'</div>'	   
+		    ).appendTo('body');
+		    $(".selectpicker").selectpicker();
 
 
-	    $(".lightboxPopup").on('click','.okButton', function() {
+		    $(".lightboxPopup").on('click','.okButton', function() {
 
-	    	// create an array with slots corresponding to the duration selected by the user
-			var slotObjArray = [];
-			var slotCount = 0;
+		    	// create an array with slots corresponding to the duration selected by the user
+				var slotObjArray = [];
+				var slotCount = 0;
 
-			// obtain selected value
-			/*
-			switch ($(".selectpicker").val()) {
-				case "0.5":
-					slotObjArray[0] = $slotObj;					
-					break;
-				case "1":
-					slotObjArray[0] = $slotObj;
-					slotNum++;
-					slotObjArray[1] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					break;
-				case "1.5":
-					slotObjArray[0] = $slotObj;
-					slotNum++;
-					slotObjArray[1] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					slotNum++;
-					slotObjArray[2] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					break;
-				case "2":
-					slotObjArray[0] = $slotObj;
-					slotNum++;
-					slotObjArray[1] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					slotNum++;
-					slotObjArray[2] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					slotNum++;
-					slotObjArray[3] = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + dayNum + "']");
-					break;
-			}
-			*/
+				// obtain selected value
 
-			switch ($(".selectpicker").val()) {
-				case "0.5":
-					slotCount = 1;					
-					break;
-				case "1":
-					slotCount = 2;					
-					break;
-				case "1.5":
-					slotCount = 3;					
-					break;
-				case "2":
-					slotCount = 4;					
-					break;
-			}
 
-			response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
-	    	$(".lightboxPopup").remove();
-	    });
+				switch ($(".selectpicker").val()) {
+					case "0.5":
+						slotCount = 1;					
+						break;
+					case "1":
+						slotCount = 2;					
+						break;
+					case "1.5":
+						slotCount = 3;					
+						break;
+					case "2":
+						slotCount = 4;					
+						break;
+				}
+
+				response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
+		    	$(".lightboxPopup").remove();
+		    });
+
+		}
 
 	}
   }
@@ -1077,7 +982,7 @@
 	var firstDayOfWeek = getFirstDayOfWeek(today);
 
 	// Identify screen size  -- Giovanna - July 21st
-	var height = $(window).height();
+/*	var height = $(window).height();
 	var width = $(window).width();
 
 	var displayOption;
@@ -1086,6 +991,8 @@
 	} else {
 		displayOption = "week";		
 	}
+*/
+	displayOption = "week";		
 
 	var dateDisplayed = today.clone();
 
@@ -1093,10 +1000,10 @@
 	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// refresh the view every 30 seconds
-	setInterval (function() { 
+/*	setInterval (function() { 
 		updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption); 
 	}, 30000);
-
+*/
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
@@ -1118,7 +1025,7 @@
 		} 
 	});
 
-	// Next button
+	// Next button logic
 	$(".nextButton").click(function(e){
 		e.preventDefault();		
 
