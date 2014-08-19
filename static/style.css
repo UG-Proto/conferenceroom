@@ -113,7 +113,7 @@
 
 .lightboxOverlayPopup {
     background-color:#000;
-    opacity: 0.3;
+    opacity: 0.5;
     bottom:0px;
     left:0px;"
     overflow:auto;
@@ -132,8 +132,8 @@
     margin-right:auto;
     padding:20px;
     right:0;
-    top:30%;
-    width: 30%;
+    top:70px;
+    width: 400px;
     max-width: 90%;
     z-index:1001;
     position:fixed;
@@ -147,9 +147,9 @@
     padding bottom: 3em;
 }
 
-.custom-elem-row p, .custom-elem-row select {
+/*.custom-elem-row p, .custom-elem-row select {
     display: inline-block;
-}
+}*/
 
 .okButton {
     background-color:#40AB49 !important;
