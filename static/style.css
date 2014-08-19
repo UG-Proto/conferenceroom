@@ -9,14 +9,24 @@
     border-bottom: 0.5em solid #40AB49; /*-> Genee green*/  /* #a3203f; -> red */
 } 
 
-.hd-logo-section, .hd-username {
-   text-align: center;
-   line-height: 8em;
+.hd-logo-section {
+    text-align: left;
+    line-height: 8em;
 }
 
+.hd-user-section {
+    text-align: right;
+    margin-top: 4em;
+}
+.hd-logout {
+    font-style: italic;
+} 
+
 .hd-resourcename {
-    margin: 1em 0 1.5em 4em; 
+    /*margin: 1em 0 1.5em 4em; */
     font-size: 120%;
+    text-align: center;
+    line-height: 4em;    
 }
 
 .hd-week-nav-container {
@@ -32,11 +42,16 @@
     color: #FFFFFF;
 }
 
-
 .hd-display-week {
     font-size: 120%;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+.hd-schedule {
+    margin: 2em 1em 2em 2em; 
+    width: 95%;
+    text-align: center;
 }
 
 .hd-schedule td {
@@ -147,9 +162,6 @@
     padding bottom: 3em;
 }
 
-/*.custom-elem-row p, .custom-elem-row select {
-    display: inline-block;
-}*/
 
 .okButton {
     background-color:#40AB49 !important;
