@@ -42,39 +42,41 @@
 			</div>	
 		</div>
 		
-		<div class="table-responsive">
-			<table class="hd-schedule table table-bordered">
-				<thead>
-					<tr>
-						<th></th>
-						<th id="sun" data-day="0" class="text-center">Sun</th>
-						<th id="mon" data-day="1" class="text-center">Mon</th>
-						<th id="tue" data-day="2" class="text-center">Tue</th>
-						<th id="wed" data-day="3" class="text-center">Wed</th>
-						<th id="thu" data-day="4" class="text-center">Thu</th>
-						<th id="fri" data-day="5" class="text-center">Fri</th>
-						<th id="sat" data-day="6" class="text-center">Sat</th>
-					</tr>
-				</thead>
-				<tbody>
+		<div class="container">	
+			<div class="table-responsive">
+				<table class="hd-schedule table table-bordered">
+					<thead>
+						<tr>
+							<th></th>
+							<th id="sun" data-day="0" class="text-center">Sun</th>
+							<th id="mon" data-day="1" class="text-center">Mon</th>
+							<th id="tue" data-day="2" class="text-center">Tue</th>
+							<th id="wed" data-day="3" class="text-center">Wed</th>
+							<th id="thu" data-day="4" class="text-center">Thu</th>
+							<th id="fri" data-day="5" class="text-center">Fri</th>
+							<th id="sat" data-day="6" class="text-center">Sat</th>
+						</tr>
+					</thead>
+					<tbody>
 
-					<!--
-					{% for hour in hours %}
-						<tr data-hour="{{hour*2}}">
-							<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
-							{% for d in days %}
-								<td data-day="{{d}}"></td>
-							{% endfor %}
-						</tr>
-						<tr data-hour="{{hour*2+1}}">
-							{% for d in days %}
-								<td data-day="{{d}}"></td>
-							{% endfor %}
-						</tr>
-					{% endfor %}
-					-->	
-				</tbody>		
-			</table>
+						<!--
+						{% for hour in hours %}
+							<tr data-hour="{{hour*2}}">
+								<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
+								{% for d in days %}
+									<td data-day="{{d}}"></td>
+								{% endfor %}
+							</tr>
+							<tr data-hour="{{hour*2+1}}">
+								{% for d in days %}
+									<td data-day="{{d}}"></td>
+								{% endfor %}
+							</tr>
+						{% endfor %}
+						-->	
+					</tbody>		
+				</table>
+			</div>	
 		</div>	
 	</div>  	
 </body>	
