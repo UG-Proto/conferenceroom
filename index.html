@@ -430,7 +430,6 @@
 	var isUserPartOfMeeting = function($slotObject) {
 
 		var attendeesString = $slotObject.attr("data-attendees");	
-		console.log("attendeesString:" + attendeesString + ", typeof attendeesString:" + typeof attendeesString);
 
 		if (typeof attendeesString !== "undefined") {
 			var userArray = attendeesString.split(",");				
@@ -964,6 +963,37 @@
   }
 
 
+  // -------------------------------------------------- //
+  // Display delete confirmation popup window
+  // -------------------------------------------------- //
+  function displayDeleteConfirmation($slotObj, numberOfSlots, datesArray, room, userName) {
+
+		    $('<div class="lightboxPopup container">' +
+		        '<div class="lightboxOverlayPopup"></div>' +
+		        '<div class="lightboxPopup">' +
+		        	'<div class="row custom-elem-row">' +
+		    			'<p>Are you sure you want to delete this reservation?</p>' +
+				    '</div>' +
+		        	'<div class="row custom-elem-row">' +
+		        		'<div class="col-xs-4 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
+		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		          		'</div>' +	
+		        		'<div class="col-xs-3 col-md-3">' + 
+		          			'<button class="okButton btn btn-default">Ok</button>' +          	
+						'</div>' +          		
+		          	'</div>' +		    
+				'</div>' +
+			'</div>'	   
+		    ).appendTo('body');
+
+		    $(".lightboxPopup").on('click','.okButton', function() {
+
+				response = updateSlot($slotObj, numberOfSlots, datesArray, room, userName, "delete");
+		    	$(".lightboxPopup").remove();
+		    });
+
+  }
+
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1090,7 +1120,8 @@
 
 					// call updateSlot only if numberOfSlots is a valid number
 					if (!isNaN(numberOfSlots)) {						
-					response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
+					// response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
+					displayDeleteConfirmation($(this), numberOfSlots, datesArray, room, userName);				
 					}
 				} else {
 					// display error message
