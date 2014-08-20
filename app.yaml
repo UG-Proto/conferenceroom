@@ -1,4 +1,4 @@
-application: conferenceroom
+application: genee-conferenceroom
 # module: default
 version: live
 runtime: python27
