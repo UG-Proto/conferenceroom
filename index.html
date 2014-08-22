@@ -289,7 +289,7 @@
 	// -------------------------------------------------- //
 	// Book slot Ajax call
 	// -------------------------------------------------- //
-	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userName, action) {
+	var updateSlot = function($slotObject, slotCount, datesArray, roomParam, userEmail, action) {
 
 		// set parameters to send in the Ajax call
 
@@ -359,6 +359,36 @@
 							return false;
 						}
 					});
+					break;	
+
+				case "geneeCommand":
+					// make AJAX call to add slot
+					$.ajax({
+                        timeout : 10000,
+					    url: '/api/v1/commandgenee',
+					    type: 'POST',
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
+						success: function(resp) {
+						    /*
+						    var data =  JSON.parse(resp);
+							if (data.status) {
+								$slotObject.text(userName);
+								$slotObject.attr("data-attendees", userEmail);
+								$slotObject.attr("data-meetingid", data.meetingid);								
+								updateSlotStyle($slotObject, slotCount, "book");
+								return true;
+							} else {
+								// display error message
+								errorMessage(data.Message);
+								return false;
+							} */
+						},
+						error: function(req, status, err) {
+							errorMessage("Not able to book slot. Error message: " + err);
+							return false;
+						}
+
+					}); // end of ajax /api/v1/addgenee
 					break;	
 			}
 
@@ -736,11 +766,9 @@
   // -------------------------------------------------- //
   // Booking popup window
   // -------------------------------------------------- //
-  function displayPopup($slotObj, datesArray, room, userName){
+  function displayPopup($slotObj, datesArray, room, userEmail){
 
  	// get weekday and slotnumber from the selected slot
-	//var dayNum = $slotObj.attr("data-day");
-	//var slotNum = $slotObj.closest("tr").attr("data-hour");
 	var dayNum = $slotObj.data("day");
 	var slotNum = $slotObj.closest("tr").data("hour");
 	var slotCountBetweeMeetings = 0;
@@ -908,14 +936,28 @@
 
 		if (displayPopUp) {
 
+			var userNamePromptHTML = "";
+
+			if (userEmail === conferenceRoomEmail) {  // request user to enter his/her email address
+
+				userNamePromptHTML = '<div class="row custom-elem-row">' + 
+			    						'<p class="hd-popup-text">Please enter your HackerDojo email id: </p>' +
+										'<input type="email" name="emailAddress" class="form-control hd-email-input col-sm-6" id="hd-emailAddress">' + 
+										'<span class="form-control-static col-sm-6">@hackerdojo.com</span>' +
+										'<p class="hd-errorMessageEmail hd-error-text col-sm-12"></p>' + 
+									'</div>';
+			}		    				
+
+			// Create complete HTML content for the popup window
 		    $('<div class="lightboxPopup container">' +
 		        '<div class="lightboxOverlayPopup"></div>' +
 		        '<div class="lightboxPopup">' +
+		        	userNamePromptHTML +
 		        	'<div class="row custom-elem-row">' +
 		    			'<p>How long do you need the room for? </p>' +
 					    dropdownHTML +
 				    '</div>' +
-		        	'<div class="row custom-elem-row">' +
+		        	'<div class="row custom-elem-row hd-buttons-section">' +
 		        		'<div class="col-xs-4 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
 		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
@@ -932,12 +974,10 @@
 		    $(".lightboxPopup").on('click','.okButton', function() {
 
 		    	// create an array with slots corresponding to the duration selected by the user
-				var slotObjArray = [];
+				// var slotObjArray = [];
 				var slotCount = 0;
 
 				// obtain selected value
-
-
 				switch ($(".selectpicker").val()) {
 					case "0.5":
 						slotCount = 1;					
@@ -953,20 +993,48 @@
 						break;
 				}
 
-				response = updateSlot($slotObj, slotCount, datesArray, room, userName, "add");
-		    	$(".lightboxPopup").remove();
-		    });
+				if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
 
+					// Validate that the user entered his/her email address
+		 			userEmailInput = $("#hd-emailAddress").val();
+
+		 			if (userEmailInput === "") {
+		 				$(".hd-errorMessageEmail").text("* This is a required field").removeClass("hd-hide");
+
+		 			}
+		 			else { 
+
+		 				// Delete any error message that could have been displayed previously
+		 				$(".hd-errorMessageEmail").text("").addClass("hd-hide");
+		 				userEmailInput = userEmailInput + "@hackerdojo.com";
+
+						// call a different API to create reservation through Genee functionality
+						response = updateSlot($slotObj, slotCount, datesArray, room, userEmailInput, "geneeCommand");
+
+						// close poup window
+				    	$(".lightboxPopup").remove();
+		 			}	
+
+		 		} else { 
+
+		 			// user logged-in with his user id, so call "addGenee API to create room reservation in Genee"	
+					response = updateSlot($slotObj, slotCount, datesArray, room, userEmail, "add");
+
+					// close poup window
+			    	$(".lightboxPopup").remove();
+			    }	
+		    });
+			  
 		}
 
 	}
   }
 
 
-  // -------------------------------------------------- //
-  // Display delete confirmation popup window
-  // -------------------------------------------------- //
-  function displayDeleteConfirmation($slotObj, numberOfSlots, datesArray, room, userName) {
+  	// -------------------------------------------------- //
+  	// Display delete confirmation popup window
+  	// -------------------------------------------------- //
+  	function displayDeleteConfirmation($slotObj, numberOfSlots, datesArray, room, userName) {
 
 		    $('<div class="lightboxPopup container">' +
 		        '<div class="lightboxOverlayPopup"></div>' +
@@ -988,11 +1056,10 @@
 
 		    $(".lightboxPopup").on('click','.okButton', function() {
 
-				response = updateSlot($slotObj, numberOfSlots, datesArray, room, userName, "delete");
+				response = updateSlot($slotObj, numberOfSlots, datesArray, room, userEmail, "delete");
 		    	$(".lightboxPopup").remove();
 		    });
-
-  }
+  	}
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1002,6 +1069,7 @@
 	var userName = "{{ username }}";
 	var userEmail = "{{ userEmail }}";
 	var userId = "{{ userId }}";
+	var conferenceRoomEmail = "meet@hackerdojo.com";
 
 	var two_hour_gap_error_msg = "Please schedule blocks that are at least 2 hours apart.";
 
@@ -1111,7 +1179,7 @@
 			if ($(this).text() === "") {
 				if (isSlotAvailable($(this))) {
 					// book/add slot only if slot is available
-					displayPopup($(this), datesArray, room, userName);				
+					displayPopup($(this), datesArray, room, userEmail);				
 				}
 			} else {
 				// delete reservation
@@ -1120,8 +1188,7 @@
 
 					// call updateSlot only if numberOfSlots is a valid number
 					if (!isNaN(numberOfSlots)) {						
-					// response = updateSlot($(this), numberOfSlots, datesArray, room, userName, "delete");
-					displayDeleteConfirmation($(this), numberOfSlots, datesArray, room, userName);				
+					displayDeleteConfirmation($(this), numberOfSlots, datesArray, room, userEmail);				
 					}
 				} else {
 					// display error message

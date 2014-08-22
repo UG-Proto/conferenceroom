@@ -378,7 +378,40 @@ class GeneeRemove(ApiHandler):
 
     self._exit_handler()
     return  
-    
+
+class GeneeCommand(ApiHandler):
+  def get(self):
+      self.post()  
+      
+  def post(self):
+    #print "AddGenee Called."
+    if not self._check_authentication():
+      return
+   
+    params = self._get_parameters("slot", "date", "slotcount","invitees")  
+    if params:    
+        slot = int(params[0])
+        meetdate = make_date(params[1])
+        slotcount=int(params[2])
+        invitees = params[3]
+        
+        # lm note: OK, now lets update Genee. 
+        #print "Slot: " + str(slot)
+        from datetime import timedelta
+        meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
+        meetingduration = slotcount*30  
+        #print "Meeting Time: " +str(meetingtime)
+        #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam}         
+        genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
+        print "genee_json: " + str(genee_json)
+        url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"
+            
+        response=requests.post(url, data=json.dumps(genee_json))
+        self.response.out.write(json.dumps(response.json()))
+        return
+
+    self._exit_handler()
+    return      
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
@@ -389,4 +422,5 @@ app = webapp2.WSGIApplication([
     ("/api/v1/removegenee", GeneeRemove),
     ("/api/v1/remove", RemoveHandler),
     ("/api/v1/roomschedule",RoomSchedule),
+    ("/api/v1/commandgenee",GeneeCommand),
     ], debug = True)

@@ -153,18 +153,36 @@
     position:fixed;
     font-color: #999999;
     font-family: arial;
-    text-align: center;
+    text-align: left;
 }
 
 .custom-elem-row {
     padding: 1em;
-    padding bottom: 3em;
+    padding bottom: 2em;
 }
 
+.hd-popup-text {
+    width: 80% !important;
+}
 
+.hd-email-input {
+    width: 40% !important; 
+    display: inline-block;   
+}
+
+.hd-buttons-section {
+    padding-top: 3em;
+    padding bottom: 2em;    
+}
 .okButton {
     background-color:#40AB49 !important;
     color: #FFFFFF;
 }
-
+.hd-hide {
+    height: 0em;
+    padding: 0em !important;
+}
+.hd-error-text {
+    color: #e43333;
+}
 
