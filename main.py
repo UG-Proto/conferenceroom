@@ -21,9 +21,14 @@ class HomePage(webapp2.RequestHandler):
     
     # If the user is not logged in, ask them to.
     if not user:
-      html = '<a href="%s">Sign In</a>' % users.create_login_url('/')
-      # html = '<a href="%s">Sign In</a>' % users.create_login_url('/')
-      self.response.write(html)
+      #html = '<a href="%s">Sign In</a>' % users.create_login_url('/')
+      #self.response.write(html)
+
+      signIn_template_values = {
+      }
+      template = JINJA_ENVIRONMENT.get_template('sign_in.html')
+      self.response.write(template.render(signIn_template_values))
+
       return
 
     # As an example, create and save one slot that starts now.

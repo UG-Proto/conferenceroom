@@ -369,19 +369,15 @@
 					    type: 'POST',
 					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
 						success: function(resp) {
-						    /*
 						    var data =  JSON.parse(resp);
 							if (data.status) {
-								$slotObject.text(userName);
-								$slotObject.attr("data-attendees", userEmail);
-								$slotObject.attr("data-meetingid", data.meetingid);								
-								updateSlotStyle($slotObject, slotCount, "book");
+								popupMessage("Your Request is being processed. Please check your email to confirm this reservation");
 								return true;
 							} else {
 								// display error message
 								errorMessage(data.Message);
 								return false;
-							} */
+							}
 						},
 						error: function(req, status, err) {
 							errorMessage("Not able to book slot. Error message: " + err);
@@ -751,11 +747,19 @@
   // Light Box
   // -------------------------------------------------- //
   function errorMessage(message){
+    popupMessage(message);
+  }
+
+
+  // -------------------------------------------------- //
+  // Light Box
+  // -------------------------------------------------- //
+  function popupMessage(message){
     $('<div class="lightbox">' +
         '<div class="lightboxOverlay"></div>' +
         '<div class="lightboxError">' +
           '<p></p>' +
-          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;">Close</button>' +
+          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default">Close</button>' +
         '</div>' +
       '</div>'
     ).appendTo('body');
@@ -1060,6 +1064,8 @@
 		    	$(".lightboxPopup").remove();
 		    });
   	}
+
+
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
