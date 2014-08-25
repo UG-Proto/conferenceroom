@@ -403,7 +403,9 @@ class GeneeCommand(ApiHandler):
         #print "Meeting Time: " +str(meetingtime)
         #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam}         
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
-        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
+        #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+
 
         print "genee_json: " + str(genee_json)
         url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"

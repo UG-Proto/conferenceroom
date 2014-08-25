@@ -199,6 +199,7 @@
 					var slotCount = 0;
 					var attendees = "";
 
+					console.log("Before locating slot... meetingDateTime:" + meetingDateTime + ", slotNum:" + slotNum + ", weekDay:" + weekDay);
 					var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 					if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
@@ -400,11 +401,12 @@
 		var hourIn24format = Number(dateTimeObj.toString("H"));
 		var mins = Number(dateTimeObj.toString("m "));
 		var slotNumFromDateTime;
+		console.log("In getSlotNumFromDateTime... hourIn24format:" + hourIn24format + ", mins:" + mins);
 
 		if (mins === 0) {
 			slotNumFromDateTime = hourIn24format * 2;
 		} else {
-			if (mins < 30) { 
+			if (mins <= 30) { 
 				var slotNumFromDateTime = hourIn24format * 2 + 1;	
 			} else {
 				var slotNumFromDateTime = hourIn24format * 2 + 2;							
