@@ -175,6 +175,7 @@
 		var start_date_param = convertDateToString(datesArray[0]);
 		var end_date_param = convertDateToString(datesArray[6]);
 
+
 		$.ajax({
 			//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
 	        url: '/api/v1/roomschedule',	
@@ -199,7 +200,6 @@
 					var slotCount = 0;
 					var attendees = "";
 
-					console.log("Before locating slot... meetingDateTime:" + meetingDateTime + ", slotNum:" + slotNum + ", weekDay:" + weekDay);
 					var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 					if (typeof (meetingDateTime) !== "undefined" && compareDate === 0  ) {
@@ -401,7 +401,6 @@
 		var hourIn24format = Number(dateTimeObj.toString("H"));
 		var mins = Number(dateTimeObj.toString("m "));
 		var slotNumFromDateTime;
-		console.log("In getSlotNumFromDateTime... hourIn24format:" + hourIn24format + ", mins:" + mins);
 
 		if (mins === 0) {
 			slotNumFromDateTime = hourIn24format * 2;
@@ -1053,7 +1052,7 @@
 		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
 		        		'<div class="col-xs-3 col-md-3">' + 
-		          			'<button class="okButton btn btn-default">Ok</button>' +          	
+		          			'<button class="okButton btn btn-default">Delete</button>' +          	
 						'</div>' +          		
 		          	'</div>' +		    
 				'</div>' +

@@ -309,7 +309,9 @@ class RoomSchedule(ApiHandler):
     end_date= params[1]
     
     
-    genee_json={ "start_date": start_date, "end_date": end_date} 
+    #genee_json={ "start_date": start_date, "end_date": end_date} 
+    genee_json={ "start_date": start_date, "end_date": end_date, "datetime": str(datetime.datetime.now())} 
+
     print "genee_json: " + str(genee_json)
     
     url="http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14"
