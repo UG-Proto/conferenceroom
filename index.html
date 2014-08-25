@@ -372,7 +372,8 @@
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
-								popupMessage("Your Request is being processed. Please check your email to confirm this reservation");
+								//popupMessage("Your Request is being processed. Please check your email to confirm this reservation");
+								popupMessage("Thanks, we're working on it. You will receive an email to confirm this meeting time.");
 								return true;
 							} else {
 								// display error message
