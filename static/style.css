@@ -60,36 +60,49 @@
     min-height: 1px !important;
 }
 
+/* Hover calendar cells but ONLY empty and disabled slots */
+tr:hover td.displayEmptySlot {
+     background-color: #D9EEDB;  /* Very light green */
+}
+tr:hover td.displayDisabledSlot {
+     background-color: #D9EEDB;  
+}
+
+
 .displayEmptySlot {
     background-color: #FFFFFF;  /* white */
     cursor: default;
     color: black;
 }
+
 .displayBookedSlot {
     background-color: #8CCD92; /* -> Light green */  /* #E0CAAE -> light tan */
     cursor: default;
     padding: 0px  !important;
     color: black;
 }
+
 .displayBookedOtherOwnerSlot {
-    background-color: #999999; /* #FFFFA3 -> yellow */  /* #E0CAAE -> light tan */
+    background-color: #999999; /* -> gray */
     cursor: default;
     padding: 0px  !important;
     color: black;
 }
+
 .displayDisabledSlot {
-    background-color: #E6E6E6;  /* gray */
+    background-color: #E6E6E6;  /* light gray */
     cursor: not-allowed;
     padding: 0px  !important;
     color: black;
 }
+
 
 /* Lightbox */
 .lightboxOverlay {
     background-color:#000;
     opacity: .5;
     bottom:0px;
-    left:0px;"
+    left:0px;
     overflow:auto;
     position:fixed;
     right:0px;
@@ -129,7 +142,7 @@
     background-color:#000;
     opacity: 0.5;
     bottom:0px;
-    left:0px;"
+    left:0px;
     overflow:auto;
     position:fixed;
     right:0px;
@@ -158,7 +171,7 @@
 
 .custom-elem-row {
     padding: 1em;
-    padding bottom: 2em;
+    padding-bottom: 2em;
 }
 
 .hd-popup-text {
@@ -172,7 +185,7 @@
 
 .hd-buttons-section {
     padding-top: 3em;
-    padding bottom: 2em;    
+    padding-bottom: 2em;    
 }
 .okButton {
     background-color:#40AB49 !important;
@@ -185,4 +198,5 @@
 .hd-error-text {
     color: #e43333;
 }
+
 
