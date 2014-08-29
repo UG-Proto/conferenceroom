@@ -57,7 +57,7 @@
     font-size: 0.8em;
     vertical-align: middle !important;
     text-align: center;
-    min-height: 1px !important;
+    height: 1.2em !important;
 }
 
 /* Hover calendar cells but ONLY empty and disabled slots */
