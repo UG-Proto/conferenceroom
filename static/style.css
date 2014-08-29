@@ -29,11 +29,11 @@
     line-height: 4em;    
 }
 
-.hd-week-nav-container {
+.hd-week-nav-container, .hd-day-nav-container{
     padding-bottom: 2em;
 }
 
-.hd-week-nav {
+.hd-nav {
     display: inline-block;
 }
 

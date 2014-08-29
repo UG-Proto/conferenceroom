@@ -308,7 +308,6 @@ class RoomSchedule(ApiHandler):
     start_date = params[0]
     end_date= params[1]
     
-    
     #genee_json={ "start_date": start_date, "end_date": end_date} 
     genee_json={ "start_date": start_date, "end_date": end_date, "datetime": str(datetime.datetime.now())} 
 
@@ -318,8 +317,6 @@ class RoomSchedule(ApiHandler):
     
     response=requests.get(url, params=genee_json)
     self.response.out.write(json.dumps(response.json()))    
-    
-
 
 
 class GeneeAdd(ApiHandler):
