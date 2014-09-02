@@ -14,6 +14,11 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
                 # Within the application directory pointing to the requests install in the virtualenv
 # Converts iso formatted dates to a date object.
 
+# Global variable for Genee API's URL
+MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
+MAIN_PROD_URL = "http://genee.me/production-py/api/v1"
+
+
 def make_date(date_string):
   elems = date_string.split("-")
   year = int(elems[0])
@@ -301,7 +306,9 @@ class RoomSchedule(ApiHandler):
     params = self._get_parameters("start_date","end_date")      
     print "Params: " + str()       
     if not params:
-      results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
+      #results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
+      results=requests.get(MAIN_PROD_URL + "/roomschedule/14")
+      
       self.response.write(json.dumps(results.json()))      
       return
     
@@ -313,7 +320,9 @@ class RoomSchedule(ApiHandler):
 
     print "genee_json: " + str(genee_json)
     
-    url="http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14"
+    #url="http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14"
+    #url="http://genee.me/production-py/api/v1/roomschedule/14"
+    url= MAIN_PROD_URL + "/roomschedule/14"
     
     response=requests.get(url, params=genee_json)
     self.response.out.write(json.dumps(response.json()))    
@@ -348,7 +357,9 @@ class GeneeAdd(ApiHandler):
     genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam} 
     print "genee_json: " + str(genee_json)
     
-    url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
+    #url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
+    #url="http://genee.me/production-py/api/v1/meeting/add"
+    url = MAIN_PROD_URL + "/meeting/add"
     
     response=requests.post(url, data=json.dumps(genee_json))
     self.response.out.write(json.dumps(response.json()))
@@ -369,7 +380,9 @@ class GeneeRemove(ApiHandler):
         meeting_id = int(params[0])
         genee_json = {"initiator_id":14,"meeting_id":meeting_id}
         print "genee_json: " + str(genee_json)
-        url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
+        #url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
+        #url="http://genee.me/production-py/api/v1/meeting/remove"
+        url = MAIN_PROD_URL + "/meeting/remove"
             
         response=requests.post(url, data=json.dumps(genee_json))
         self.response.out.write(json.dumps(response.json()))
@@ -407,7 +420,9 @@ class GeneeCommand(ApiHandler):
 
 
         print "genee_json: " + str(genee_json)
-        url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"
+        #url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"
+        #url="http://genee.me/production-py/api/v1/command"
+        url = MAIN_PROD_URL + "/command"
             
         response=requests.post(url, data=json.dumps(genee_json))
         self.response.out.write(json.dumps(response.json()))
