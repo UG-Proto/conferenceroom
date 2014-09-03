@@ -392,6 +392,22 @@ class GeneeRemove(ApiHandler):
     return  
 
 class GeneeCommand(ApiHandler):
+  
+  def slot_to_time(self,slots):
+      minutes = slots * 30
+      hours = minutes // 60 
+      minutes = minutes % 60
+      
+      if hours >= 12: 
+          ampm = 'pm' 
+          hours -= 12 
+      else: 
+          ampm = 'am' 
+      if hours < 1: 
+          hours += 12 
+             
+      return '%02d:%02d %s' % (hours, minutes, ampm)   
+    
   def get(self):
       self.post()  
       
@@ -409,27 +425,29 @@ class GeneeCommand(ApiHandler):
         
         # lm note: OK, now lets update Genee. 
         #print "Slot: " + str(slot)
-        from datetime import timedelta
-        meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
+        #from datetime import timedelta
+        #meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
         meetingduration = slotcount*30  
         #print "Meeting Time: " +str(meetingtime)
         #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam}         
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
 
 
         print "genee_json: " + str(genee_json)
         #url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"
-        #url="http://genee.me/production-py/api/v1/command"
         url = MAIN_PROD_URL + "/command"
-            
+        #http://aws.ugather.us/production-py
+        #url="http://aws.ugather.us/production-py/api/v1/command"    
         response=requests.post(url, data=json.dumps(genee_json))
         self.response.out.write(json.dumps(response.json()))
         return
 
     self._exit_handler()
-    return      
+    return 
+
+
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),

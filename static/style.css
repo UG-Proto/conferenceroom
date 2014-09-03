@@ -49,16 +49,28 @@
 }
 
 .hd-schedule {
-    margin-top: 2em; 
     text-align: center;
+}
+
+
+.hd-schedule th, .hd-schedule td {
+    border: 1px solid #ddd !important;
 }
 
 .hd-schedule td {
     font-size: 0.8em;
     vertical-align: middle !important;
     text-align: center;
+}
+
+.hd-week-view td {
     height: 1.2em !important;
 }
+
+.hd-day-view td {
+    height: 17px !important;
+}
+
 
 /* Hover calendar cells but ONLY empty and disabled slots */
 tr:hover td.displayEmptySlot {
