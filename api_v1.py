@@ -420,19 +420,25 @@ class GeneeCommand(ApiHandler):
     if params:    
         slot = int(params[0])
         meetdate = make_date(params[1])
+        # convert Date to fomrat that Genee interprets: MM/DD/YYYY
+        meetdate = str(meetdate.month) + "/" + str(meetdate.day) + "/" + str(meetdate.year) 
         slotcount=int(params[2])
         invitees = params[3]
+
+        #print "Genee command parameters... slot:" + slot + ", meetdate:" + meetdate + ", slotcount:" + slotcount + ", invitees:" + invitees
         
         # lm note: OK, now lets update Genee. 
         #print "Slot: " + str(slot)
         #from datetime import timedelta
         #meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
+        meetingtime = str(meetdate) + " " + self.slot_to_time(slot)
         meetingduration = slotcount*30  
         #print "Meeting Time: " +str(meetingtime)
         #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam}         
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+        #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
 
 
         print "genee_json: " + str(genee_json)

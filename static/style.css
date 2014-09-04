@@ -63,14 +63,22 @@
     text-align: center;
 }
 
+
 .hd-week-view td {
-    height: 1.2em !important;
+    height: 17px !important;
 }
 
 .hd-day-view td {
     height: 17px !important;
 }
 
+tr:not(tr>th:only-child)  {
+    height: 17px !important;
+}
+
+tr {
+    height: 17px !important;
+}
 
 /* Hover calendar cells but ONLY empty and disabled slots */
 tr:hover td.displayEmptySlot {
