@@ -346,6 +346,38 @@
 
 
 	// -------------------------------------------------- //
+	// getTimeFromSlotNum function
+	// -------------------------------------------------- //
+	var getTimeFromSlotNum = function(slot) {
+
+      var minutes = slot * 30;
+      var hours = minutes / 60; 
+      var minutes = minutes % 60;
+      var time = ""; 
+      var ampm = "";
+      
+      if (hours >= 12) { 
+          ampm = 'PM'; 
+          hours = hours - 12; 
+      } else { 
+          ampm = 'AM'; 
+      }    
+      
+      if (hours < 1) { 
+          hours = hours + 12; 
+      }
+      
+      if (minutes > 0) {
+      	time = ~~hours + ":" + minutes + " " + ampm;
+      } else {
+      	time = ~~hours + ":00 " + ampm;
+      }
+
+      return time;
+	}
+
+
+	// -------------------------------------------------- //
 	// Is slot available function
 	// -------------------------------------------------- //
 	var getSlotNumFromDateTime = function(dateTimeObj) {
@@ -365,6 +397,7 @@
 		}
 		return slotNumFromDateTime;
 	}	
+
 
 
 	// -------------------------------------------------- //
@@ -1009,6 +1042,12 @@
 		    $('<div class="lightboxPopup container">' +
 		        '<div class="lightboxOverlayPopup"></div>' +
 		        '<div class="lightboxPopup">' +
+					'<div class="row custom-elem-row">' + 
+			    		'<p class="hd-popup-text">' + 'Time selected:' + '<p>' +			
+			    		'<p class="hd-popup-text">' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
+			        	'</p>' + 
+			        '</div>' +	 
+
 		        	userNamePromptHTML +
 		        	'<div class="row custom-elem-row">' +
 		    			'<p>How long do you need the room for? </p>' +
@@ -1101,10 +1140,10 @@
 				    '</div>' +
 		        	'<div class="row custom-elem-row">' +
 		        		'<div class="col-xs-4 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
-		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
 		        		'<div class="col-xs-3 col-md-3">' + 
-		          			'<button class="okButton btn btn-default">Delete</button>' +          	
+		          			'<button class="okButton btn btn-default btn-lg">Delete</button>' +          	
 						'</div>' +          		
 		          	'</div>' +		    
 				'</div>' +
