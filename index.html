@@ -15,7 +15,7 @@
 </head>	
 
 <body>
-	<div class="container">
+	<div class="container-fluid">
 
 		<!-- H E A D E R -->
 		<div class="header hidden-xs hidden-sm">
@@ -37,28 +37,28 @@
 		</div>	
 
 		<!-- W E E K   &   D A I L Y   N A V I G A T I O N -->
-		<div class="container hidden-xs hidden-sm">
+		<div class="container-fluid hidden-xs hidden-sm">
 			<div class="row hd-week-nav-container">
 				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
-					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default hd-nav-button" role="button"> < </a></div>
+					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
 					<div class="hd-display-week text-center hd-nav"></div>
-					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default hd-nav-button" role="button"> > </a></div>
+					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
 				</div>	
 			</div>	
 		</div>
 		
-		<div class="container  hidden-md hidden-lg">
+		<div class="container-fluid  hidden-md hidden-lg">
 			<div class="row hd-day-nav-container">
 				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
-					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default hd-nav-button" role="button"> < </a></div>
+					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
 					<div class="hd-display-day text-center hd-nav"></div>
-					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default hd-nav-button" role="button"> > </a></div>
+					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
 				</div>	
 			</div>	
 		</div>
 
 
-		<div class="container">
+		<div class="container-fluid">
 
 			<!-- Week display -->
 			<div class="table-responsive  hidden-xs hidden-sm">
@@ -66,7 +66,7 @@
 					<!--
 					<thead>
 						<tr>
-							<th></th>
+							<th>Time</th>
 							<th id="sun" data-day="0" class="text-center">Sun</th>
 							<th id="mon" data-day="1" class="text-center">Mon</th>
 							<th id="tue" data-day="2" class="text-center">Tue</th>
@@ -127,6 +127,7 @@
 	// -------------------------------------------------- //
 	// Build and insert calendar HTML into the DOM
 	// -------------------------------------------------- //
+	
 	var buildCalendarDOM = function() {
 		var htmlCalendar = "";
 		var timePeriod = "";
@@ -135,14 +136,14 @@
 
 		htmlCalendar = '<thead>' +
 						'<tr>' +
-							'<th></th>' +
-							'<th id="sun" data-day="0" class="text-center">Sun</th>' +
-							'<th id="mon" data-day="1" class="text-center">Mon</th>' +
-							'<th id="tue" data-day="2" class="text-center">Tue</th>' +
-							'<th id="wed" data-day="3" class="text-center">Wed</th>' +
-							'<th id="thu" data-day="4" class="text-center">Thu</th>' +
-							'<th id="fri" data-day="5" class="text-center">Fri</th>' +
-							'<th id="sat" data-day="6" class="text-center">Sat</th>' +
+							'<th><div>Time</div></th>' +
+							'<th id="sun" data-day="0" class="text-center"><div>Sun</div></th>' +
+							'<th id="mon" data-day="1" class="text-center"><div>Mon</div></th>' +
+							'<th id="tue" data-day="2" class="text-center"><div>Tue</div></th>' +
+							'<th id="wed" data-day="3" class="text-center"><div>Wed</div></th>' +
+							'<th id="thu" data-day="4" class="text-center"><div>Thu</div></th>' +
+							'<th id="fri" data-day="5" class="text-center"><div>Fri</div></th>' +
+							'<th id="sat" data-day="6" class="text-center"><div>Sat</div></th>' +
 						'</tr>' +
 					'</thead>'
 
@@ -160,20 +161,20 @@
 			}
 
 			if (h < 12) {
-				timePeriod = "am";
+				timePeriod = " AM";
 			} else {
-				timePeriod = "pm";
+				timePeriod = " PM";
 			}
 
 			hour = h*2;
 			htmlCalendar = htmlCalendar + "<tr data-hour=" + hour + ">";
 			
 			// add th for the column header
-			htmlCalendar = htmlCalendar + "<th rowspan='2' class='text-center'>" + hourNumber + timePeriod + "</th>";
+			htmlCalendar = htmlCalendar + "<th rowspan='2' class='text-center'><div>" + hourNumber + timePeriod + "</div></th>";
 
 			// add cells for each day
 			for (d=0;d<=6;d++) {
-				htmlCalendar = htmlCalendar + "<td data-day=" + d + "></td>";
+				htmlCalendar = htmlCalendar + "<td data-day=" + d + "><div></div></td>";
 			}
 			htmlCalendar = htmlCalendar + "</tr>";
 
@@ -182,7 +183,7 @@
 			htmlCalendar = htmlCalendar + "<tr data-hour=" + hour + ">";
 
 			for (d=0;d<=6;d++) {
-				htmlCalendar = htmlCalendar + "<td data-day=" + d + "></td>";
+				htmlCalendar = htmlCalendar + "<td data-day=" + d + "><div></div></td>";
 			}
 			htmlCalendar = htmlCalendar + "</tr>";
 		}
@@ -243,12 +244,12 @@
 
 
 		htmlCalendar =  '<thead>' +
-							'<tr>' +
-								'<th></th>' +
-								'<th id="' + dayID + '" data-day="' + weekDay + '" class="text-center">' + dayLabel + '</th>' +
+							'<tr>' + 
+								'<th><div>Time</div></th>' +
+								'<th id="' + dayID + '" data-day="' + weekDay + '" class="text-center"><div>' + dayLabel + 
+								'</div></th>' +
 							'</tr>' +
 						'</thead>'
-
 
 		htmlCalendar = htmlCalendar + "<tbody>";
 
@@ -265,19 +266,19 @@
 			}
 
 			if (h < 12) {
-				timePeriod = "am";
+				timePeriod = " AM";
 			} else {
-				timePeriod = "pm";
+				timePeriod = " PM";
 			}
 
 			hour = h*2;
 			htmlCalendar = htmlCalendar + "<tr data-hour=" + hour + ">";
 			
 			// add th for the column header
-			htmlCalendar = htmlCalendar + "<th rowspan='2' class='text-center'>" + hourNumber + timePeriod + "</th>";
+			htmlCalendar = htmlCalendar + "<th rowspan='2' class='text-center'><div>" + hourNumber + timePeriod + "</div></th>";
 
 			// add cell for that particular day
-			htmlCalendar = htmlCalendar + "<td data-day=" + weekDay + "></td>";
+			htmlCalendar = htmlCalendar + "<td data-day=" + weekDay + "><div></div></td>";
 			htmlCalendar = htmlCalendar + "</tr>";
 
 			// ------------
@@ -287,7 +288,7 @@
 			hour = h*2 + 1;
 			htmlCalendar = htmlCalendar + "<tr data-hour=" + hour + ">";
 
-			htmlCalendar = htmlCalendar + "<td data-day=" + weekDay + "></td>";
+			htmlCalendar = htmlCalendar + "<td data-day=" + weekDay + "><div></div></td>";
 			htmlCalendar = htmlCalendar + "</tr>";
 		}
 
@@ -299,6 +300,7 @@
 		// Add calendar html to the DOM
 		$(htmlCalendar).appendTo('.hd-day-view');
 	}
+
 
 	// -------------------------------------------------- //
 	// Transform date object into string in the following format: YYYY-MM-DD
@@ -437,14 +439,17 @@
 			case "delete":
 			case "display":
 
+				console.log("isSlotAvailable($slotObject):" + isSlotAvailable($slotObject));
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
-					if ($slotObject.text() === "" ) { 						
+
+					console.log("isSlotAvailable($slotObject):" + isSlotAvailable($slotObject) + ", $slotObject.find('div').text():" + $slotObject.find("div").text());
+					//if ($slotObject.text() === "" ) { 						
+					if ($slotObject.find("div").text() === "" ) { 						
 							$slotObject.removeClass("displayBookedSlot");		
 							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
 							$slotObject.removeClass("displayDisabledSlot");		
 							$slotObject.addClass("displayEmptySlot");	
 					} else {
-						// if (userName === $slotObject.text()) {	
 						if (isUserPartOfMeeting($slotObject)) {								
 							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
 							$slotObject.removeClass("displayDisabledSlot");		
@@ -724,7 +729,9 @@
 		buildCalendarDOM();
 
 		// Format style of slots		
-		$("table.hd-schedule td").text("").each( function() {
+		//$("table.hd-schedule td").text("").each( function() {
+		//$("table.hd-schedule td").text("").each( function() {
+		$("table.hd-schedule td").each( function() {
 			updateSlotStyle($(this), 1, "display");
 		}); 
 
@@ -745,7 +752,9 @@
 		buildDayCalendarDOM(dateToDisplay);
 
 		// Format style of slots		
-		$("table.hd-schedule td").text("").each( function() {
+		//$("table.hd-schedule td").text("").each( function() {
+		//$("table.hd-schedule td").text("").each( function() {
+		$("table.hd-schedule td").each( function() {
 			updateSlotStyle($(this), 1, "display");
 		}); 
 
@@ -801,7 +810,7 @@
         '<div class="lightboxOverlay"></div>' +
         '<div class="lightboxError">' +
           '<p></p>' +
-          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default">Close</button>' +
+          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default btn-lg">Close</button>' +
         '</div>' +
       '</div>'
     ).appendTo('body');
@@ -868,22 +877,22 @@
 		var isUserPartOfNextMeeting;
 
 
-		var dropdownHTML_upTo30mins = '<select class="selectpicker">' +
+		var dropdownHTML_upTo30mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
 					    			'</select>';
 
-		var dropdownHTML_upTo60mins = '<select class="selectpicker">' +
+		var dropdownHTML_upTo60mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
 						    			'<option value="1">1 hour</option>' +
 					    			'</select>';
 
-		var dropdownHTML_upTo90mins = '<select class="selectpicker">' +
+		var dropdownHTML_upTo90mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
 						    			'<option value="1">1 hour</option>' +
 						    			'<option value="1.5">1 1/2 hours</option>' +
 					    			'</select>';
 
-		var dropdownHTML_upTo120mins = '<select class="selectpicker">' +
+		var dropdownHTML_upTo120mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
 						    			'<option value="1">1 hour</option>' +
 						    			'<option value="1.5">1 1/2 hours</option>' +
@@ -894,7 +903,8 @@
 		// Loop up to 7 slots down to determine how may slots the user will be able to book		    
 		for (s=slotNum+1; s<=lastSlotToCheck; s++) {
 			$slotObjToCheck = $("tr[data-hour='" + s + "']").find("td[data-day='" + dayNum + "']");
-			if ($slotObjToCheck.text() === "" ) { 	
+			//if ($slotObjToCheck.text() === "" ) { 	
+			if ($slotObjToCheck.find("div").text() === "" ) { 	
 				availableSlotsCount++;
 			} else {
 				isUserPartOfNextMeeting = isUserPartOfMeeting($slotObjToCheck);
@@ -1005,11 +1015,11 @@
 					    dropdownHTML +
 				    '</div>' +
 		        	'<div class="row custom-elem-row hd-buttons-section">' +
-		        		'<div class="col-xs-4 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
-		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		        		'<div class="col-xs-3 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
+		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
 		        		'<div class="col-xs-3 col-md-3">' + 
-		          			'<button class="okButton btn btn-default">Ok</button>' +          	
+		          			'<button class="okButton btn btn-default btn-lg">Ok</button>' +          	
 						'</div>' +          		
 		          	'</div>' +		    
 				'</div>' +
@@ -1197,7 +1207,8 @@
 										attendees = attendees + "," + inviteesArray[j].email;  
 									}
 								}	
-								$slotObj.text(slotOwner);
+								//$slotObj.text(slotOwner);
+								$slotObj.find("div").text(slotOwner);
 								$slotObj.attr("data-attendees", attendees);
 
 								updateSlotStyle($slotObj, slotCount, "display");
@@ -1245,7 +1256,8 @@
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
-								$slotObject.text(userName);
+								//$slotObject.text(userName);
+								$slotObject.find("div").text(userName);
 								$slotObject.attr("data-attendees", userEmail);
 								$slotObject.attr("data-meetingid", data.meetingid);								
 								updateSlotStyle($slotObject, slotCount, "book");
@@ -1274,7 +1286,8 @@
 						success: function(resp) {
 						    var data = JSON.parse(resp);
 							if (data.status) {
-								$slotObject.text("");
+								//$slotObject.text("");
+								$slotObject.find("div").text("");								
 								updateSlotStyle($slotObject, slotCount, "delete");
 								return true;
 							} else {
@@ -1336,6 +1349,7 @@
 
 	// Hide logout link if login user is meet@hackerdojo.com
 	if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
+		$(".hd-username").css("display","none");	
 		$(".hd-logout").css("display","none");
 	}	
 
@@ -1370,10 +1384,10 @@
 			updateWeekCalendar(firstDayOfWeek, datesArray);
 
 			// refresh the view every 30 seconds			
-			setInterval (function() { 
+/*			setInterval (function() { 
 				updateWeekCalendar(firstDayOfWeek, datesArray); 
 			}, 30000);			
-
+*/
 			break;
 
 		case "day":
@@ -1388,10 +1402,10 @@
 			console.log("After calling updateDayCalendar.. datesArray:" + datesArray);
 
 			// refresh the view every 30 seconds
-			setInterval (function() { 
+/*			setInterval (function() { 
 				updateDayCalendar(dateDisplayed, datesArray); 
 			}, 30000);
-			
+*/
 			break;
 	}
 
@@ -1499,7 +1513,8 @@
 
 		if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
 
-			if ($(this).text() === "") {
+			//if ($(this).text() === "") {
+			if ($(this).find("div").text() === "") {
 				if (isSlotAvailable($(this))) {
 					// book/add slot only if slot is available
 					displayPopup($(this), datesArray, room, userEmail);				

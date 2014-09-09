@@ -1,4 +1,8 @@
 
+body {
+  font-family: Verdana,Arial,sans-serif; 
+}
+
 .hd-logo, .hd-genee-logo {
     background: transparent;   
     margin: 2em 1em 1em 2em;
@@ -42,10 +46,11 @@
     color: #FFFFFF;
 }
 
-.hd-display-week {
-    font-size: 120%;
+.hd-display-week, .hd-display-day {
+    font-size: 140%;
     padding-left: 0.5em;
     padding-right: 0.5em;
+    vertical-align: middle;
 }
 
 .hd-schedule {
@@ -55,30 +60,44 @@
 
 .hd-schedule th, .hd-schedule td {
     border: 1px solid #ddd !important;
-}
-
-.hd-schedule td {
-    font-size: 0.8em;
     vertical-align: middle !important;
     text-align: center;
+    width: 10em;
+    font-size: 130%;    
 }
 
+.hd-schedule th {
+    width: 6em;
+    height: 1.7em !important;
+    font-weight: normal;
+}
 
 .hd-week-view td {
-    height: 17px !important;
+    /*height: 17px !important;*/
+    height: 1.7em !important;
 }
 
 .hd-day-view td {
-    height: 17px !important;
+    /*height: 17px !important;*/
+    height: 1.7em !important;
 }
 
-tr:not(tr>th:only-child)  {
-    height: 17px !important;
+.hd-week-view td div, .hd-day-view td div {
+    max-width: 10em;
+    text-align: center;
+    margin: auto;
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: normal;
 }
 
 tr {
     height: 17px !important;
 }
+
 
 /* Hover calendar cells but ONLY empty and disabled slots */
 tr:hover td.displayEmptySlot {
@@ -140,10 +159,11 @@ tr:hover td.displayDisabledSlot {
     padding:20px;
     right:0;
     top:70px;
-    width: 400px;
+    width: 450px;
     max-width: 90%;
     z-index:1001;
     position:fixed;
+    font-size: 120%; 
 }
 
 .lightbox p {
@@ -180,13 +200,14 @@ tr:hover td.displayDisabledSlot {
     padding:20px;
     right:0;
     top:70px;
-    width: 400px;
+    width: 500px;
     max-width: 90%;
     z-index:1001;
     position:fixed;
     font-color: #999999;
     font-family: arial;
     text-align: left;
+    font-size: 120%;  
 }
 
 .custom-elem-row {
@@ -200,7 +221,11 @@ tr:hover td.displayDisabledSlot {
 
 .hd-email-input {
     width: 40% !important; 
-    display: inline-block;   
+    display: inline-block;
+    font-size: 20px !important;   
+    vertical-align: bottom;
+    height: 140%;
+    margin-left: 0.7em;
 }
 
 .hd-buttons-section {
@@ -219,4 +244,6 @@ tr:hover td.displayDisabledSlot {
     color: #e43333;
 }
 
-
+.selectpicker {
+    font-size: 18px !important;
+}
