@@ -65,7 +65,7 @@ body {
     vertical-align: middle !important;
     text-align: center;
     width: 10em;
-    font-size: 130%;    
+    font-size: 120%;    
 }
 
 .hd-schedule th {
@@ -81,7 +81,7 @@ body {
 
 .hd-day-view td {
     /*height: 17px !important;*/
-    height: 1.7em !important;
+    height: 2em !important;
 }
 
 .hd-week-view td div, .hd-day-view td div {
@@ -96,10 +96,13 @@ body {
     white-space: normal;
 }
 
-tr {
+.hd-week-view tr {
     height: 17px !important;
 }
 
+.hd-day-view tr {
+    height: 2em !important;
+}
 
 /* Hover calendar cells but ONLY empty and disabled slots */
 tr:hover td.displayEmptySlot {
@@ -218,13 +221,13 @@ tr:hover td.displayDisabledSlot {
 }
 
 .hd-popup-text {
-    width: 80% !important;
+    width: 100% !important;
 }
 
 .hd-email-input {
     width: 40% !important; 
     display: inline-block;
-    font-size: 1.25em !important;   
+    font-size: 1em !important;   
     vertical-align: bottom;
     height: 140%;
     margin-left: 0.7em;
@@ -248,4 +251,67 @@ tr:hover td.displayDisabledSlot {
 
 .selectpicker {
     font-size: 1.125em !important;
+}
+
+/* Extra small devices (phones, less than 768px) */
+/* @media (max-width: @screen-xs-max) { */
+@media all and (max-width: 768px) {
+
+    .lightboxError {
+        font-size: 100%;
+    }    
+
+    .lightboxOverlayPopup {
+    }
+
+    .lightboxPopup {
+        border: 1px #000000 solid;
+        border-radius: 5px;
+        left:0;
+        padding:1em;
+        right:0;
+        top:70px;
+        width: 500px;
+        max-width: 90%;
+        max-height: 90%;
+        font-size: 100%;  
+    }
+
+    .custom-elem-row {
+        padding: 0.8em;
+    }
+
+    .hd-popup-text {
+        width: 100% !important;
+    }
+
+    .hd-email-input {
+        width: 40% !important; 
+        font-size: 1em !important;   
+        height: 140%;
+        margin-left: 0.7em;
+    }
+
+    .hd-buttons-section {
+        padding-top: 2em;
+        padding-bottom: 1em;    
+    }
+    .okButton {
+    }
+
+    .selectpicker {
+        font-size: 0.8em !important;
+    }
+
+    .selectpicker option {
+        font-size: 1em !important;
+    }
+}
+
+/* increase margin for large desktops only */
+@media all and (min-width: 1400px) {
+    body {
+        margin-left: 1em;
+        margin-right: 1em;        
+    }
 }

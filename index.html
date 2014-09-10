@@ -540,12 +540,18 @@
 
 					// change slot rowspan to 1
 					$slotObject.attr("rowspan", 1).removeAttr("data-meetingid").removeAttr("data-attendees");
-					var prevSlot = Number(slotWeekDay) - 1;
+					var prevSlotDay = Number(slotWeekDay) - 1;
 
 					// Loop through the rest of slots and add them
 					for (i=1;i<=slotCount - 1;i++) {
-						$prevSlotObj = $("tr[data-hour='" + nextSlot  + "']").find("td[data-day='" + prevSlot + "']");
-						$prevSlotObj.after('<td data-day="' + slotWeekDay + '" class="displayEmptySlot" rowspan="1"></td>');
+						$prevSlotObj = $("tr[data-hour='" + nextSlot  + "']").find("td[data-day='" + prevSlotDay + "']");
+						if ($prevSlotObj.length >= 1) {
+							// add this empty slot right after the corresponding previous slot 
+							$prevSlotObj.after('<td data-day="' + slotWeekDay + '" class="displayEmptySlot" rowspan="1"><div></div></td>');
+						} else {
+							// add this empty slot to the corresponding "tr"
+							$("tr[data-hour='" + nextSlot  + "']").append('<td data-day="' + slotWeekDay + '" class="displayEmptySlot" rowspan="1"><div></div></td>');
+						}	
 						nextSlot++;			
 					}
 
@@ -842,8 +848,11 @@
     $('<div class="lightbox">' +
         '<div class="lightboxOverlay"></div>' +
         '<div class="lightboxError">' +
-          '<p></p>' +
-          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default btn-lg">Close</button>' +
+            '<p class="hd-popup-text"></p>' +
+            '<div class="row custom-elem-row">' + 
+	          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default hidden-md hidden-lg">Close</button>' +  //smaller button displayed for phones only
+	          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default btn-lg hidden-xs hidden-sm">Close</button>' + // large button displayed for ipad & desktops
+	        '</div>' +  
         '</div>' +
       '</div>'
     ).appendTo('body');
@@ -1053,12 +1062,20 @@
 		    			'<p>How long do you need the room for? </p>' +
 					    dropdownHTML +
 				    '</div>' +
-		        	'<div class="row custom-elem-row hd-buttons-section">' +
-		        		'<div class="col-xs-3 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
+		        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
+		        		'<div class="col-md-3 col-md-offset-3">' + 
 		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
-		        		'<div class="col-xs-3 col-md-3">' + 
+		        		'<div class="col-md-3">' + 
 		          			'<button class="okButton btn btn-default btn-lg">Ok</button>' +          	
+						'</div>' +          		
+		          	'</div>' +		    
+		        	'<div class="row custom-elem-row hd-buttons-section hidden-md hidden-lg">' + // phones
+		        		'<div class="col-xs-3 col-xs-offset-2">' + 
+		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		          		'</div>' +	
+		        		'<div class="col-xs-3 col-xs-offset-1">' + 
+		          			'<button class="okButton btn btn-default">Ok</button>' +          	
 						'</div>' +          		
 		          	'</div>' +		    
 				'</div>' +
@@ -1138,12 +1155,20 @@
 		        	'<div class="row custom-elem-row">' +
 		    			'<p>Are you sure you want to delete this reservation?</p>' +
 				    '</div>' +
-		        	'<div class="row custom-elem-row">' +
-		        		'<div class="col-xs-4 col-xs-offset-2 col-md-3 col-md-offset-3">' + 
+		        	'<div class="row custom-elem-row  hidden-xs hidden-sm">' +
+		        		'<div class="col-md-3 col-md-offset-3">' + 
 		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
 		          		'</div>' +	
-		        		'<div class="col-xs-3 col-md-3">' + 
+		        		'<div class="col-md-3">' + 
 		          			'<button class="okButton btn btn-default btn-lg">Delete</button>' +          	
+						'</div>' +          		
+		          	'</div>' +		    
+		        	'<div class="row custom-elem-row  hidden-md hidden-lg">' +  //phones
+		        		'<div class="col-xs-3 col-xs-offset-2">' + 
+		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+		          		'</div>' +	
+		        		'<div class="col-xs-3 col-xs-offset-1">' + 
+		          			'<button class="okButton btn btn-default">Delete</button>' +          	
 						'</div>' +          		
 		          	'</div>' +		    
 				'</div>' +

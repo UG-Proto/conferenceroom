@@ -15,12 +15,12 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 # Converts iso formatted dates to a date object.
 
 # Global variable for Genee API's URL
-#MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
-MAIN_DEV_URL = "https://aws.ugather.us/ugather-py/api/v1"
+MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
+#MAIN_DEV_URL = "https://aws.ugather.us/ugather-py/api/v1"
 
 MAIN_PROD_URL = "https://genee.me/production-py/api/v1"
 
-MAIN_URL = MAIN_PROD_URL
+MAIN_URL = MAIN_DEV_URL
 
 
 def make_date(date_string):
