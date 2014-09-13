@@ -421,7 +421,7 @@ class GeneeCommand(ApiHandler):
       if hours < 1: 
           hours += 12 
              
-      return '%02d:%02d %s' % (hours, minutes, ampm)   
+      return '%2d:%02d %s' % (hours, minutes, ampm)   
     
   def get(self):
       self.post()  
@@ -453,7 +453,7 @@ class GeneeCommand(ApiHandler):
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":email2name(invitees[0]) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":email2name(invitees) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
 
 
         print "genee_json: " + str(genee_json)
