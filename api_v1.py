@@ -16,12 +16,22 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 
 # Global variable for Genee API's URL
 MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
+MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
 #MAIN_DEV_URL = "https://aws.ugather.us/ugather-py/api/v1"
 
-MAIN_PROD_URL = "https://genee.me/production-py/api/v1"
+MAIN_PROD_URL = "http://genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.)
 
-MAIN_URL = MAIN_DEV_URL
+MAIN_URL = MAIN_PROD_URL
 
+def email2name(email=""):
+  print "email2Name: " + email
+  try:
+    name = email.split('@')[0].split('.')[0].title() + " " + email.split('@')[0].split('.')[1].title()
+  except:
+    print "Error parsing email address."
+    return email
+  print "Returning: " + name
+  return name
 
 def make_date(date_string):
   elems = date_string.split("-")
@@ -358,7 +368,8 @@ class GeneeAdd(ApiHandler):
     meetingtime=str(meetdate)+" "+str(timedelta(minutes=slot*30))
     meetingduration = slotcount*30  
     #print "Meeting Time: " +str(meetingtime)
-    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": "Meeting at the Hacker Dojo.", "email":userEmailParam} 
+    print userEmailParam
+    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
     print "genee_json: " + str(genee_json)
     
     #url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"
@@ -410,7 +421,7 @@ class GeneeCommand(ApiHandler):
       if hours < 1: 
           hours += 12 
              
-      return '%02d:%02d %s' % (hours, minutes, ampm)   
+      return '%2d:%02d %s' % (hours, minutes, ampm)   
     
   def get(self):
       self.post()  
@@ -442,7 +453,7 @@ class GeneeCommand(ApiHandler):
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":email2name(invitees) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
 
 
         print "genee_json: " + str(genee_json)

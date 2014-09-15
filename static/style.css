@@ -1,7 +1,62 @@
 
 body {
   font-family: Verdana,Arial,sans-serif; 
+/*  width:100%; 
+  height:100%; 
+  overflow:hidden;
+  margin:0; */
 }
+
+/*html {width:100%; height:100%; overflow:hidden}*/
+
+/* ---------- */
+/* Fix header */ 
+/* ---------- */
+
+.hd-top {
+    position: fixed;
+    width: 100%;
+   z-index:1001;
+   background-color: white;
+}
+
+.hd-table-header-wrapper {
+    position: fixed;
+    top: 270px;
+   z-index:1001;
+   background-color: white;
+}
+
+.hd-table-body-wrapper {
+    position: relative;
+    top: 308px;
+/*    overflow-y: scroll;
+    overflow-x: hidden; */
+    width: 100%;
+    margin-bottom: 1em;
+    z-index:1000;
+}
+
+.hd-table-header-wrapper-day {
+    position: fixed;
+    top: 100px;
+    z-index:1001;
+    background-color: white;
+    height: auto;
+}
+
+.hd-table-body-wrapper-day {
+    position: relative;
+    top: 138px;
+    width: 100%;
+    margin-bottom: 1em;
+    z-index:1000;
+}
+
+
+/* -------------------- */
+/* Header / top section */ 
+/* -------------------- */
 
 .hd-logo, .hd-genee-logo {
     background: transparent;   
@@ -9,7 +64,7 @@ body {
     display: inline-block;
 }
 
-.header {
+.hd-header {
     border-bottom: 0.5em solid #40AB49; /*-> Genee green*/  /* #a3203f; -> red */
 } 
 
@@ -19,10 +74,10 @@ body {
 }
 
 .hd-user-section {
-    text-align: right;
     margin-top: 3em;
     font-size:120%;
 }
+
 .hd-logout {
     font-style: italic;
 } 
@@ -35,7 +90,11 @@ body {
     margin-left: 0.9em;   
 }
 
-.hd-week-nav-container, .hd-day-nav-container{
+/* --------------------- */
+/* Week / Day navigation */
+/* --------------------- */
+
+.hd-week-nav-container, .hd-day-nav-container {
     padding-bottom: 4em;
 }
 
@@ -55,24 +114,29 @@ body {
     vertical-align: middle;
 }
 
-.hd-schedule {
+/* --------------------- */
+/* Week / Day calendar */
+/* --------------------- */
+
+.hd-schedule, .hd-schedule-header {
     text-align: center;
+    margin: 0 !important;
+    table-layout: fixed; /* makes all cells fixed width and height but still keeps the table responsive */
+    height: 100%;
 }
 
 
-.hd-schedule th, .hd-schedule td {
-    border: 1px solid #ddd !important;
+th, td {
+    border: 1px solid #ddd !important;  
     vertical-align: middle !important;
     text-align: center;
-    width: 10em;
-    font-size: 120%;    
 }
 
-.hd-schedule th {
+th {
     width: 6em;
     height: 1.7em !important;
     font-weight: normal;
-}
+ }
 
 .hd-week-view td {
     /*height: 17px !important;*/
@@ -87,6 +151,8 @@ body {
 .hd-week-view td div, .hd-day-view td div {
     max-width: 10em;
     text-align: center;
+    vertical-align: middle !important;
+    font-size: 120%;    
     margin: auto;
     white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
@@ -105,10 +171,13 @@ body {
 }
 
 /* Hover calendar cells but ONLY empty and disabled slots */
-tr:hover td.displayEmptySlot {
+tr:hover td.displayEmptySlot { 
+/*.hd-table-body-wrapper tr:hover td.displayEmptySlot { */
      background-color: #D9EEDB;  /* Very light green */
 }
-tr:hover td.displayDisabledSlot {
+
+tr:hover td.displayDisabledSlot { 
+/*.hd-table-body-wrapper tr:hover td.displayDisabledSlot { */
      background-color: #D9EEDB;  
 }
 
@@ -140,8 +209,23 @@ tr:hover td.displayDisabledSlot {
     color: black;
 }
 
+/*
+thead {
+    position:relative;
+    display:block;
+}
 
-/* Lightbox */
+tbody{
+    display:block;
+    width: 100%;
+    height:500px;
+    overflow:auto;
+}*/
+
+/* --------------------- */
+/*      Popup window     */
+/* --------------------- */
+
 .lightboxOverlay {
     background-color:#000;
     opacity: .5;

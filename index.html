@@ -15,29 +15,29 @@
 </head>	
 
 <body>
-	<div class="container-fluid">
+	<div class="container-fluid hd-top">
 
 		<!-- H E A D E R -->
-		<div class="header hidden-xs hidden-sm">
+		<div class="container-fluid hd-header hidden-xs">
 			<div class="row">
-  				<div class="col-xs-4 col-md-9 hidden-xs hidden-sm hd-logo-section">
+  				<div class="col-xs-8 col-md-8 hd-logo-section">
 					<img src="static/hacker-dojo.png" class="img-responsive hd-logo"/>
 					<img src="static/img/genee-logo.png"  class="img-responsive hd-genee-logo"/>	
   				</div>
-  				<div class="col-md-3 col-xs-8 hidden-xs hidden-sm hd-user-section">
-  					<div class="text-left hd-username"></div>
-  					<div class="text-left hd-logout"><a href="/logout">Logout</a></div>
+  				<div class="col-xs-4 col-md-4 hidden-sm hd-user-section">
+  					<div class="text-right hd-username"></div>
+  					<div class="text-right hd-logout"><a href="/logout">Logout</a></div>
   				</div>
 			</div>
 		</div>		
 
 		<!-- R O O M   N U M B E R -->
-		<div class="hd-topsection row  hidden-xs hidden-sm"></div>
+		<div class="container-fluid hd-topsection row  hidden-xs">
 			<div class="col-xs-6 col-md-6 hd-resourcename"></div>
 		</div>	
 
 		<!-- W E E K   &   D A I L Y   N A V I G A T I O N -->
-		<div class="container-fluid hidden-xs hidden-sm">
+		<div class="container-fluid hidden-xs">
 			<div class="row hd-week-nav-container">
 				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
 					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
@@ -47,7 +47,7 @@
 			</div>	
 		</div>
 		
-		<div class="container-fluid  hidden-md hidden-lg">
+		<div class="container-fluid hidden-sm hidden-md hidden-lg">
 			<div class="row hd-day-nav-container">
 				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
 					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
@@ -56,56 +56,69 @@
 				</div>	
 			</div>	
 		</div>
+	</div>
 
-
-		<div class="container-fluid">
-
-			<!-- Week display -->
-			<div class="table-responsive  hidden-xs hidden-sm">
-				<table class="hd-schedule table table-bordered hd-week-view">
-					<!--
-					<thead>
-						<tr>
-							<th>Time</th>
-							<th id="sun" data-day="0" class="text-center">Sun</th>
-							<th id="mon" data-day="1" class="text-center">Mon</th>
-							<th id="tue" data-day="2" class="text-center">Tue</th>
-							<th id="wed" data-day="3" class="text-center">Wed</th>
-							<th id="thu" data-day="4" class="text-center">Thu</th>
-							<th id="fri" data-day="5" class="text-center">Fri</th>
-							<th id="sat" data-day="6" class="text-center">Sat</th>
-						</tr>
-					</thead>
-					-->
-
-					<!--
-					<tbody>
-						{% for hour in hours %}
-							<tr data-hour="{{hour*2}}">
-								<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
-								{% for d in days %}
-									<td data-day="{{d}}"></td>
-								{% endfor %}
-							</tr>
-							<tr data-hour="{{hour*2+1}}">
-								{% for d in days %}
-									<td data-day="{{d}}"></td>
-								{% endfor %}
-							</tr>
-						{% endfor %}
-					</tbody>		
-					-->
-				</table>
-			</div>	
-
-			<!-- Day display -->
-			<div class="table-responsive hidden-md hidden-lg">
-				<table class="hd-schedule table hd-day-view">
-				</table>
-			</div>
-
+	<!-- Week display -->
+	<div class="hidden-xs container-fluid hd-table-header-wrapper">
+		<div class="table-responsive">
+			<table class="hd-schedule-header table table-bordered hd-week-view-header">
+				<!--
+				<thead>
+					<tr>
+						<th>Time</th>
+						<th id="sun" data-day="0" class="text-center">Sun</th>
+						<th id="mon" data-day="1" class="text-center">Mon</th>
+						<th id="tue" data-day="2" class="text-center">Tue</th>
+						<th id="wed" data-day="3" class="text-center">Wed</th>
+						<th id="thu" data-day="4" class="text-center">Thu</th>
+						<th id="fri" data-day="5" class="text-center">Fri</th>
+						<th id="sat" data-day="6" class="text-center">Sat</th>
+					</tr>
+				</thead>
+				-->
+			</table>
 		</div>	
-	</div>  	
+	</div>
+		
+	<div class="hidden-xs container-fluid hd-table-body-wrapper">
+		<div class="table-responsive">
+			<table class="hd-schedule table table-bordered hd-week-view">
+				<!--
+				<tbody>
+					{% for hour in hours %}
+						<tr data-hour="{{hour*2}}">
+							<th rowspan="2" class="text-center">{% if hour % 12 == 0 %}12{% else %}{{ hour % 12 }}{% endif %}{% if hour < 12 %}am{% else %}pm{% endif %}</th>
+							{% for d in days %}
+								<td data-day="{{d}}"></td>
+							{% endfor %}
+						</tr>
+						<tr data-hour="{{hour*2+1}}">
+							{% for d in days %}
+								<td data-day="{{d}}"></td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>		
+				-->
+			</table>
+		</div>	
+	</div>	
+				
+	<!-- Day display -->
+	<div class="container-fluid hidden-sm hidden-md hidden-lg hd-table-header-wrapper-day">	
+		<div class="table-responsive">
+			<table class="hd-schedule table hd-day-view-header">
+			</table>
+		</div>
+	</div>		
+
+	<div class="container-fluid hidden-sm hidden-md hidden-lg hd-table-body-wrapper-day">
+		<div class="table-responsive">
+			<table class="hd-schedule table hd-day-view">
+			</table>
+		</div>
+	</div>	
+ 	
 </body>	
 
 <script src="static/jquery-1.11.0.js"></script>
@@ -129,24 +142,29 @@
 	// -------------------------------------------------- //
 	
 	var buildCalendarDOM = function() {
-		var htmlCalendar = "";
+		var htmlCalendarHeader = "";
+		var htmlCalendar = "";		
 		var timePeriod = "";
 		var hourNumber = "";
 		var hour = 0;
 
-		htmlCalendar = '<thead>' +
-						'<tr>' +
-							'<th><div>Time</div></th>' +
-							'<th id="sun" data-day="0" class="text-center"><div>Sun</div></th>' +
-							'<th id="mon" data-day="1" class="text-center"><div>Mon</div></th>' +
-							'<th id="tue" data-day="2" class="text-center"><div>Tue</div></th>' +
-							'<th id="wed" data-day="3" class="text-center"><div>Wed</div></th>' +
-							'<th id="thu" data-day="4" class="text-center"><div>Thu</div></th>' +
-							'<th id="fri" data-day="5" class="text-center"><div>Fri</div></th>' +
-							'<th id="sat" data-day="6" class="text-center"><div>Sat</div></th>' +
-						'</tr>' +
-					'</thead>'
+		htmlCalendarHeader = '<tbody>' +
+								'<tr>' +
+									'<th><div>Time</div></th>' +
+									'<td id="sun" data-day="0" class="text-center"><div>Sun</div></td>' +
+									'<td id="mon" data-day="1" class="text-center"><div>Mon</div></td>' +
+									'<td id="tue" data-day="2" class="text-center"><div>Tue</div></td>' +
+									'<td id="wed" data-day="3" class="text-center"><div>Wed</div></td>' +
+									'<td id="thu" data-day="4" class="text-center"><div>Thu</div></td>' +
+									'<td id="fri" data-day="5" class="text-center"><div>Fri</div></td>' +
+									'<td id="sat" data-day="6" class="text-center"><div>Sat</div></td>' +
+								'</tr>' +
+							'</tbody>'
 
+		// remove the calendar header
+		$(".hd-week-view-header tbody").remove();
+
+		$(htmlCalendarHeader).appendTo('.hd-week-view-header');
 
 		htmlCalendar = htmlCalendar + "<tbody>";
 
@@ -191,8 +209,12 @@
 		htmlCalendar = htmlCalendar + "</tbody>";
 
 		// Remove previous calendar
-		$("thead").remove();
-		$("tbody").remove();
+		//$("thead").remove();
+		//$("tbody").remove();
+
+		//remove the calendar body
+		$(".hd-week-view tbody").remove();
+
 		// Add calendar html to the DOM
 		$(htmlCalendar).appendTo('.hd-week-view');
 
@@ -203,6 +225,7 @@
 	// Build and insert calendar HTML into the DOM
 	// -------------------------------------------------- //
 	var buildDayCalendarDOM = function(dateObj) {
+		var htmlCalendarHeader = "";
 		var htmlCalendar = "";
 		var timePeriod = "";
 		var hourNumber = "";
@@ -243,13 +266,17 @@
 		}
 
 
-		htmlCalendar =  '<thead>' +
-							'<tr>' + 
-								'<th><div>Time</div></th>' +
-								'<th id="' + dayID + '" data-day="' + weekDay + '" class="text-center"><div>' + dayLabel + 
-								'</div></th>' +
-							'</tr>' +
-						'</thead>'
+		htmlCalendarHeader =  '<tbody>' +
+								'<tr>' + 
+									'<th><div>Time</div></th>' +
+									'<td id="' + dayID + '" data-day="' + weekDay + '" class="text-center"><div>' + dayLabel + 
+									'</div></td>' +
+								'</tr>' +
+							'</tbody>'
+
+		// remove the calendar header
+		$(".hd-day-view-header tbody").remove();
+		$(htmlCalendarHeader).appendTo('.hd-day-view-header');
 
 		htmlCalendar = htmlCalendar + "<tbody>";
 
@@ -295,8 +322,11 @@
 		htmlCalendar = htmlCalendar + "</tbody>";
 
 		// Remove previous calendar
-		$("thead").remove();
-		$("tbody").remove();
+		//$("thead").remove();
+		//$("tbody").remove();
+		//remove the calendar body
+		$(".hd-day-view tbody").remove();
+
 		// Add calendar html to the DOM
 		$(htmlCalendar).appendTo('.hd-day-view');
 	}
@@ -472,10 +502,8 @@
 			case "delete":
 			case "display":
 
-				console.log("isSlotAvailable($slotObject):" + isSlotAvailable($slotObject));
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
 
-					console.log("isSlotAvailable($slotObject):" + isSlotAvailable($slotObject) + ", $slotObject.find('div').text():" + $slotObject.find("div").text());
 					//if ($slotObject.text() === "" ) { 						
 					if ($slotObject.find("div").text() === "" ) { 						
 							$slotObject.removeClass("displayBookedSlot");		
@@ -639,7 +667,6 @@
 			datesArray[6] = dateObj;
 		}
 
-		console.log("In getDayArray... dateObj:" + dateObj + ", datesArray:" + datesArray);
 		return datesArray;
 	}
 
@@ -681,7 +708,7 @@
 					idValue = "sat";
 					break;
 			}
-			$(".hd-week-view" + " " + "#" + idValue).text(getDateColumnTitle(datesArray[i]));				
+			$(".hd-week-view-header" + " " + "#" + idValue).text(getDateColumnTitle(datesArray[i]));				
 		}
 
 		// Display Week or Day on the week/day navigation section
@@ -769,8 +796,8 @@
 
 		// Format style of slots		
 		//$("table.hd-schedule td").text("").each( function() {
-		//$("table.hd-schedule td").text("").each( function() {
-		$("table.hd-schedule td").each( function() {
+		// $("table.hd-schedule td").each( function() {
+		$(".hd-table-body-wrapper table td").each( function() {
 			updateSlotStyle($(this), 1, "display");
 		}); 
 
@@ -792,20 +819,15 @@
 
 		// Format style of slots		
 		//$("table.hd-schedule td").text("").each( function() {
-		//$("table.hd-schedule td").text("").each( function() {
-		$("table.hd-schedule td").each( function() {
+		//$("table.hd-schedule td").each( function() {
+		$(".hd-table-body-wrapper-day table td").each( function() {
 			updateSlotStyle($(this), 1, "display");
 		}); 
 
-		console.log("Inside updateDayCalendar, before calling updateDatesOnDayCalendar... datesArray:" + datesArray);
 		updateDatesOnDayCalendar(dateToDisplay, datesArray);	
-
-		console.log("Inside updateDayCalendar, after calling updateDatesOnDayCalendar... datesArray:" + datesArray);
 
 		//fillOutSlotFromDB(datesArray, room);  //replaced old getSChedule with Genee API below
 		fillOutSlotFromGenee(datesArray);		
-
-		console.log("Inside updateDayCalendar, after calling fillOutSlotFromGenee... datesArray:" + datesArray);
 
 		// For small devices, we only display current Date
 /*
@@ -1230,8 +1252,6 @@
 						var slotCount = 0;
 						var attendees = "";
 
-						console.log("resp[i].meetingtime:" + resp[i].meetingtime + ", slotNum:" + slotNum + ", weekDay:" + weekDay + ", weekDayDate:" + weekDayDate + ", meetingId:" + meetingId + ", datesArray:" + datesArray);
-
 						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 						if (compareDate === 0  ) {
@@ -1400,6 +1420,74 @@
 
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// +++++++++++++++++++++++++++++++++ W I N D O W / S C R E E N  R E L A T E D +++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	// -------------------------------------------------- //
+	// setHeight function
+	// -------------------------------------------------- //
+	function setHeight() {
+	    var totHeight = $(window).height();
+	    var top = $('.hd-top').outerHeight();
+	    var calendarHeader = $('.hd-table-header-wrapper').outerHeight();
+	    var calendarHeight = totHeight - top - calendarHeader - 200;
+
+	    console.log("totHeight:" + totHeight + ", top:" + top + ", calendarHeight:" + calendarHeight);
+
+	    $('body').css('height', totHeight);
+	    $('.hd-schedule').css('height', calendarHeight);
+  	}
+
+	// -------------------------------------------------- //
+	// setWeekDayDisplay function
+	// -------------------------------------------------- //
+	function setWeekDayDisplay() {
+
+		// Identify screen size  -- Giovanna - July 21st
+		var height = $(window).height();
+		var width = $(window).width();
+		//console.log("height:" + height + ", width:" + width);
+
+		if (width < 768) {
+			displayOption = "day";
+		} else {
+			displayOption = "week";		
+		}
+
+		// Clear all setIntervals
+		for (var i = 1; i < 99999; i++) {
+	        window.clearInterval(i);
+		}
+
+		switch (displayOption) {
+			case "week":
+				datesArray = getWeekDaysArray(firstDayOfWeek);
+				console.log("Before calling updateWeekCalendar... displayOption:" + displayOption);
+				updateWeekCalendar(firstDayOfWeek, datesArray);
+
+				// refresh the view every 30 seconds			
+				setInterval (function() { 
+					updateWeekCalendar(firstDayOfWeek, datesArray); 
+				}, 30000);			
+
+				break;
+
+			case "day":
+				dateDisplayed = today.clone();		
+				datesArray = getDayArray(dateDisplayed);
+				console.log("Before calling updateDayCalendar... displayOption:" + displayOption);
+				updateDayCalendar(dateDisplayed, datesArray);
+
+				// refresh the view every 30 seconds
+				setInterval (function() { 
+					updateDayCalendar(dateDisplayed, datesArray); 
+				}, 30000);
+
+				break;
+		}
+	}	
+
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1431,47 +1519,18 @@
 	var today = new Date();
 	var firstDayOfWeek = getFirstDayOfWeek(today);
 
-	// Identify screen size  -- Giovanna - July 21st
-	var height = $(window).height();
-	var width = $(window).width();
-
+	// Declaring global variables that will be set in setWeekDayDisplay() function
+	var dateDisplayed;		
+	var datesArray = [];
 	var displayOption;
-	if (width < 768) {
-		displayOption = "day";
-	} else {
-		displayOption = "week";		
-	}
 
-	switch (displayOption) {
-		case "week":
-			var datesArray = getWeekDaysArray(firstDayOfWeek);
-			updateWeekCalendar(firstDayOfWeek, datesArray);
+	$(window).on('resize', function() { 
+	  setWeekDayDisplay();  // display either week or day view 
+	  //setHeight();  // set height of calendar section 
+	});
 
-			// refresh the view every 30 seconds			
-/*			setInterval (function() { 
-				updateWeekCalendar(firstDayOfWeek, datesArray); 
-			}, 30000);			
-*/
-			break;
-
-		case "day":
-			var dateDisplayed = today.clone();
-			console.log("Before calling getDayArray... dateDisplayed:" + dateDisplayed);
-		
-			var datesArray = getDayArray(dateDisplayed);
-			console.log("Initial datesArray values.. datesArray:" + datesArray);
-		
-			updateDayCalendar(dateDisplayed, datesArray);
-
-			console.log("After calling updateDayCalendar.. datesArray:" + datesArray);
-
-			// refresh the view every 30 seconds
-/*			setInterval (function() { 
-				updateDayCalendar(dateDisplayed, datesArray); 
-			}, 30000);
-*/
-			break;
-	}
+	setWeekDayDisplay();
+	//setHeight();
 
 
 	// Initially disable prev button
@@ -1569,11 +1628,10 @@
 
 
 	// Slot "click" event
-	$(".hd-schedule").on('click','td', function() {                   
+	$(".hd-schedule").on('click','td', function() {    
+
 		var response;
 		var numberOfSlots = 1;
-
-		console.log("clicked on a slot...");
 
 		if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
 
