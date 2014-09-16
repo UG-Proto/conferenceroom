@@ -16,17 +16,9 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 
 # Global variable for Genee API's URL
 MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
-<<<<<<< HEAD
 MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
-#MAIN_DEV_URL = "https://aws.ugather.us/ugather-py/api/v1"
+MAIN_PROD_URL = "http://genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
 
-MAIN_PROD_URL = "http://genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.)
-=======
-#MAIN_DEV_URL = "http://localgenee.me/api/v1"
-#MAIN_DEV_URL = "https://aws.ugather.us/ugather-py/api/v1"
-
-MAIN_PROD_URL = "http://genee.me/production-py/api/v1"
->>>>>>> origin/master
 
 MAIN_URL = MAIN_PROD_URL
 
