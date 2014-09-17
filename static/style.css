@@ -62,6 +62,8 @@ body {
     background: transparent;   
     margin: 2em 1em 1em 2em;
     display: inline-block;
+    height: 4em;
+    width: 11em;
 }
 
 .hd-header {
@@ -74,13 +76,22 @@ body {
 }
 
 .hd-user-section {
-    margin-top: 3em;
+    margin-top: 2em;
     font-size:120%;
 }
 
 .hd-logout {
     font-style: italic;
 } 
+
+.hd-header-time {
+    font-size: 100%;
+}
+
+.hd-support-email {
+    font-size: 90%;
+    padding-top:1.2em;
+}
 
 .hd-resourcename {
     /*margin: 1em 0 1.5em 4em; */
