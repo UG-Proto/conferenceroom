@@ -146,6 +146,10 @@ html {
 /* Week / Day calendar */
 /* --------------------- */
 
+.table-responsive {
+    margin-bottom: 0 !important;
+}
+
 .hd-schedule, .hd-schedule-header {
     text-align: center;
     margin: 0 !important;
