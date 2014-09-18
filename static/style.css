@@ -1,13 +1,18 @@
 
 body {
   font-family: Verdana,Arial,sans-serif; 
-/*  width:100%; 
-  height:100%; 
-  overflow:hidden;
-  margin:0; */
+  width:100%; 
+/*  height:100%;
+  margin:0; 
+  overflow:hidden; */
 }
 
-/*html {width:100%; height:100%; overflow:hidden}*/
+html {
+/*    width:100%; 
+    height:100%; */
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
 
 /* ---------- */
 /* Fix header */ 
@@ -16,22 +21,21 @@ body {
 .hd-top {
     position: fixed;
     width: 100%;
-   z-index:1001;
-   background-color: white;
+    z-index:1001;
+    background-color: white;
 }
 
 .hd-table-header-wrapper {
     position: fixed;
     top: 270px;
-   z-index:1001;
-   background-color: white;
+    width: 100%;
+    z-index:1001;
+    background-color: white;
 }
 
 .hd-table-body-wrapper {
     position: relative;
     top: 308px;
-/*    overflow-y: scroll;
-    overflow-x: hidden; */
     width: 100%;
     margin-bottom: 1em;
     z-index:1000;
@@ -85,7 +89,7 @@ body {
 } 
 
 .hd-header-time {
-    font-size: 100%;
+    font-size: 95%;
 }
 
 .hd-support-email {
@@ -109,6 +113,10 @@ body {
     padding-bottom: 4em;
 }
 
+.hd-day-nav-container {
+    padding-top: 0.5em;
+}
+
 .hd-nav {
     display: inline-block;
 }
@@ -119,11 +127,20 @@ body {
 }
 
 .hd-display-week, .hd-display-day {
-    font-size: 140%;
     padding-left: 0.5em;
     padding-right: 0.5em;
     vertical-align: middle;
 }
+
+.hd-display-week {
+    font-size: 140%;
+}
+
+.hd-display-day {
+    font-size: 120%;
+}
+
+
 
 /* --------------------- */
 /* Week / Day calendar */
@@ -144,7 +161,6 @@ th, td {
 }
 
 th {
-    width: 6em;
     height: 1.7em !important;
     font-weight: normal;
  }
@@ -159,7 +175,7 @@ th {
     height: 2em !important;
 }
 
-.hd-week-view td div, .hd-day-view td div {
+.hd-week-view td div, .hd-day-view td div, .hd-week-view-header td div, .hd-day-view-header td div {
     max-width: 10em;
     text-align: center;
     vertical-align: middle !important;
@@ -256,7 +272,7 @@ tbody{
     left:0;
     margin-left:auto;
     margin-right:auto;
-    padding:20px;
+    padding:1em;
     right:0;
     top:70px;
     width: 450px;
@@ -270,7 +286,7 @@ tbody{
     /* style of message text */
 }
 
-.lightbox button {
+.lightboxError button {
     display:block;
     margin: 1em auto auto auto;
 }
@@ -319,6 +335,13 @@ tbody{
     width: 100% !important;
 }
 
+.hd-popup-message {
+    width: 100% !important;
+    text-align: justify;
+    padding: 1em;
+}
+
+
 .hd-email-input {
     width: 40% !important; 
     display: inline-block;
@@ -352,14 +375,11 @@ tbody{
 /* @media (max-width: @screen-xs-max) { */
 @media all and (max-width: 768px) {
 
-    .lightboxError {
-        font-size: 100%;
-    }    
 
     .lightboxOverlayPopup {
     }
 
-    .lightboxPopup {
+    .lightboxError, .lightboxPopup {
         border: 1px #000000 solid;
         border-radius: 5px;
         left:0;

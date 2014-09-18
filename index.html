@@ -47,7 +47,7 @@
 		</div>		
 
 		<!-- R O O M   N U M B E R -->
-		<div class="container-fluid hd-topsection row  hidden-xs">
+		<div class="container-fluid hd-topsection row hidden-xs">
 			<div class="col-xs-6 col-md-6 hd-resourcename"></div>
 		</div>	
 
@@ -55,7 +55,7 @@
 		<!-- W E E K   &   D A I L Y   N A V I G A T I O N -->
 		<div class="container-fluid hidden-xs">
 			<div class="row hd-week-nav-container">
-				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
+				<div class="col-xs-12 col-md-6 col-md-offset-3 text-center">
 					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
 					<div class="hd-display-week text-center hd-nav"></div>
 					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
@@ -65,19 +65,19 @@
 		
 		<div class="container-fluid hidden-sm hidden-md hidden-lg">
 			<div class="row hd-day-nav-container">
-				<div class="col-xs-12 col-md-4 col-md-offset-4 text-center">
+				<div class="col-xs-12 col-md-6 col-md-offset-3 text-center">
 					<div class="text-center hd-nav"><a href="" class="prevButton btn btn-default btn-lg hd-nav-button" role="button"> < </a></div>
 					<div class="hd-display-day text-center hd-nav"></div>
 					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
 				</div>	
 			</div>	
 		</div>
-	</div>
+	</div>	
 
 	<!-- Week display -->
 	<div class="hidden-xs container-fluid hd-table-header-wrapper">
 		<div class="table-responsive">
-			<table class="hd-schedule-header table table-bordered hd-week-view-header">
+			<table class="container-fluid hd-schedule-header table table-bordered hd-week-view-header">
 				<!--
 				<thead>
 					<tr>
@@ -883,18 +883,18 @@
   // Light Box
   // -------------------------------------------------- //
   function popupMessage(message){
-    $('<div class="lightbox">' +
+    $('<div class="lightboxError container">' +
         '<div class="lightboxOverlay"></div>' +
         '<div class="lightboxError">' +
-            '<p class="hd-popup-text"></p>' +
+            '<p class="hd-popup-message"></p>' +
             '<div class="row custom-elem-row">' + 
-	          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default hidden-md hidden-lg">Close</button>' +  //smaller button displayed for phones only
-	          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;" class="okButton btn btn-default btn-lg hidden-xs hidden-sm">Close</button>' + // large button displayed for ipad & desktops
+	          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default hidden-md hidden-lg">Close</button>' +  //smaller button displayed for phones only
+	          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default btn-lg hidden-xs hidden-sm">Close</button>' + // large button displayed for ipad & desktops
 	        '</div>' +  
         '</div>' +
       '</div>'
     ).appendTo('body');
-    $(".lightbox p").text(message);
+    $(".lightboxError p").text(message);
   }
 
 
@@ -1482,9 +1482,9 @@
 				updateWeekCalendar(firstDayOfWeek, datesArray);
 
 				// refresh the view every 30 seconds			
-				setInterval (function() { 
+				/*setInterval (function() { 
 					updateWeekCalendar(firstDayOfWeek, datesArray); 
-				}, 30000);			
+				}, 30000);*/			
 
 				break;
 
@@ -1545,13 +1545,16 @@
 
 	$(window).on('resize', function() { 
 	  setWeekDayDisplay();  // display either week or day view 
-	  //setHeight();  // set height of calendar section 
 	});
 
 	setWeekDayDisplay();
-	//setHeight();
 
-
+	// move fixed div to the left as much distance as the user scrolled horizontally, so the table header and body are algined
+/*	$(window).scroll(function(){
+		$('.hd-top').css('left',-$(window).scrollLeft());
+		$('.hd-table-header-wrapper').css('left', -$(window).scrollLeft());
+	});
+*/
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
