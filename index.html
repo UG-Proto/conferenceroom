@@ -72,6 +72,9 @@
 					<div class="hd-display-day text-center hd-nav"></div>
 					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
 				</div>	
+				<div class="col-xs-12 col-md-6 col-md-offset-3 text-center">
+					<div><a href="" class="hd-today-link">Today</a></div>
+				</div>	
 			</div>	
 		</div>
 	</div>	
@@ -1557,6 +1560,26 @@
 		$('.hd-table-header-wrapper').css('left', -$(window).scrollLeft());
 	});
 */
+
+
+	// Today link on mobile view
+
+	$(".hd-today-link").click(function(e){
+
+		e.preventDefault();
+
+		if (displayOption === "day") {
+			dateDisplayed = new Date();
+			datesArray = getDayArray(dateDisplayed);
+			updateDayCalendar(dateDisplayed, datesArray);
+			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+			if (today >= dateDisplayed) {
+				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+			}			
+		} 
+	});
+
+
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
@@ -1586,7 +1609,6 @@
 					datesArray = getDayArray(dateDisplayed);
 					updateDayCalendar(dateDisplayed, datesArray);
 					$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-					// if (today > firstDayOfWeek) {
 					if (today >= dateDisplayed) {
 						$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
 					}			
