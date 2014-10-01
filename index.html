@@ -62,6 +62,9 @@
 					<div class="hd-display-week text-center hd-nav"></div>
 					<div class="text-center hd-nav"><a href="" class="nextButton btn btn-default btn-lg hd-nav-button" role="button"> > </a></div>
 				</div>	
+				<div class="col-xs-12 col-md-6 col-md-offset-3 text-center hd-first-week-link-div">
+					<div><a href="" class="hd-first-week-link">Today</a></div>
+				</div>					
 			</div>	
 		</div>
 		
@@ -1349,6 +1352,7 @@
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
 		var meetingidParam = $slotObject.attr("data-meetingid");
+		// var attendeesParam = "giovannaolivera@gmail.com giovanna@genee.me";
 
 			switch (action) {
 				case "add":
@@ -1357,7 +1361,7 @@
                         timeout : 10000,
 					    url: '/api/v1/addgenee',
 					    type: 'POST',
-					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam,userEmailParam:userEmailParam},
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam, userEmailParam:userEmailParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
@@ -1487,9 +1491,9 @@
 				updateWeekCalendar(firstDayOfWeek, datesArray);
 
 				// refresh the view every 30 seconds			
-				/*setInterval (function() { 
+				setInterval (function() { 
 					updateWeekCalendar(firstDayOfWeek, datesArray); 
-				}, 30000);*/			
+				}, 30000);			
 
 				break;
 
@@ -1564,18 +1568,33 @@
 
 	// Today link on mobile view
 
-	$(".hd-today-link").click(function(e){
-
+	$(".hd-first-week-link, .hd-today-link").click(function(e){
 		e.preventDefault();
 
-		if (displayOption === "day") {
-			dateDisplayed = new Date();
-			datesArray = getDayArray(dateDisplayed);
-			updateDayCalendar(dateDisplayed, datesArray);
-			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-			if (today >= dateDisplayed) {
-				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-			}			
+		switch (displayOption) {
+
+			case "week":
+
+				firstDayOfWeek = getFirstDayOfWeek(today);
+				datesArray = getWeekDaysArray(firstDayOfWeek);
+				updateWeekCalendar(firstDayOfWeek, datesArray);
+				$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+				if (today >= firstDayOfWeek) {
+					$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+				}			
+				break;
+
+			case "day":
+
+				dateDisplayed = new Date();
+				datesArray = getDayArray(dateDisplayed);
+				updateDayCalendar(dateDisplayed, datesArray);
+				$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+				if (today >= dateDisplayed) {
+					$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+				}			
+				break;
+				
 		} 
 	});
 

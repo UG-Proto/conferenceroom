@@ -27,7 +27,7 @@ html {
 
 .hd-table-header-wrapper {
     position: fixed;
-    top: 270px;
+    top: 280px;
     width: 100%;
     z-index:1001;
     background-color: white;
@@ -35,7 +35,7 @@ html {
 
 .hd-table-body-wrapper {
     position: relative;
-    top: 308px;
+    top: 318px;
     width: 100%;
     margin-bottom: 1em;
     z-index:1000;
@@ -141,11 +141,15 @@ html {
 }
 
 
-.hd-today-link {
+.hd-first-week-link, .hd-today-link {
     font-style: italic;
     font-size: 110%;
     text-decoration: underline;
 } 
+
+.hd-first-week-link-div {
+    margin-top: 1em;
+}
 
 /* --------------------- */
 /* Week / Day calendar */
@@ -426,4 +430,5 @@ tr:hover td.displayDisabledSlot {
         margin-left: 1em;
         margin-right: 1em;        
     }
+
 }
