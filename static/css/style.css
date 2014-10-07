@@ -360,7 +360,7 @@ tr:hover td.displayDisabledSlot {
 }
 
 .hd-buttons-section {
-    padding-top: 2em;
+    padding-top: 1em;
     padding-bottom: 1em;    
 }
 .okButton {
@@ -373,6 +373,7 @@ tr:hover td.displayDisabledSlot {
 }
 .hd-error-text {
     color: #e43333;
+    font-size: 90%;
 }
 
 .selectpicker {

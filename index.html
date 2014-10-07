@@ -1101,13 +1101,14 @@
 			    						'<p class="hd-popup-text">Please enter your HackerDojo email id: </p>' +
 										'<input type="text" name="emailAddress" class="form-control hd-email-input col-sm-6" id="hd-emailAddress">' + 
 										'<span class="form-control-static col-sm-6">@hackerdojo.com</span>' +
-										'<p class="hd-errorMessageEmail hd-error-text col-sm-12"></p>' + 
+										'<p class="hd-errorMessageEmail hd-error-text col-sm-12 hd-hide"></p>' + 
 									'</div>';
 
 				// request user to enter attendees email address
 				attendeesPromptHTML = '<div class="row custom-elem-row">' + 
 			    						'<p class="hd-popup-text">Inform others in the meeting (email addresses separated by commas): </p>' +
 										'<input type="text" name="attendeesEmailAddress" class="form-control hd-attendees-email-input col-sm-6" id="hd-attendeesEmail">' + 
+										'<p class="hd-errorMessageEmailList hd-error-text col-sm-12 hd-hide"></p>' + 
 									'</div>';
 
 			}		    				
@@ -1191,7 +1192,7 @@
 
 		 			else { 
 
-		 				// Delete any error message that could have been displayed previously
+		 				// Hide any error message that could have been displayed previously
 		 				$(".hd-errorMessageEmail").text("").addClass("hd-hide");
 		 				userEmailInput = userEmailInput + "@hackerdojo.com";
 
@@ -1220,9 +1221,12 @@
 							if (response === false) {
 
 								// display error message below the email input text
-								alert("Incorrect email list!!!");
+		 						$(".hd-errorMessageEmailList").text("* Please enter correct email address(es)").removeClass("hd-hide");
 
 							} else {
+
+				 				// Hide any error message that could have been displayed previously
+				 				$(".hd-errorMessageEmailList").text("").addClass("hd-hide");
 
 								// Convert the array of emails into string joined by "," only.
 								attendeesEmail = emailArray.join(", ");
@@ -1316,6 +1320,7 @@
 
 		var end_date_param = convertDateToString(end_date);
 
+		console.log("Inside fillOutSlotFromGenee... before calling roomschedule API..");
 
 		$.ajax({
 			//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
@@ -1598,7 +1603,6 @@
 	if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
 		// Hide username and logout link if login user is meet@hackerdojo.com
 		$(".hd-username-section").css("display","none");	
-		// $(".hd-logout").css("display","none");
 	} else {
 		// If user is NOT meet@hackerdojo.com, hide the time at the right upper corner
 		$(".hd-header-time").css("display","none");
