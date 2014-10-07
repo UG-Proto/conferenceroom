@@ -9,7 +9,7 @@
     <!--<link rel="icon" type="image/ico" href="http://cdn.hackerdojo.com/favicon.ico" />-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.css">
- 	<link rel="stylesheet" type="text/css" href="static/style.css" />
+ 	<link rel="stylesheet" type="text/css" href="static/css/style.css" />
 
 	<title>Room Reservation</title>
 </head>	
@@ -22,7 +22,7 @@
 			<div class="row">
 			
   				<div class="col-xs-8 col-sm-8 col-md-6 hd-logo-section">
-					<img src="static/hacker-dojo.png" class="img-responsive hd-logo"/>
+					<img src="static/img/hacker-dojo.png" class="img-responsive hd-logo"/>
 					<img src="static/img/genee-logo.png"  class="img-responsive hd-genee-logo"/>	
 					
   				</div>	
@@ -145,10 +145,10 @@
  	
 </body>	
 
-<script src="static/jquery-1.11.0.js"></script>
+<script src="static/js/jquery-1.11.0.js"></script>
 
 <!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
-<script type="text/javascript" src="static/date.js"></script>
+<script type="text/javascript" src="static/js/date.js"></script>
 
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js" type="text/javascript"></script>
@@ -852,25 +852,36 @@
 
 		//fillOutSlotFromDB(datesArray, room);  //replaced old getSChedule with Genee API below
 		fillOutSlotFromGenee(datesArray);		
+	}
 
-		// For small devices, we only display current Date
-/*
-		switch (displayOption) {
-			case "week":
-				//do nothing, no need to hide any column
-				break;
-			case "day":
-				var weekDay = currentDate.getDay();
-				// Hide the header row for columns that are different from the date to display
-				$("thead th[data-day]").hide();
-				$("thead th[data-day][data-day='" + weekDay + "']").show();
 
-				// Hide rest of rows for columns that are different from the date to display
-				$("td[data-day]").hide();				
-				$("td[data-day='" + weekDay + "']").show();				
-				break;	
-		}
-*/
+
+	function validateEmail(email) {
+
+	    var regex=/(\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b)/i;	    
+
+	    console.log("Inside validateEmail... email:" + email + ", regex.test(email):" + regex.test(email));
+
+	    if ( regex.test(email) ) {
+	    	return true;
+	    } else {
+	    	return false;
+	    }
+	}
+
+	function validateMultipleEmailsCommaSeparated(emailArray) {
+
+	    console.log("Inside validateMultipleEmailsCommaSeparated... emailArray:" + emailArray);
+	    var flag = true;
+
+	    for (i = 0;i < emailArray.length;i++) {
+		    if(!validateEmail(emailArray[i])) { 
+	    		flag = false;
+	            return false;    		
+			} 
+		}	
+		return flag;
+	
 	}
 
 
@@ -1081,6 +1092,7 @@
 		if (displayPopUp) {
 
 			var userNamePromptHTML = "";
+			var attendeesPromptHTML = "";
 
 			if (userEmail === conferenceRoomEmail) {  // if login user is meet@hackerdojo.com
 
@@ -1091,6 +1103,13 @@
 										'<span class="form-control-static col-sm-6">@hackerdojo.com</span>' +
 										'<p class="hd-errorMessageEmail hd-error-text col-sm-12"></p>' + 
 									'</div>';
+
+				// request user to enter attendees email address
+				attendeesPromptHTML = '<div class="row custom-elem-row">' + 
+			    						'<p class="hd-popup-text">Inform others in the meeting (email addresses separated by commas): </p>' +
+										'<input type="text" name="attendeesEmailAddress" class="form-control hd-attendees-email-input col-sm-6" id="hd-attendeesEmail">' + 
+									'</div>';
+
 			}		    				
 
 			// Create complete HTML content for the popup window
@@ -1098,16 +1117,24 @@
 		        '<div class="lightboxOverlayPopup"></div>' +
 		        '<div class="lightboxPopup">' +
 					'<div class="row custom-elem-row">' + 
-			    		'<p class="hd-popup-text">' + 'Time selected:' + '<p>' +			
-			    		'<p class="hd-popup-text">' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
+			    		//'<p class="hd-popup-text">' + 'Time selected:' + '<p>' +			
+			    		//'<p class="hd-popup-text">' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
+			        	//'</p>' + 
+
+			    		'<p class="hd-popup-text">' + 'Time selected: ' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
 			        	'</p>' + 
+
 			        '</div>' +	 
 
 		        	userNamePromptHTML +
+		        	
 		        	'<div class="row custom-elem-row">' +
 		    			'<p>How long do you need the room for? </p>' +
 					    dropdownHTML +
 				    '</div>' +
+
+				    attendeesPromptHTML + 
+
 		        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
 		        		'<div class="col-md-3 col-md-offset-3">' + 
 		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
@@ -1155,29 +1182,67 @@
 				if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
 
 					// Validate that the user entered his/her email address
-		 			userEmailInput = $("#hd-emailAddress").val();
+		 			var userEmailInput = $("#hd-emailAddress").val();
+		 			var attendeesEmail = " ";
 
 		 			if (userEmailInput === "") {
 		 				$(".hd-errorMessageEmail").text("* This is a required field").removeClass("hd-hide");
-
 		 			}
+
 		 			else { 
 
 		 				// Delete any error message that could have been displayed previously
 		 				$(".hd-errorMessageEmail").text("").addClass("hd-hide");
 		 				userEmailInput = userEmailInput + "@hackerdojo.com";
 
-						// call a different API to create reservation through Genee functionality
-						response = updateSlot($slotObj, slotCount, room, userEmailInput, "geneeCommand");
 
-						// close poup window
-				    	$(".lightboxPopup").remove();
+		 				// Capture attendees email addresses
+		 				attendeesEmail = $("#hd-attendeesEmail").val();
+
+		 				console.log("Inside displayPopup... attendeesEmail:" + attendeesEmail);
+
+		 				if ($.trim(attendeesEmail) === "") {
+
+								response = updateSlot($slotObj, slotCount, room, userEmailInput, " ", "geneeCommand");
+								
+								// close poup window
+						    	$(".lightboxPopup").remove();
+
+		 				} else {
+
+							//var emailArray = attendeesEmail.split(/\s|[,;]/);
+							var emailArray = attendeesEmail.split(/[,;]\s*|\s+/);
+
+							console.log("emailArray:" + emailArray);
+							var response = validateMultipleEmailsCommaSeparated(emailArray);
+							console.log("response:" + response);
+
+							if (response === false) {
+
+								// display error message below the email input text
+								alert("Incorrect email list!!!");
+
+							} else {
+
+								// Convert the array of emails into string joined by "," only.
+								attendeesEmail = emailArray.join(", ");
+
+								// call a different API to create reservation through Genee functionality
+								response = updateSlot($slotObj, slotCount, room, userEmailInput, attendeesEmail, "geneeCommand");
+
+								// close poup window
+						    	$(".lightboxPopup").remove();
+
+							}							
+
+						}	
+
 		 			}	
 
 		 		} else { 
 
 		 			// user logged-in with his user id, so call "addGenee API to create room reservation in Genee"	
-					response = updateSlot($slotObj, slotCount, room, userEmail, "add");
+					response = updateSlot($slotObj, slotCount, room, userEmail, " ", "add");
 
 					// close poup window
 			    	$(".lightboxPopup").remove();
@@ -1188,6 +1253,8 @@
 
 	}
   }
+
+
 
 
   	// -------------------------------------------------- //
@@ -1223,7 +1290,7 @@
 
 		    $(".lightboxPopup").on('click','.okButton', function() {
 
-				response = updateSlot($slotObj, numberOfSlots, room, userEmail, "delete");
+				response = updateSlot($slotObj, numberOfSlots, room, userEmail, " ", "delete");
 		    	$(".lightboxPopup").remove();
 		    });
   	}
@@ -1337,7 +1404,7 @@
 	// -------------------------------------------------- //
 	// Book slot Ajax call
 	// -------------------------------------------------- //
-	var updateSlot = function($slotObject, slotCount, roomParam, userEmail, action) {
+	var updateSlot = function($slotObject, slotCount, roomParam, userEmail, attendeesEmail, action) {
 
 		// set parameters to send in the Ajax call
 
@@ -1352,7 +1419,16 @@
 		var userEmailParam = userEmail;
 		var userIdParam = userId;
 		var meetingidParam = $slotObject.attr("data-meetingid");
-		// var attendeesParam = "giovannaolivera@gmail.com giovanna@genee.me";
+
+		// Add current user to list of attendees
+		if (attendeesEmail !== "") {
+			attendeesEmail = userEmail + ", " + attendeesEmail;
+		} else {
+			attendeesEmail = userEmail;
+		}
+
+		var attendeesListParam = attendeesEmail;
+		console.log("Inside updateSlot... attendeesListParam:" + attendeesListParam);
 
 			switch (action) {
 				case "add":
@@ -1418,11 +1494,11 @@
                         timeout : 10000,
 					    url: '/api/v1/commandgenee',
 					    type: 'POST',
-					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
+					    // data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:attendeesListParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
-								//popupMessage("Your Request is being processed. Please check your email to confirm this reservation");
 								popupMessage("Thanks, your request has been received. We will send an email to the email address you provided. Please follow through and confirm the desired meeting time to book the room.");
 								return true;
 							} else {
@@ -1457,8 +1533,6 @@
 	    var calendarHeader = $('.hd-table-header-wrapper').outerHeight();
 	    var calendarHeight = totHeight - top - calendarHeader - 200;
 
-	    console.log("totHeight:" + totHeight + ", top:" + top + ", calendarHeight:" + calendarHeight);
-
 	    $('body').css('height', totHeight);
 	    $('.hd-schedule').css('height', calendarHeight);
   	}
@@ -1471,7 +1545,6 @@
 		// Identify screen size  -- Giovanna - July 21st
 		var height = $(window).height();
 		var width = $(window).width();
-		//console.log("height:" + height + ", width:" + width);
 
 		if (width < 768) {
 			displayOption = "day";
@@ -1487,20 +1560,18 @@
 		switch (displayOption) {
 			case "week":
 				datesArray = getWeekDaysArray(firstDayOfWeek);
-				console.log("Before calling updateWeekCalendar... displayOption:" + displayOption);
 				updateWeekCalendar(firstDayOfWeek, datesArray);
 
 				// refresh the view every 30 seconds			
-				setInterval (function() { 
+/*				setInterval (function() { 
 					updateWeekCalendar(firstDayOfWeek, datesArray); 
 				}, 30000);			
-
+*/
 				break;
 
 			case "day":
 				dateDisplayed = today.clone();		
 				datesArray = getDayArray(dateDisplayed);
-				console.log("Before calling updateDayCalendar... displayOption:" + displayOption);
 				updateDayCalendar(dateDisplayed, datesArray);
 
 				// refresh the view every 30 seconds

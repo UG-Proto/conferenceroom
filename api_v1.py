@@ -426,20 +426,25 @@ class GeneeCommand(ApiHandler):
       self.post()  
       
   def post(self):
-    #print "AddGenee Called."
+    print "AddGenee Called."
     if not self._check_authentication():
       return
    
-    params = self._get_parameters("slot", "date", "slotcount","invitees")  
+    params = self._get_parameters("slot", "date", "slotcount", "invitees")  
     if params:    
         slot = int(params[0])
         meetdate = make_date(params[1])
         # convert Date to fomrat that Genee interprets: MM/DD/YYYY
         meetdate = str(meetdate.month) + "/" + str(meetdate.day) + "/" + str(meetdate.year) 
         slotcount=int(params[2])
-        invitees = params[3]
 
-        #print "Genee command parameters... slot:" + slot + ", meetdate:" + meetdate + ", slotcount:" + slotcount + ", invitees:" + invitees
+        # Modified by Giovanna Oct 3rd
+        #invitees = params[3]
+        invitees = str(params[3])
+        attendees = invitees.split(',') 
+
+        # print "Genee command parameters... slot:" + str(slot) + ", meetdate:" + str(meetdate) + ", slotcount:" + str(slotcount) + ", invitees:" + str(invitees)
+        print "Genee command parameters... slot:" + str(slot) + ", meetdate:" + str(meetdate) + ", slotcount:" + str(slotcount) + ", invitees:" + str(invitees) + ", attendees:" + str(attendees)
         
         # lm note: OK, now lets update Genee. 
         #print "Slot: " + str(slot)
@@ -452,7 +457,9 @@ class GeneeCommand(ApiHandler):
         #genee_json = {"userid":14,"attendees":[invitees],command:"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ meetingduration + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at Hackerdojo with Larry for "+ str(meetingduration) + " minutes."}
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":email2name(invitees) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
+ 
+        #genee_json = {"userid":14,"subject":email2name(invitees) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":14,"subject":email2name(str(invitees)) + " meeting at HackerDojo","attendees":attendees,"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
 
 
         print "genee_json: " + str(genee_json)
@@ -461,6 +468,8 @@ class GeneeCommand(ApiHandler):
         #http://aws.ugather.us/production-py
         #url="http://aws.ugather.us/production-py/api/v1/command"    
         response=requests.post(url, data=json.dumps(genee_json))
+
+        print "genee response: " + str(response)
         self.response.out.write(json.dumps(response.json()))
         return
 

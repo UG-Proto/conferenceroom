@@ -342,14 +342,21 @@ tr:hover td.displayDisabledSlot {
     padding: 1em;
 }
 
-
-.hd-email-input {
-    width: 40% !important; 
+.hd-email-input, .hd-attendees-email-input {
     display: inline-block;
     font-size: 1em !important;   
     vertical-align: bottom;
     height: 140%;
     margin-left: 0.7em;
+}
+
+
+.hd-email-input {
+    width: 40% !important; 
+}
+
+.hd-attendees-email-input {
+    width: 90% !important; 
 }
 
 .hd-buttons-section {
