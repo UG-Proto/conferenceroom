@@ -856,6 +856,9 @@
 
 
 
+	// -------------------------------------------------- //
+	// validateEmail function
+	// -------------------------------------------------- //
 	function validateEmail(email) {
 
 	    var regex=/(\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b)/i;	    
@@ -869,6 +872,9 @@
 	    }
 	}
 
+	// -------------------------------------------------- //
+	// validateMultipleEmailsCommaSeparated function
+	// -------------------------------------------------- //
 	function validateMultipleEmailsCommaSeparated(emailArray) {
 
 	    console.log("Inside validateMultipleEmailsCommaSeparated... emailArray:" + emailArray);
@@ -1106,7 +1112,7 @@
 
 				// request user to enter attendees email address
 				attendeesPromptHTML = '<div class="row custom-elem-row">' + 
-			    						'<p class="hd-popup-text">Inform others in the meeting (email addresses separated by commas): </p>' +
+			    						'<p class="hd-popup-text">Invite others to the meeting (email addresses separated by commas): </p>' +
 										'<input type="text" name="attendeesEmailAddress" class="form-control hd-attendees-email-input col-sm-6" id="hd-attendeesEmail">' + 
 										'<p class="hd-errorMessageEmailList hd-error-text col-sm-12 hd-hide"></p>' + 
 									'</div>';
@@ -1221,7 +1227,7 @@
 							if (response === false) {
 
 								// display error message below the email input text
-		 						$(".hd-errorMessageEmailList").text("* Please enter correct email address(es)").removeClass("hd-hide");
+		 						$(".hd-errorMessageEmailList").text("* Invalid email address").removeClass("hd-hide");
 
 							} else {
 
