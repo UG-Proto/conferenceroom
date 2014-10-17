@@ -15,12 +15,13 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 # Converts iso formatted dates to a date object.
 
 # Global variable for Genee API's URL
-MAIN_DEV_URL = "http://aws.ugather.us/ugatherstaging-py/api/v1"
+MAIN_DEV_URL = "http://www.genee.me/ugather-py/api/v1"
 MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
 MAIN_PROD_URL = "http://genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
 
 
 MAIN_URL = MAIN_PROD_URL
+
 
 def email2name(email=""):
   print "email2Name: " + email
@@ -477,6 +478,35 @@ class GeneeCommand(ApiHandler):
     return 
 
 
+class currentEnvironment(ApiHandler):
+  def get(self):
+
+    if MAIN_URL == MAIN_PROD_URL:
+      env = "PROD"
+    else:
+      env = "DEV"
+
+    self.response.out.write(json.dumps({"env":env}))
+
+
+class geneeUserLookup(ApiHandler):
+  def get(self):
+
+    params = self._get_parameters("email")  
+    if params:    
+        email = str(params[0])
+
+        url = MAIN_URL + "/users/lookup?email=" + str(email)
+        response=requests.get(url)
+
+        print "genee response: " + str(response)
+        self.response.out.write(json.dumps(response.json()))
+        return
+
+
+    self._exit_handler()
+    return 
+
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
@@ -488,4 +518,7 @@ app = webapp2.WSGIApplication([
     ("/api/v1/remove", RemoveHandler),
     ("/api/v1/roomschedule",RoomSchedule),
     ("/api/v1/commandgenee",GeneeCommand),
+    ("/api/v1/environment",currentEnvironment),
+    ("/api/v1/geneeuser",geneeUserLookup),    
+
     ], debug = True)
