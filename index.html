@@ -526,7 +526,6 @@
 			case "delete":
 			case "display":
 
-				console.log("Inside updateSlotStyle... isSlotAvailable($slotObject):" + isSlotAvailable($slotObject));
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
 
 					if ($slotObject.find("div").text() === "" ) { 						
@@ -1511,8 +1510,9 @@
 		var userEmailParam = userEmail;
 		var meetingidParam = $slotObject.attr("data-meetingid");
 
+		console.log("Inside updateSlot... attendeesEmail:" + attendeesEmail);
 		// Add current user to list of attendees
-		if (attendeesEmail !== "") {
+		if ($.trim(attendeesEmail) !== "") {
 			attendeesEmail = userEmail + "," + attendeesEmail;
 		} else {
 			attendeesEmail = userEmail;
