@@ -347,12 +347,14 @@ class GeneeAdd(ApiHandler):
       self.post()  
       
   def post(self):
-    #print "AddGenee Called."
+    print "AddGenee Called."
     if not self._check_authentication():
       return
    
-    params = self._get_parameters("slot", "date", "slotcount","userNameParam","userEmailParam")      
+    params = self._get_parameters("slot", "date", "slotcount","userNameParam","userEmailParam", "attendees")      
     
+    print params
+
     if not params:
       return
     
@@ -361,7 +363,9 @@ class GeneeAdd(ApiHandler):
     slotcount=int(params[2])
     userNameParam=params[3]
     userEmailParam=params[4]
-    
+
+    attendeesParam=params[5]
+
     # lm note: OK, now lets update Genee. 
     #print "Slot: " + str(slot)
     from datetime import timedelta
@@ -369,7 +373,9 @@ class GeneeAdd(ApiHandler):
     meetingduration = slotcount*30  
     #print "Meeting Time: " +str(meetingtime)
     print userEmailParam
-    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
+    print attendeesParam
+    #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
+    genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam, "attendees":attendeesParam} 
     print "genee_json: " + str(genee_json)
     
     #url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/add"

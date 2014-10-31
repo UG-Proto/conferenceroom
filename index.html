@@ -493,25 +493,6 @@
 	// -------------------------------------------------- //
 	var isUserPartOfMeeting = function($slotObject) {
 
-/*		var attendeesString = $slotObject.attr("data-attendees");	
-
-		if (typeof attendeesString !== "undefined") {
-			var userArray = attendeesString.split(",");				
-			var userArrayLength = userArray.length;
-			var found = false;
-
-			for (u=0;u<userArrayLength;u++) {
-				if ( userEmail === userArray[u] ) {				
-					found = true;
-					break;
-				}
-			}
-			return found;
-		} else {
-			return false;	
-		}
-*/
-
 		var attendeesUserIdsString = $slotObject.attr("data-userids");	
 
 		if (typeof attendeesUserIdsString !== "undefined") {
@@ -545,6 +526,7 @@
 			case "delete":
 			case "display":
 
+				console.log("Inside updateSlotStyle... isSlotAvailable($slotObject):" + isSlotAvailable($slotObject));
 				if (isSlotAvailable($slotObject)) { // slot is available for booking 
 
 					if ($slotObject.find("div").text() === "" ) { 						
@@ -890,7 +872,7 @@
 
 	    var regex=/(\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b)/i;	    
 
-	    console.log("Inside validateEmail... email:" + email + ", regex.test(email):" + regex.test(email));
+	    //console.log("Inside validateEmail... email:" + email + ", regex.test(email):" + regex.test(email));
 
 	    if ( regex.test(email) ) {
 	    	return true;
@@ -900,11 +882,11 @@
 	}
 
 	// -------------------------------------------------- //
-	// validateMultipleEmailsCommaSeparated function
+	// validateMultipleEmails function
 	// -------------------------------------------------- //
-	function validateMultipleEmailsCommaSeparated(emailArray) {
+	function validateMultipleEmails(emailArray) {
 
-	    console.log("Inside validateMultipleEmailsCommaSeparated... emailArray:" + emailArray);
+	    //console.log("Inside validateMultipleEmails... emailArray:" + emailArray);
 	    var flag = true;
 
 	    for (i = 0;i < emailArray.length;i++) {
@@ -1145,7 +1127,7 @@
 				    '</div>' +
 
 				    // Comment it out for now!!!!!!!! until Genee add API can accept attendees
-				    // attendeesPromptHTML + 
+				    attendeesPromptHTML + 
 
 		        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
 		        		'<div class="col-md-3 col-md-offset-3">' + 
@@ -1215,8 +1197,6 @@
 
 		 		} else { 
 
-/*
-	 		///// !!!! DO NOT DELETE  !!!!! ////
 
 	 				// Capture attendees email addresses
 	 				attendeesEmail = $("#hd-attendeesEmail").val();
@@ -1236,9 +1216,9 @@
 						//var emailArray = attendeesEmail.split(/\s|[,;]/);
 						var emailArray = attendeesEmail.split(/[,;]\s*|\s+/);
 
-						console.log("emailArray:" + emailArray);
-						var response = validateMultipleEmailsCommaSeparated(emailArray);
-						console.log("response:" + response);
+						//console.log("emailArray:" + emailArray);
+						var response = validateMultipleEmails(emailArray);
+						//console.log("response:" + response);
 
 						if (response === false) {
 
@@ -1262,13 +1242,7 @@
 						}							
 
 					}
-*/
 
-		 			// user logged-in with his user id, so call "addGenee API to create room reservation in Genee"	
-					response = updateSlot($slotObj, slotCount, room, userEmail, " ", "add");
-
-					// close poup window
-			    	$(".lightboxPopup").remove();
 			    }	
 		    });
 			  
@@ -1539,13 +1513,13 @@
 
 		// Add current user to list of attendees
 		if (attendeesEmail !== "") {
-			attendeesEmail = userEmail + ", " + attendeesEmail;
+			attendeesEmail = userEmail + "," + attendeesEmail;
 		} else {
 			attendeesEmail = userEmail;
 		}
 
 		var attendeesListParam = attendeesEmail;
-		// console.log("Inside updateSlot... attendeesListParam:" + attendeesListParam);
+		console.log("Inside updateSlot... attendeesListParam:" + attendeesListParam);
 
 			switch (action) {
 				case "add":
@@ -1554,7 +1528,7 @@
                         timeout : 10000,
 					    url: '/api/v1/addgenee',
 					    type: 'POST',
-					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam, userEmailParam:userEmailParam},
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, userNameParam:userNameParam, userEmailParam:userEmailParam, attendees: attendeesListParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
@@ -1565,7 +1539,7 @@
 								$slotObject.attr("data-userids", loggedinGeneeUserId);							
 								updateSlotStyle($slotObject, slotCount, "book");
 
-								// console.log("Inside AJAx call Add, meetingid:" + data.meetingid + ", attendeesUserIds:" + data.attendeeid + ", isUserActive:" + data.active);
+								console.log("Inside Ajax call Add, meetingid:" + data.meetingid + ", attendeesUserId:" + data.attendeeid + ", isUserActive:" + data.active);
 								displayBookingConfirmation($slotObject, data.meetingid, data.attendeeid, data.active);
 
 								return true;
@@ -1654,10 +1628,10 @@
 		    type: 'GET',
 		    dataType: 'json',
 			success: function(resp) {
-				console.log("Inside getEnvironment Ajax call, resp.env:" + resp.env);
+				// console.log("Inside getEnvironment Ajax call, resp.env:" + resp.env);
 				if (resp.env) {
 					environment_constant = resp.env;  // values: "DEV" or "PROD"
-					console.log("Inside getEnvironment Ajax call, environment_constant:" + environment_constant);
+					// console.log("Inside getEnvironment Ajax call, environment_constant:" + environment_constant);
 				} 
 			},
 			error: function(req, status, err) {
@@ -1672,23 +1646,28 @@
 	// -------------------------------------------------- //
 	var getGeneeUserId = function(email) {
 
+		var userId = "";
+
 		// make AJAX call to geneeuser API
 		$.ajax({
 	        timeout : 10000,
 		    url: '/api/v1/geneeuser',
 		    type: 'GET',
+		    async: false, // making this call synchronous
 		    data: {email: email},
 		    dataType: 'json',
 			success: function(resp) {
 				console.log("Inside getGeneeUserId Ajax call, resp.userid:" + resp.userid);
 				if (resp.userid) {
-					loggedinGeneeUserId = resp.userid.toString();  // Genee UserId
+					userId = resp.userid.toString();  // Genee UserId
 				} 
 			},
 			error: function(req, status, err) {
 				errorMessage("Not able to get Genee User Id, call to Genee User Lookup API failed. " + err);
 			}
 		}); // end of ajax /api/v1/geneeuser
+
+		return userId;
 	}	
 
 
@@ -1770,11 +1749,10 @@
 
 	// get current environment (DEV or PROD)
 	var environment_constant = getEnvironment();
-	console.log("environment_constant:" + environment_constant);
 
 	// get Genee user Id for the logged-in user
 	var loggedinGeneeUserId = getGeneeUserId(userEmail);
-	console.log("loggedinGeneeUserId:" + loggedinGeneeUserId);
+	//console.log("loggedinGeneeUserId:" + loggedinGeneeUserId);
 
 
 	if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
@@ -1964,7 +1942,7 @@
 				if (isUserPartOfMeeting($(this))) {	
 					numberOfSlots = $(this).attr("rowspan");	
 
-					// call updateSlot only if numberOfSlots is a valid number
+					// call displayDeleteConfirmation only if numberOfSlots is a valid number
 					if (!isNaN(numberOfSlots)) {						
 					displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
 					}
