@@ -14,8 +14,13 @@
 	<script src="static/js/jquery-1.11.0.js"></script>
 	<!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
 	<script type="text/javascript" src="static/js/date.js"></script>
+    <script type="text/javascript" src="static/js/moment.min.js"></script>
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.js" type="text/javascript"></script>
+
+	<!-- start Mixpanel --><script type="text/javascript">(function(f,b){if(!b.__SV){var a,e,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");
+for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=f.createElement("script");a.type="text/javascript";a.async=!0;a.src="//cdn.mxpnl.com/libs/mixpanel-2.2.min.js";e=f.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}})(document,window.mixpanel||[]);
+mixpanel.init("affcd976983ca9d52600fc125e614ddc");</script><!-- end Mixpanel -->
 
 	<title>Room Reservation</title>
 </head>	
@@ -37,9 +42,14 @@
 					<div class="text-right hd-header-time">
 						<strong>
 	    					<!-- <a href="http://24timezones.com/world_directory/current_los_angeles_time.php" style="text-decoration: none" target="_BLANK" title="clock for Los Angeles">Mountain View, CA</a> - <span id="tzTimeSpan_ee5417d895c2bea"></span>  -->
-	    					Mountain View, CA - <span id="tzTimeSpan_ee5417d895c2bea"></span>
+	    					Mountain View, CA - 
+<!--	    					<span id="tzTimeSpan_ee5417d895c2bea"></span>
 	    <script type="text/javascript" src="http://24timezones.com/js/en/time_12_1_0.js"></script>
 	    <script src="http://24timezones.com/timescript/gettime.js.php?city=137&hourtype=12&showdate=1&showseconds=0&id=1843187&elem=ee5417d895c2bea" language="javascript"></script>
+-->
+	    					<span id="time"></span>
+	    					<span>-</span>
+	    					<span id="date"></span>
 						</strong>
 					</div>
 					<div  class="text-right hd-username-section">
@@ -434,29 +444,41 @@
 	// -------------------------------------------------- //
 	var getSlotNumFromDateTime = function(dateTimeObj) {
 	
-		var hourIn24format = Number(dateTimeObj.toString("H"));
+/*		var hourIn24format = Number(dateTimeObj.toString("H"));
 		var mins = Number(dateTimeObj.toString("m "));
+*/
+		var dateTimeMomentObj = moment(dateTimeObj);
+		// console.log("Inside getSlotNumFromDateTime, dateTimeObj:" + dateTimeObj + ", dateTimeMomentObj:" + dateTimeMomentObj + ";, formatted:" + dateTimeMomentObj.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+
+		var hourIn24format = Number(dateTimeMomentObj.get('hour'));
+		var mins = Number(dateTimeMomentObj.get('minute'));
+
+		//console.log("hourIn24format:" + hourIn24format + ", mins:" + mins);
+
 		var slotNumFromDateTime;
 
 		if (mins === 0) {
 			slotNumFromDateTime = hourIn24format * 2;
 		} else {
-			if (mins <= 30) { 
-				var slotNumFromDateTime = hourIn24format * 2 + 1;	
+			if (mins < 30) { 
+				// var slotNumFromDateTime = hourIn24format * 2 + 1;	
+				var slotNumFromDateTime = hourIn24format * 2;					
 			} else {
-				var slotNumFromDateTime = hourIn24format * 2 + 2;							
+				// var slotNumFromDateTime = hourIn24format * 2 + 2;							
+				var slotNumFromDateTime = hourIn24format * 2 + 1;							
 			} 				
 		}
+
+
 		return slotNumFromDateTime;
 	}	
-
 
 
 	// -------------------------------------------------- //
 	// Is slot available function
 	// -------------------------------------------------- //
 	var isSlotAvailable = function($slotObject) {
-
+/*
 		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
 
 		if (slotDateObj !== undefined && slotDateObj !== "") {
@@ -485,7 +507,61 @@
 			}	
 
 		}
+*/
+		switch ( slotTypeBasedOnTime($slotObject) ) {
+			case "past":
+			case "current":
+				return false;
+				break;
+			case "future":
+				return true;
+				break;		
+		};
 	}	
+
+
+	// -------------------------------------------------- //
+	// Is slot available function
+	// -------------------------------------------------- //
+	var slotTypeBasedOnTime = function($slotObject) {
+
+		var slotDateObj = getDateFromWeekDayNum($slotObject.data("day"));
+
+		if (slotDateObj !== undefined && slotDateObj !== "") {
+
+			var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
+
+			if (compareDate === 1) { // slot is in the past 
+				return "past";
+			} else {
+
+				if (compareDate === 0) {  // slot is within today
+
+					// determine if slot selected is before current time
+					var slotNum = Number($slotObject.closest("tr").data("hour"));  // slot selected
+					var slotRowSpan = $slotObject.attr("rowspan");
+					if (slotRowSpan === undefined || isNaN(slotRowSpan) ) {slotRowSpan = 0;};
+
+					var slotNumForCurrentTime = Number(getSlotNumFromDateTime(moment()));	
+					var slotNumberSum = Number(slotNum) + Number(slotRowSpan) - 1;
+
+					//console.log("slotNum:" + slotNum + ", slotRowSpan:" + slotRowSpan + ", slotNumForCurrentTime:" + slotNumForCurrentTime + ", slotNumberSum:" + slotNumberSum);
+
+					if (slotNum > slotNumForCurrentTime) {
+						return "future";
+					} else if ( (slotNum < slotNumForCurrentTime) && (Number(slotNum) + Number(slotRowSpan) - 1 < slotNumForCurrentTime) ) {
+						return "past";
+					} else {
+						return "current";
+					};
+
+				} else if (compareDate === -1) { // slot is in the future
+					return "future";
+				}
+			}	
+		}		
+	}
+
 
 
 	// -------------------------------------------------- //
@@ -519,42 +595,6 @@
 	// update slot background
 	// -------------------------------------------------- //
 	var updateSlotStyle = function($slotObject, slotCount, action) {
-
-		// update slot style
-		switch (action) {
-			case "book":
-			case "delete":
-			case "display":
-
-				if (isSlotAvailable($slotObject)) { // slot is available for booking 
-
-					if ($slotObject.find("div").text() === "" ) { 						
-							$slotObject.removeClass("displayBookedSlot");		
-							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.addClass("displayEmptySlot");	
-					} else {
-						if (isUserPartOfMeeting($slotObject)) {								
-							$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.removeClass("displayEmptySlot");	
-							$slotObject.addClass("displayBookedSlot");
-						} else {
-							$slotObject.removeClass("displayBookedSlot");
-							$slotObject.removeClass("displayDisabledSlot");		
-							$slotObject.removeClass("displayEmptySlot");	
-							$slotObject.addClass("displayBookedOtherOwnerSlot");	
-						}
-					}
-				} else {
-					// slot is disabled - slot selected is in the past
-					$slotObject.removeClass("displayBookedSlot");		
-					$slotObject.removeClass("displayBookedOtherOwnerSlot");	
-					$slotObject.removeClass("displayEmptySlot");							
-					$slotObject.addClass("displayDisabledSlot");							
-				}						
-				break;
-		}
 
 		var slotWeekDay = $slotObject.attr("data-day");
 		var slotNum = $slotObject.closest("tr").attr("data-hour");
@@ -608,7 +648,82 @@
 
 				}			
 				break;
-		}						
+		}	
+
+		// update slot style
+		switch (action) {
+			case "book":
+			case "delete":
+			case "display":
+
+/*				if (isSlotAvailable($slotObject)) { // slot is available for booking 
+					if ($slotObject.find("div").text() === "" ) { 						
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayEmptySlot");	
+					} else {
+						if (isUserPartOfMeeting($slotObject)) {								
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedSlot");
+						} else {
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedOtherOwnerSlot");	
+						}
+					}
+				} else {
+					// slot is disabled - slot selected is in the past
+					$slotObject.attr("class", "");	
+					$slotObject.addClass("displayDisabledSlot");							
+				}						
+				break;
+*/
+				var slotType = slotTypeBasedOnTime($slotObject);
+				if ( slotType === "future") { // slot is available for booking 	
+					if ($slotObject.find("div").text() === "" ) { 						
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayEmptySlot");	
+					} else {
+						if (isUserPartOfMeeting($slotObject)) {								
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedSlot");
+						} else {
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedOtherOwnerSlot");	
+						}
+					}
+				} else if (slotType === "past") { // slot is disabled - slot selected is in the past
+					
+					$slotObject.attr("class", "");	
+					$slotObject.addClass("displayDisabledSlot");
+
+				} else if (slotType === "current") { // current slot so highlight it
+
+					if (userEmail === conferenceRoomEmail) {  // if login user is meet@hackerdojo.com (console view)
+
+						// console.log("current slot:" + $slotObject.find("div").text());
+
+						$slotObject.attr("class", "");	
+						$slotObject.addClass("displayCurrentSlot");
+
+						// Highlight the corresponding time under the "time" column
+						var now = new moment();
+						var slotNum = getSlotNumFromDateTime(now);
+
+						var trElem = $("tr[data-hour='" + slotNum + "']");
+						var thElem = trElem.find("th");
+						if (thElem.length !== 0) {
+							thElem.find("div").css("color","#40AB49").css("font-weight","bold");
+						} else {
+							trElem.prev().find("th div").css("color","#40AB49").css("font-weight","bold");
+						}
+
+					} else {
+						$slotObject.attr("class", "");	
+						$slotObject.addClass("displayDisabledSlot");						
+					}								
+				}						
+				break;
+
+		}					
 	}
 
 
@@ -835,7 +950,7 @@
 
 		updateDatesOnWeekCalendar(firstDayOfWeek, datesArray);	
 
-		//fillOutSlotFromDB(datesArray, room);  //replaced old getSChedule with Genee API below
+		//fillOutSlotFromDB(datesArray, room);  //replaced old getSchedule with Genee API below
 		fillOutSlotFromGenee(datesArray);		
 
 	}
@@ -950,7 +1065,7 @@
 
 		if ($slotObjToCheck.length > 0) {
 
-			if (!$slotObjToCheck.hasClass("displayEmptySlot")) { //if slot is not empty
+			if (!$slotObjToCheck.hasClass("displayEmptySlot")) { //if slot is NOT empty
 
 				if (isUserPartOfMeeting($slotObjToCheck) === true) {								
 
@@ -960,7 +1075,8 @@
 						errorMessage(two_hour_gap_error_msg);
 						break;												
 					} else {
-						slotCountBetweeMeetings = n - $slotObjToCheck.attr("rowspan");
+						slotCountBetweeMeetings = n - Number($slotObjToCheck.attr("rowspan"));
+
 						if (slotCountBetweeMeetings >= 4) {
 							displayPopUp = true;  // more than 4 slots were left as a gap
 							break;							
@@ -996,18 +1112,18 @@
 
 		var dropdownHTML_upTo60mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1">1 hour</option>' +
+						    			'<option value="1" selected>1 hour</option>' +
 					    			'</select>';
 
 		var dropdownHTML_upTo90mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1">1 hour</option>' +
+						    			'<option value="1" selected>1 hour</option>' +
 						    			'<option value="1.5">1 1/2 hours</option>' +
 					    			'</select>';
 
 		var dropdownHTML_upTo120mins = '<select class="selectpicker input-lg">' +
 						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1">1 hour</option>' +
+						    			'<option value="1" selected>1 hour</option>' +
 						    			'<option value="1.5">1 1/2 hours</option>' +
 						    			'<option value="2">2 hours</option>' +    	
 					    			'</select>';
@@ -1125,7 +1241,6 @@
 					    dropdownHTML +
 				    '</div>' +
 
-				    // Comment it out for now!!!!!!!! until Genee add API can accept attendees
 				    attendeesPromptHTML + 
 
 		        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
@@ -1200,7 +1315,7 @@
 	 				// Capture attendees email addresses
 	 				attendeesEmail = $("#hd-attendeesEmail").val();
 
-	 				console.log("Inside displayPopup... attendeesEmail:" + attendeesEmail);
+	 				//console.log("Inside displayPopup... attendeesEmail:" + attendeesEmail);
 
 	 				if ($.trim(attendeesEmail) === "") {
 
@@ -1214,8 +1329,8 @@
 
 						//var emailArray = attendeesEmail.split(/\s|[,;]/);
 						var emailArray = attendeesEmail.split(/[,;]\s*|\s+/);
-
 						//console.log("emailArray:" + emailArray);
+
 						var response = validateMultipleEmails(emailArray);
 						//console.log("response:" + response);
 
@@ -1399,8 +1514,6 @@
 
 		var end_date_param = convertDateToString(end_date);
 
-		console.log("Inside fillOutSlotFromGenee... before calling roomschedule API..");
-
 		$.ajax({
 			//url: 'http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14',
 	        url: '/api/v1/roomschedule',	
@@ -1416,9 +1529,12 @@
 
 					// Determine the first slot
 					var meetingDateTime = Date.parse(resp[i].meetingtime);
+					var meetingTime = moment(resp[i].meetingtime);
 
 					if (meetingDateTime !== null) {
-						var slotNum = getSlotNumFromDateTime(meetingDateTime);
+						// var slotNum = getSlotNumFromDateTime(meetingDateTime);
+						var slotNum = getSlotNumFromDateTime(meetingTime);
+
 						var weekDay = meetingDateTime.getDay();
 						var weekDayDate = getDateFromWeekDayNum(weekDay);
 						var slotObjArray = [];
@@ -1431,6 +1547,11 @@
 						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
 						if (compareDate === 0  ) {
+
+/*							if (slotNum === 28 || slotNum === 29) {
+								console.log("Inside fillOutSlotFromGenee ajax call.... meetingId:" + meetingId + ", slotNum:" + slotNum + ", meetingDateTime:" + meetingDateTime + ", resp[i].meetingtime:" + resp[i].meetingtime + ", meetingTime:" + meetingTime);
+							}	
+*/
 							// Locate the first slot
 							var $slotObj = $("tr[data-hour='" + slotNum + "']").find("td[data-day='" + weekDay + "']");
 
@@ -1509,17 +1630,16 @@
 		var userNameParam = userName;
 		var userEmailParam = userEmail;
 		var meetingidParam = $slotObject.attr("data-meetingid");
-
-		console.log("Inside updateSlot... attendeesEmail:" + attendeesEmail);
-		// Add current user to list of attendees
-		if ($.trim(attendeesEmail) !== "") {
-			attendeesEmail = userEmail + "," + attendeesEmail;
-		} else {
-			attendeesEmail = userEmail;
-		}
-
+		var inputData;
 		var attendeesListParam = attendeesEmail;
-		console.log("Inside updateSlot... attendeesListParam:" + attendeesListParam);
+		var CommandInviteesParam;
+
+		//console.log("Inside updateSlot... attendeesEmail:" + attendeesEmail);
+		if ($.trim(attendeesEmail) === "") {
+			CommandInviteesParam = userEmail;
+		} else {
+			CommandInviteesParam = userEmail + " , " + attendeesEmail;
+		}
 
 			switch (action) {
 				case "add":
@@ -1539,13 +1659,24 @@
 								$slotObject.attr("data-userids", loggedinGeneeUserId);							
 								updateSlotStyle($slotObject, slotCount, "book");
 
-								console.log("Inside Ajax call Add, meetingid:" + data.meetingid + ", attendeesUserId:" + data.attendeeid + ", isUserActive:" + data.active);
+								//console.log("Inside Ajax call Add, meetingid:" + data.meetingid + ", attendeesUserId:" + data.attendeeid + ", isUserActive:" + data.active + ", attendeesEmail:" + attendeesEmail);
 								displayBookingConfirmation($slotObject, data.meetingid, data.attendeeid, data.active);
+
+								// track the user who created a meeting with attendees
+								if ($.trim(attendeesEmail) !== "") {	
+									mixpanel.track("[HD conference room] user created a meeting with invitees from HD conference room", {
+							            "server": "Hackerdojo Conference Room",
+							            "Genee_user": loggedinGeneeUserId,
+							            "HD user": userEmail,
+							            "meeting": data.meetingid
+							        });
+							        console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail + ", meeting_id:" + data.meetingid);
+								}
 
 								return true;
 							} else {
 								// display error message
-								errorMessage(data.Message);
+								errorMessage("Not able to book slot");
 								return false;
 							}
 						},
@@ -1590,8 +1721,8 @@
                         timeout : 10000,
 					    url: '/api/v1/commandgenee',
 					    type: 'POST',
-					    // data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
-					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:attendeesListParam},
+					    data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:userEmailParam},
+					    // data: {slot: slotParam, date: dateParam, slotcount:slotCountParam, invitees:CommandInviteesParam},
 						success: function(resp) {
 						    var data =  JSON.parse(resp);
 							if (data.status) {
@@ -1714,9 +1845,15 @@
 				datesArray = getWeekDaysArray(firstDayOfWeek);
 				updateWeekCalendar(firstDayOfWeek, datesArray);
 
+				// Scroll the page to 5am slot
+				var divPosition = $('tr[data-hour="3"]').offset();  // data-hour = "3" makes the page scroll to 7am (for bigger device)
+				var scrollPos = Number(divPosition.top) + 10;
+				$('html, body').animate({scrollTop: scrollPos}, "slow");
+
 				// refresh the view every 30 seconds			
 				setInterval (function() { 
 					updateWeekCalendar(firstDayOfWeek, datesArray); 
+					setDateTime(); // sets date and time for console view
 				}, 30000);			
 
 				break;
@@ -1726,14 +1863,32 @@
 				datesArray = getDayArray(dateDisplayed);
 				updateDayCalendar(dateDisplayed, datesArray);
 
+				// Scroll the page to 5am slot
+				var divPosition = $('tr[data-hour="9"]').offset();  // data-hour = "9" makes the page scroll to 7am (for small device)
+				var scrollPos = Number(divPosition.top) + 10;
+				$('html, body').animate({scrollTop: scrollPos}, "slow");
+
 				// refresh the view every 30 seconds
 				setInterval (function() { 
 					updateDayCalendar(dateDisplayed, datesArray); 
+					setDateTime(); // sets date and time for console view
 				}, 30000);
 
 				break;
 		}
+
 	}	
+
+	// -------------------------------------------------- //
+	// setDateTime function
+	// -------------------------------------------------- //
+	function setDateTime() {
+		var now = new moment();
+		var hourVal = now.format("h:mm A");
+		var dateVal = now.format("dddd, MMMM D, YYYY"); 
+		$("#time").text(hourVal);
+		$("#date").text(dateVal);
+	}
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++ M A I N +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1765,6 +1920,9 @@
 		$(".hd-username-section").show();			
 	}	
 
+	// Display time and date for console view
+	setDateTime(); //Time will be updated everytime the calendar gets updated: 		
+
 	// Display username on upper right corner
 	$(".hd-username").text(userEmail);	
 
@@ -1789,14 +1947,6 @@
 	});
 
 	setWeekDayDisplay();
-
-	// move fixed div to the left as much distance as the user scrolled horizontally, so the table header and body are algined
-/*	$(window).scroll(function(){
-		$('.hd-top').css('left',-$(window).scrollLeft());
-		$('.hd-table-header-wrapper').css('left', -$(window).scrollLeft());
-	});
-*/
-
 
 	// Today link on mobile view
 
