@@ -450,8 +450,10 @@ class GeneeCommand(ApiHandler):
     if params:    
         slot = int(params[0])
         meetdate = make_date(params[1])
-        # convert Date to fomrat that Genee interprets: MM/DD/YYYY
-        meetdate = str(meetdate.month) + "/" + str(meetdate.day) + "/" + str(meetdate.year) 
+        # convert Date to format that Genee interprets: MM/DD/YYYY
+        # meetdate = str(meetdate.month) + "/" + str(meetdate.day) + "/" + str(meetdate.year) 
+        meetdate = str(meetdate.month) + "/" + str(meetdate.day)  # TEMPORARY FIX!!!, we should send the complete year
+
         slotcount=int(params[2])
 
         # Modified by Giovanna Oct 3rd

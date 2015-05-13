@@ -23,6 +23,8 @@ html {
     width: 100%;
     z-index:1001;
     background-color: white;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .hd-table-header-wrapper {
@@ -43,7 +45,8 @@ html {
 
 .hd-table-header-wrapper-day {
     position: fixed;
-    top: 100px;
+/*    top: 100px;  */
+    top: 110px;
     z-index:1001;
     background-color: white;
     height: auto;
@@ -51,7 +54,8 @@ html {
 
 .hd-table-body-wrapper-day {
     position: relative;
-    top: 138px;
+/*    top: 138px; */
+    top: 148px;
     width: 100%;
     margin-bottom: 1em;
     z-index:1000;
@@ -119,7 +123,7 @@ html {
 }
 
 .hd-day-nav-container {
-    padding-top: 0.5em;
+/*    padding-top: 0.5em; */
 }
 
 .hd-nav {
@@ -255,7 +259,7 @@ tr:hover td.displayDisabledSlot {
 }
 
 .displayCurrentSlot {
-    background-color: #40AB49;  /* light yellow */
+    background-color: #40AB49;  
     background-color: #8CCD92;
     cursor: not-allowed;
     padding: 0px  !important;
@@ -397,6 +401,7 @@ tr:hover td.displayDisabledSlot {
 /* @media (max-width: @screen-xs-max) { */
 @media all and (max-width: 768px) {
 
+    .hd-top { padding-top: 20px;}
 
     .lightboxOverlayPopup {
     }
