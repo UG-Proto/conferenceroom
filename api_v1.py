@@ -16,15 +16,15 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 
 # Global variable for Genee API's URL
 
-MAIN_DEV_URL = "http://www.genee.me/ugather-py/api/v1"
+MAIN_DEV_URL = "https://dev.genee.me/larry/api/v1"
 # MAIN_DEV_URL = "http://www.genee.me/ugatherstaging-py/api/v1"
 
 MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
-MAIN_PROD_URL = "http://genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
+MAIN_PROD_URL = "https://prod.genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
 
 
-MAIN_URL = MAIN_PROD_URL
-
+MAIN_URL = MAIN_DEV_URL
+ROOM_NUMBER = "1588"
 
 def email2name(email=""):
   print "email2Name: " + email
@@ -324,7 +324,7 @@ class RoomSchedule(ApiHandler):
     print "Params: " + str()       
     if not params:
       #results=requests.get("http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14")
-      results=requests.get(MAIN_URL + "/roomschedule/14")
+      results=requests.get(MAIN_URL + "/roomschedule/"+ROOM_NUMBER)
       
       self.response.write(json.dumps(results.json()))      
       return
@@ -339,7 +339,7 @@ class RoomSchedule(ApiHandler):
     
     #url="http://aws.ugather.us/ugatherstaging-py/api/v1/roomschedule/14"
     #url="http://genee.me/production-py/api/v1/roomschedule/14"
-    url= MAIN_URL + "/roomschedule/14"
+    url= MAIN_URL + "/roomschedule/" + ROOM_NUMBER
     
     response=requests.get(url, params=genee_json)
     self.response.out.write(json.dumps(response.json()))    
@@ -379,9 +379,9 @@ class GeneeAdd(ApiHandler):
     #genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
 
     if attendeesParam.strip() == "":  #no attendees, so don't send attendees label in the JSON
-      genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
+      genee_json={ "initiator_id": int(ROOM_NUMBER), "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam} 
     else:
-      genee_json={ "initiator_id": 14, "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam, "attendees":attendeesParam}       
+      genee_json={ "initiator_id": int(ROOM_NUMBER), "meetingduration": meetingduration, "meetingtime": meetingtime, "meetingtitle": email2name(userEmailParam) + " meeting at HackerDojo", "email":userEmailParam, "attendees":attendeesParam}       
     
     print "genee_json: " + str(genee_json)
     
@@ -408,7 +408,7 @@ class GeneeRemove(ApiHandler):
     params = self._get_parameters("meeting_id")
     if params:
         meeting_id = int(params[0])
-        genee_json = {"initiator_id":14,"meeting_id":meeting_id}
+        genee_json = {"initiator_id":int(ROOM_NUMBER),"meeting_id":meeting_id}
         print "genee_json: " + str(genee_json)
         #url="http://aws.ugather.us/ugatherstaging-py/api/v1/meeting/remove"
         #url="http://genee.me/production-py/api/v1/meeting/remove"
@@ -477,7 +477,7 @@ class GeneeCommand(ApiHandler):
         #genee_json = {"userid":14,"subject":"Meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ self.slot_to_time(slot) + " at Hackerdojo for "+ str(meetingduration) + " minutes."}
  
         #genee_json = {"userid":14,"subject":email2name(invitees) + " meeting at HackerDojo","attendees":[invitees],"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
-        genee_json = {"userid":14,"subject":email2name(str(invitees)) + " meeting at HackerDojo","attendees":attendees,"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
+        genee_json = {"userid":int(ROOM_NUMBER),"subject":email2name(str(invitees)) + " meeting at HackerDojo","attendees":attendees,"command":"Genee book a meeting on "+ meetingtime + " at HackerDojo for "+ str(meetingduration) + " minutes."}
 
         print "genee_json: " + str(genee_json)
         #url="http://aws.ugather.us/ugatherstaging-py/api/v1/command"
