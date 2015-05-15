@@ -16,7 +16,7 @@ import requests # Added by Larry Maloney.  Note: Google App Engine SDK sandbox I
 
 # Global variable for Genee API's URL
 
-MAIN_DEV_URL = "https://dev.genee.me/larry/api/v1"
+MAIN_DEV_URL = "http://dev.genee.me/larry/api/v1"
 # MAIN_DEV_URL = "http://www.genee.me/ugatherstaging-py/api/v1"
 
 MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
@@ -512,7 +512,7 @@ class geneeUserLookup(ApiHandler):
     if params:    
         email = str(params[0])
 
-        url = MAIN_URL + "/users/lookup?email=" + str(email)
+        url = MAIN_URL + "/users/lookup?email=" + str(email) +"&room_number="+ROOM_NUMBER
         response=requests.get(url)
 
         print "genee response: " + str(response)
