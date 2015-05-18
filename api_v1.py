@@ -20,11 +20,30 @@ MAIN_DEV_URL = "http://dev.genee.me/larry/api/v1"
 # MAIN_DEV_URL = "http://www.genee.me/ugatherstaging-py/api/v1"
 
 MAIN_LOCAL_URL = "http://localgenee.me/api/v1"
-MAIN_PROD_URL = "https://prod.genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
+MAIN_PROD_URL = "http://prod.genee.me/production-py/api/v1"  # Note for producton we WANT HTTP(S) connection, but GAE has bug or requests is problem? (set verify=False doesn't seem to fix it.
 
 
 MAIN_URL = MAIN_DEV_URL
-ROOM_NUMBER = "1588"
+ROOM_NUMBER = None # By default.
+
+# Startup app, by querying server to get userid of this appengines engine id.
+from google.appengine.api.app_identity import get_application_id
+appname = get_application_id() # Should be the Google App engine name/ID in app.yaml
+    
+genee_json={ "app_engine_id": appname}
+
+url = MAIN_URL + "/getappid/"
+  
+print 'url' + url 
+
+response=requests.post(url, data=json.dumps(genee_json))
+results = response.json()
+if results['room_id'] != False:
+  ROOM_NUMBER=results['room_id']
+else:
+  print "Error, could not find room ID, aborting!"
+  print "Need to return something"
+  exit() #exiting program.
 
 def email2name(email=""):
   print "email2Name: " + email
