@@ -26,24 +26,31 @@ MAIN_PROD_URL = "http://prod.genee.me/production-py/api/v1"  # Note for producto
 MAIN_URL = MAIN_DEV_URL
 ROOM_NUMBER = None # By default.
 
+
 # Startup app, by querying server to get userid of this appengines engine id.
 from google.appengine.api.app_identity import get_application_id
 appname = get_application_id() # Should be the Google App engine name/ID in app.yaml
     
+print "Should have appengine ID: " + appname
 genee_json={ "app_engine_id": appname}
+print "genee_json says: " + str(genee_json)
 
 url = MAIN_URL + "/getappid/"
   
-print 'url' + url 
+#print 'Using this URL: ' + url 
 
-response=requests.post(url, data=json.dumps(genee_json))
+response=requests.get(url, params=genee_json)
+#print "Response: " + str(response)
 results = response.json()
+#print "Results for room id call: " + str(results)
+
 if results['room_id'] != False:
-  ROOM_NUMBER=results['room_id']
+   ROOM_NUMBER=results['room_id']
 else:
-  print "Error, could not find room ID, aborting!"
-  print "Need to return something"
-  exit() #exiting program.
+   print "Error, could not find room ID, aborting!"
+   print "Need to return something"
+   exit() #exiting program.
+
 
 def email2name(email=""):
   print "email2Name: " + email
