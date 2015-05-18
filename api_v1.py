@@ -45,7 +45,7 @@ results = response.json()
 #print "Results for room id call: " + str(results)
 
 if results['room_id'] != False:
-   ROOM_NUMBER=results['room_id']
+   ROOM_NUMBER=str(results['room_id'])
 else:
    print "Error, could not find room ID, aborting!"
    print "Need to return something"
@@ -539,6 +539,7 @@ class geneeUserLookup(ApiHandler):
         email = str(params[0])
 
         url = MAIN_URL + "/users/lookup?email=" + str(email) +"&room_number="+ROOM_NUMBER
+        #print "GeneeUserLooup with this URL: " + url
         response=requests.get(url)
 
         print "genee response: " + str(response)
