@@ -1,4 +1,4 @@
-application: hackerdojo-room
+application: hackerdojo-room-2
 # module: default
 version: live
 runtime: python27
