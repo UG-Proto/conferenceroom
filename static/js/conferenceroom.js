@@ -1316,13 +1316,13 @@
 			    	
 				switch (environment_constant) {
 					case "DEV":
-				    	url = "http://www.genee.me/ugather/web/external.cfm/" + meetingId + "?a=" + attendeeId + "&confirm=true&next=/ugather-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";
+				    	url = "http://genee.me/ugather-py/external?next=/ugather-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";
 						break;
 					case "PROD":
-			    		url = "http://www.genee.me/production/web/external.cfm/" + meetingId + "?a=" + attendeeId + "&confirm=true&next=/production-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";
+			    		url = "http://genee.me/production-py/external?next=/production-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";
 						break;						
 					default:
-				    	url = "http://www.genee.me/ugather/web/external.cfm/" + meetingId + "?a=" + attendeeId + "&confirm=true&next=/ugather-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";				
+				    	url = "http://genee.me/ugather-py/external?next=/ugather-py/web/meetings/" + meetingId + "/a/" + attendeeId + "/confirm%3Fdo%3Dregistered";				
 				}
 
 			    	console.log("environment_constant:" + environment_constant + "url:" + url);
