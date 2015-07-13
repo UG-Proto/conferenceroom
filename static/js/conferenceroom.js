@@ -289,12 +289,12 @@
 		var mins = Number(dateTimeObj.toString("m "));
 */
 		var dateTimeMomentObj = moment(dateTimeObj);
-		console.log("Inside getSlotNumFromDateTime, dateTimeObj:" + dateTimeObj + ", dateTimeMomentObj:" + dateTimeMomentObj + ";, formatted:" + dateTimeMomentObj.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+		//console.log("Inside getSlotNumFromDateTime, dateTimeObj:" + dateTimeObj + ", dateTimeMomentObj:" + dateTimeMomentObj + ";, formatted:" + dateTimeMomentObj.format("dddd, MMMM Do YYYY, h:mm:ss a"));
 
 		var hourIn24format = Number(dateTimeMomentObj.get('hour'));
 		var mins = Number(dateTimeMomentObj.get('minute'));
 
-		console.log("hourIn24format:" + hourIn24format + ", mins:" + mins);
+		//console.log("hourIn24format:" + hourIn24format + ", mins:" + mins);
 
 		var slotNumFromDateTime;
 
@@ -1386,7 +1386,7 @@
 						var attendees = "";
 						var attendeesUserIds = "";
 
-						console.log("resp[i].meetingtime:" + resp[i].meetingtime + ", meetingDateTime:" + meetingDateTime + ", meetingTime formatted:" + meetingTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));	
+						//console.log("resp[i].meetingtime:" + resp[i].meetingtime + ", meetingDateTime:" + meetingDateTime + ", meetingTime formatted:" + meetingTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));	
 
 						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
@@ -1514,7 +1514,7 @@
 							            "meeting": data.meetingid,
 							            "attendees": attendeesEmail
 							        });
-							        console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail + ", meeting_id:" + data.meetingid + ", attendees:" + attendeesEmail);
+							        //console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail + ", meeting_id:" + data.meetingid + ", attendees:" + attendeesEmail);
 								}
 
 								return true;
@@ -1555,7 +1555,7 @@
 							            "meeting": data.meetingid,
 							            "attendees": attendeesEmail
 							        });
-							        console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail + ", meeting_id:" + data.meetingid + ", attendees:" + attendeesEmail);
+							        //console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail + ", meeting_id:" + data.meetingid + ", attendees:" + attendeesEmail);
 								}
 
 								return true;
@@ -1591,7 +1591,7 @@
 						            "Genee_user": loggedinGeneeUserId,
 						            "HD user": userEmail							            
 						        });
-						        console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail);
+						        //console.log("after calling mixpanel, Genee user:" + loggedinGeneeUserId + ", HD user:" + userEmail);
 
 								return true;
 							} else {
