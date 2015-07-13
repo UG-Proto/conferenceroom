@@ -1370,8 +1370,8 @@
 
 					// Determine the first slot
 					var meetingDateTime = Date.parse(resp[i].meetingtime);
-					//var meetingTime = moment(resp[i].meetingtime);
-					var meetingTime = moment(meetingDateTime);  // 07/13/15 - temporary fix. resp[i].meetingtime is coming as GMT instead of PDT
+					var meetingTime = moment(resp[i].meetingtime);
+					//var meetingTime = moment(meetingDateTime);  // 07/13/15 - temporary fix not needed anymore. Roomschedule is now returning the correct timezone
 
 					if (meetingDateTime !== null) {
 						// var slotNum = getSlotNumFromDateTime(meetingDateTime);
