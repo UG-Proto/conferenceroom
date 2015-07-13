@@ -289,12 +289,12 @@
 		var mins = Number(dateTimeObj.toString("m "));
 */
 		var dateTimeMomentObj = moment(dateTimeObj);
-		// console.log("Inside getSlotNumFromDateTime, dateTimeObj:" + dateTimeObj + ", dateTimeMomentObj:" + dateTimeMomentObj + ";, formatted:" + dateTimeMomentObj.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+		console.log("Inside getSlotNumFromDateTime, dateTimeObj:" + dateTimeObj + ", dateTimeMomentObj:" + dateTimeMomentObj + ";, formatted:" + dateTimeMomentObj.format("dddd, MMMM Do YYYY, h:mm:ss a"));
 
 		var hourIn24format = Number(dateTimeMomentObj.get('hour'));
 		var mins = Number(dateTimeMomentObj.get('minute'));
 
-		//console.log("hourIn24format:" + hourIn24format + ", mins:" + mins);
+		console.log("hourIn24format:" + hourIn24format + ", mins:" + mins);
 
 		var slotNumFromDateTime;
 
@@ -1370,7 +1370,8 @@
 
 					// Determine the first slot
 					var meetingDateTime = Date.parse(resp[i].meetingtime);
-					var meetingTime = moment(resp[i].meetingtime);
+					//var meetingTime = moment(resp[i].meetingtime);
+					var meetingTime = moment(meetingDateTime);  // 07/13/15 - temporary fix. resp[i].meetingtime is coming as GMT instead of PDT
 
 					if (meetingDateTime !== null) {
 						// var slotNum = getSlotNumFromDateTime(meetingDateTime);
@@ -1384,6 +1385,8 @@
 						var slotCount = 0;
 						var attendees = "";
 						var attendeesUserIds = "";
+
+						console.log("resp[i].meetingtime:" + resp[i].meetingtime + ", meetingDateTime:" + meetingDateTime + ", meetingTime formatted:" + meetingTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));	
 
 						var compareDate = Date.compare(weekDayDate.clearTime(), meetingDateTime.clearTime());
 
