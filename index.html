@@ -284,30 +284,6 @@ mixpanel.init("affcd976983ca9d52600fc125e614ddc");</script><!-- end Mixpanel -->
 	// get current environment (DEV or PROD)
 	var environment_constant = getEnvironment();
 
-	// get Genee user Id for the logged-in user
-	var loggedinGeneeUserId = getGeneeUserId(userEmail);
-	//console.log("loggedinGeneeUserId:" + loggedinGeneeUserId);
-
-
-	if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
-		// Hide username and logout link if login user is meet@hackerdojo.com
-		$(".hd-username-section").hide();			
-		$(".hd-header-time").show();
-	} else {
-		// If user is NOT meet@hackerdojo.com, hide the time at the right upper corner
-		$(".hd-header-time").hide();
-		$(".hd-username-section").show();			
-	}	
-
-	// Display time and date for console view
-	setDateTime(); //Time will be updated everytime the calendar gets updated: 		
-
-	// Display username on upper right corner
-	$(".hd-username").text(userEmail);	
-
-	// extract the username portion before @hackerdojo.com
-	userName = userName.split("@")[0];
-
 	// Set room name
 	var room = "Room 004";
 	$(".hd-resourcename").text(room);
@@ -316,217 +292,18 @@ mixpanel.init("affcd976983ca9d52600fc125e614ddc");</script><!-- end Mixpanel -->
 	var today = new Date();
 	var firstDayOfWeek = getFirstDayOfWeek(today);
 
-	// Declaring global variables that will be set in setWeekDayDisplay() function
+	// Declaring global variables that will be set in setWeekDayDisplay()  and initialize functions
 	var dateDisplayed = today.clone();	
 	var datesArray = [];
 	var displayOption;
 
-	$(window).on('resize', function() { 
-	  setWeekDayDisplay();  // display either week or day view 
-	});
+	var loggedinGeneeUserId;
+	var minHour;
+	var maxHour;
 
-	setWeekDayDisplay();
+	// Initialize schedule - get Genee userid, schedule hours and display schedule accrodingly
+	initialize(userEmail);
 
-	// Today link on mobile view
-
-	$(".hd-first-week-link, .hd-today-link").click(function(e){
-		e.preventDefault();
-
-		switch (displayOption) {
-
-			case "week":
-
-				firstDayOfWeek = getFirstDayOfWeek(today);
-				datesArray = getWeekDaysArray(firstDayOfWeek);
-				updateWeekCalendar(firstDayOfWeek, datesArray);
-				$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-				if (today >= firstDayOfWeek) {
-					$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-				}			
-				break;
-
-			case "day":
-
-				dateDisplayed = new Date();
-				datesArray = getDayArray(dateDisplayed);
-				updateDayCalendar(dateDisplayed, datesArray);
-				$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-				if (today >= dateDisplayed) {
-					$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-				}			
-
-				//calendarNav.selectDay(dateDisplayed, true);
-				break;
-				
-		} 
-	});
-
-
-	// Initially disable prev button
-	$(".prevButton").addClass("disabled");
-
-	// Prev button logic
-	$(".prevButton").click(function(e){
-		e.preventDefault();
-
-		switch (displayOption) {
-
-			case "week":
-
-				if (today < firstDayOfWeek) {
-					firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);			
-					datesArray = getWeekDaysArray(firstDayOfWeek);
-					updateWeekCalendar(firstDayOfWeek, datesArray);
-					$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-					if (today >= firstDayOfWeek) {
-						$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-					}			
-				} 
-				break;
-
-			case "day":
-
-				if (today < dateDisplayed) {
-					dateDisplayed.setDate(dateDisplayed.getDate() - 1);
-					datesArray = getDayArray(dateDisplayed);
-					updateDayCalendar(dateDisplayed, datesArray);
-					$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-					if (today >= dateDisplayed) {
-						$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
-					}			
-				} 
-				break;
-		}		
-
-	});
-
-	// Next button logic
-	$(".nextButton").click(function(e){
-		e.preventDefault();		
-
-		// calculate date 30 days from today
-		var todayPlus30days = today.clone();
-		todayPlus30days.setDate(todayPlus30days.getDate() + 30);
-
-		switch (displayOption) {
-
-			case "week":
-		
-				// calculate last date of current week
-				var lastDateOfWeek = firstDayOfWeek.clone();
-				lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-
-				if (todayPlus30days > lastDateOfWeek) {
-
-					// set firstDayOfWeek to 1 week ahead and update dates on calendar if displayOption = "week"
-					firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
-					datesArray = getWeekDaysArray(firstDayOfWeek);
-					updateWeekCalendar(firstDayOfWeek, datesArray);
-					
-					$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
-
-					// calculate last date of current week
-					lastDateOfWeek = firstDayOfWeek.clone();
-					lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-
-					if (todayPlus30days <= lastDateOfWeek) {
-						$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"	
-					}				
-				}
-				break;
-
-			case "day":
-
-				if (dateDisplayed <= todayPlus30days) {
-
-					dateDisplayed.setDate(dateDisplayed.getDate() + 1);
-					datesArray = getDayArray(dateDisplayed);
-					updateDayCalendar(dateDisplayed, datesArray);
-					
-					$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
-
-					if (dateDisplayed >= todayPlus30days) {
-						$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"	
-					}				
-				}			
-				break;
-		}		
-
-	});
-
-
-	// Slot "click" event
-	$(".hd-schedule").on('click','td', function() {    
-
-		var response;
-		var numberOfSlots = 1;
-
-		if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
-
-			if ($(this).find("div").text() === "") {
-				if (isSlotAvailable($(this))) {
-					// book/add slot only if slot is available
-					displayPopup($(this), datesArray, room, userEmail);				
-				}
-			} else {
-				// delete reservation
-				if (isUserPartOfMeeting($(this))) {	
-					numberOfSlots = $(this).attr("rowspan");	
-
-					// call displayDeleteConfirmation only if numberOfSlots is a valid number
-					if (!isNaN(numberOfSlots)) {						
-					displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
-					}
-				} else {
-					// display error message
-					errorMessage("Cannot delete slots from different owner");
-				}			
-			}
-		}	
-	});
-
-	// Slot "click" event
-	//$("td").on("hover", function() {  
-
-	$("td").hover(function() {  
-
-		//alert("hover event is triggered!!!");
-		var datahour = $(this).closest("tr").attr("data-hour");
-		var timeStr = getTimeFromSlotNum(datahour);
-		$(this).attr("title", timeStr);
-	},
-	function() {
-		$(this).attr("title", "");		
-	});
-
-
-	// Initialize scrollable calendar - carousel
-/*
-	var calendarNav = new calendarSlider();
-	calendarNav.initialize({
-
-		currentDayClassName: "custom-currentday",  
-		dayToDisplayNextOrPrevWeek: "mon",
-		afterInitialize: function() {
-          // action can be passed by user			
-		},      
-        prevPress: function () {
-          // action can be passed by user
-        },
-        nextPress: function () {
-          // action can be passed by user
-        },
-        dayPress: function() {
-            // Triggered when user clicks on a day of the scrollable calendar. "this" is the date object returned by the calendar carousel
-            var momentDate = this;
-
-            var DateDate = Date.parse(momentDate.format("MM-DD-YYYY"), "MM-DD-YYYY");
-            dateDisplayed = DateDate;
-			datesArray = getDayArray(DateDate);
-			updateDayCalendar(DateDate, datesArray);
-        }
-	});	
-*/
 		
 </script>
 
