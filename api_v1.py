@@ -551,6 +551,31 @@ class geneeUserLookup(ApiHandler):
     return 
 
 
+class getHours(ApiHandler):
+
+  def get(self):
+      self.post()  
+      
+  def post(self):
+
+    url = MAIN_URL + "/gethours/"
+    print "Before calling gethours API.. url:" + url
+
+    getHours_json = {"userid": int(ROOM_NUMBER)}
+    print "gethours_input_json: " + str(getHours_json)
+ 
+    response=requests.post(url, data=json.dumps(getHours_json))
+
+    print "gethours response: " + str(response)
+    self.response.out.write(json.dumps(response.json()))
+    return
+
+    self._exit_handler()
+    return 
+
+
+
+
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
@@ -563,5 +588,5 @@ app = webapp2.WSGIApplication([
     ("/api/v1/commandgenee",GeneeCommand),
     ("/api/v1/environment",currentEnvironment),
     ("/api/v1/geneeuser",geneeUserLookup),    
-
+    ("/api/v1/gethours",getHours), 
     ], debug = True)
