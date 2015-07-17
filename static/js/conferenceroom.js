@@ -33,7 +33,10 @@
 
 		htmlCalendar = htmlCalendar + "<tbody>";
 
-		for (h=0;h<=23;h++) {
+		// for (h=0;h<=23;h++) {
+		//console.log("minHour:" + minHour + ", maxHour:" + maxHour);
+		
+		for (h=minHour;h<=maxHour;h++) {
 
 			// add odd row
 
@@ -152,7 +155,9 @@
 
 		htmlCalendar = htmlCalendar + "<tbody>";
 
-		for (h=0;h<=23;h++) {
+		//console.log("minHour:" + minHour + ", maxHour:" + maxHour);
+		//for (h=0;h<=23;h++) {
+		for (h=minHour;h<=maxHour;h++) {
 
 			// ------------
 			// add odd row
@@ -193,9 +198,6 @@
 
 		htmlCalendar = htmlCalendar + "</tbody>";
 
-		// Remove previous calendar
-		//$("thead").remove();
-		//$("tbody").remove();
 		//remove the calendar body
 		$(".hd-day-view tbody").remove();
 
@@ -1638,34 +1640,6 @@
 	}	
 
 
-	// -------------------------------------------------- //
-	// Get Genee user Id Ajax call
-	// -------------------------------------------------- //
-	var getGeneeUserId = function(email) {
-
-		var userId = "";
-
-		// make AJAX call to geneeuser API
-		$.ajax({
-	        timeout : 10000,
-		    url: '/api/v1/geneeuser',
-		    type: 'GET',
-		    async: false, // making this call synchronous
-		    data: {email: email},
-		    dataType: 'json',
-			success: function(resp) {
-				console.log("Inside getGeneeUserId Ajax call, resp.userid:" + resp.userid);
-				if (resp.userid) {
-					userId = resp.userid.toString();  // Genee UserId
-				} 
-			},
-			error: function(req, status, err) {
-				errorMessage("Not able to get Genee User Id, call to Genee User Lookup API failed. " + err);
-			}
-		}); // end of ajax /api/v1/geneeuser
-
-		return userId;
-	}	
 
 
 
@@ -1718,11 +1692,12 @@
 					datesArray = getWeekDaysArray(firstDayOfWeek);
 					updateWeekCalendar(firstDayOfWeek, datesArray);
 
-					// Scroll the page to 5am slot
+					// Scroll the page to 5am slot if 5am is included in the schedule
 					var divPosition = $('tr[data-hour="3"]').offset();  // data-hour = "3" makes the page scroll to 7am (for bigger device)
-					var scrollPos = Number(divPosition.top) + 10;
-					$('html, body').animate({scrollTop: scrollPos}, "slow");
-
+					if (divPosition != undefined) {				
+						var scrollPos = Number(divPosition.top) + 10;
+						$('html, body').animate({scrollTop: scrollPos}, "slow");
+					}		
 					// refresh the view every 30 seconds			
 					setInterval (function() { 
 						updateWeekCalendar(firstDayOfWeek, datesArray); 
@@ -1738,9 +1713,10 @@
 					// Scroll the page to 5am slot
 					var divPosition = $('tr[data-hour="9"]').offset();  // data-hour = "9" makes the page scroll to 7am (for small device)
 					//var scrollPos = Number(divPosition.top) + 10;
-					var scrollPos = Number(divPosition.top) + 8;				
-					$('html, body').animate({scrollTop: scrollPos}, "slow");
-
+					if (divPosition != undefined) {				
+						var scrollPos = Number(divPosition.top) + 8;				
+						$('html, body').animate({scrollTop: scrollPos}, "slow");
+					}		
 					// refresh the view every 30 seconds
 					setInterval (function() { 
 						updateDayCalendar(dateDisplayed, datesArray); 
@@ -1763,4 +1739,324 @@
 		$("#date").text(dateVal);
 	}
 
+
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++ I N I T I A L I Z E  ++++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	// ---------------------------------------------------- //
+	// When initializing, get Genee User id first
+	// ---------------------------------------------------- //
+	var initialize = function(email) {
+
+		var userId = "";
+
+		// make AJAX call to geneeuser API
+		$.ajax({
+	        timeout : 10000,
+		    url: '/api/v1/geneeuser',
+		    type: 'GET',
+		    //async: false, // making this call synchronous
+		    data: {email: email},
+		    dataType: 'json',
+			success: function(resp) {
+				console.log("Inside getGeneeUserId Ajax call, resp.userid:" + resp.userid);
+				if (resp.userid) {
+					userId = resp.userid.toString();  // Genee UserId
+					loggedinGeneeUserId = userId;
+					gethours();
+				} 
+			},
+			error: function(req, status, err) {
+				errorMessage("Not able to get Genee User Id, call to Genee User Lookup API failed. " + err);
+			}
+		}); // end of ajax /api/v1/geneeuser
+
+		//return userId;
+	}	
+
+
+	// -------------------------------------------------- //
+	// Get Genee user Id Ajax call
+	// -------------------------------------------------- //
+	var gethours = function() {
+
+		// make AJAX call to gethours API
+		$.ajax({
+	        timeout : 10000,
+		    url: '/api/v1/gethours',
+		    type: 'POST',
+		    //async: false, // making this call synchronous
+		    //data: {},
+		    dataType: 'json',
+			success: function(resp) {
+
+				if (resp.status) {
+					if (resp.SlotBegins) { minHour = parseInt(resp.SlotBegins)/100;}
+					else { 
+						errorMessage("gethours didn't return start time range, seeting start time to 12am"); 
+						minHour = 0;
+					}	
+
+					if (resp.SlotEnds) { maxHour = parseInt(resp.SlotEnds)/100;}
+					else {
+						errorMessage("gethours didn't return end time range, seeting end time to 11pm"); 
+						maxHour = 23;
+					}
+
+					displaySchedule();
+
+				} else {
+					errorMessage("gethours didn't return successful status");
+
+					minHour = 0;
+					maxHour = 23;
+					displaySchedule();
+
+				}
+
+			},
+			error: function(req, status, err) {
+				errorMessage("Not able to get conference room hours, call to Genee gethours API failed. " + err);
+
+				minHour = 0;
+				maxHour = 23;
+				displaySchedule();
+
+			}
+		}); // end of ajax /api/v1/gethours
+
+	}	
+
+	// -------------------------------------------------- //
+	// Display schedule
+	// -------------------------------------------------- //
+	function displaySchedule() {
+
+		if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
+			// Hide username and logout link if login user is meet@hackerdojo.com
+			$(".hd-username-section").hide();			
+			$(".hd-header-time").show();
+		} else {
+			// If user is NOT meet@hackerdojo.com, hide the time at the right upper corner
+			$(".hd-header-time").hide();
+			$(".hd-username-section").show();			
+		}	
+
+		// Display time and date for console view
+		setDateTime(); //Time will be updated everytime the calendar gets updated: 		
+
+		// Display username on upper right corner
+		$(".hd-username").text(userEmail);	
+
+		// extract the username portion before @hackerdojo.com
+		userName = userName.split("@")[0];
+
+		$(window).on('resize', function() { 
+		  setWeekDayDisplay();  // display either week or day view 
+		});
+
+		setWeekDayDisplay();
+
+		// Today link on mobile view
+
+		$(".hd-first-week-link, .hd-today-link").click(function(e){
+			e.preventDefault();
+
+			switch (displayOption) {
+
+				case "week":
+
+					firstDayOfWeek = getFirstDayOfWeek(today);
+					datesArray = getWeekDaysArray(firstDayOfWeek);
+					updateWeekCalendar(firstDayOfWeek, datesArray);
+					$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+					if (today >= firstDayOfWeek) {
+						$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+					}			
+					break;
+
+				case "day":
+
+					dateDisplayed = new Date();
+					datesArray = getDayArray(dateDisplayed);
+					updateDayCalendar(dateDisplayed, datesArray);
+					$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+					if (today >= dateDisplayed) {
+						$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+					}			
+
+					//calendarNav.selectDay(dateDisplayed, true);
+					break;
+					
+			} 
+		});
+
+
+		// Initially disable prev button
+		$(".prevButton").addClass("disabled");
+
+		// Prev button logic
+		$(".prevButton").click(function(e){
+			e.preventDefault();
+
+			switch (displayOption) {
+
+				case "week":
+
+					if (today < firstDayOfWeek) {
+						firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);			
+						datesArray = getWeekDaysArray(firstDayOfWeek);
+						updateWeekCalendar(firstDayOfWeek, datesArray);
+						$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+						if (today >= firstDayOfWeek) {
+							$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+						}			
+					} 
+					break;
+
+				case "day":
+
+					if (today < dateDisplayed) {
+						dateDisplayed.setDate(dateDisplayed.getDate() - 1);
+						datesArray = getDayArray(dateDisplayed);
+						updateDayCalendar(dateDisplayed, datesArray);
+						$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+						if (today >= dateDisplayed) {
+							$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+						}			
+					} 
+					break;
+			}		
+
+		});
+
+		// Next button logic
+		$(".nextButton").click(function(e){
+			e.preventDefault();		
+
+			// calculate date 30 days from today
+			var todayPlus30days = today.clone();
+			todayPlus30days.setDate(todayPlus30days.getDate() + 30);
+
+			switch (displayOption) {
+
+				case "week":
+			
+					// calculate last date of current week
+					var lastDateOfWeek = firstDayOfWeek.clone();
+					lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+					if (todayPlus30days > lastDateOfWeek) {
+
+						// set firstDayOfWeek to 1 week ahead and update dates on calendar if displayOption = "week"
+						firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
+						datesArray = getWeekDaysArray(firstDayOfWeek);
+						updateWeekCalendar(firstDayOfWeek, datesArray);
+						
+						$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
+
+						// calculate last date of current week
+						lastDateOfWeek = firstDayOfWeek.clone();
+						lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+						if (todayPlus30days <= lastDateOfWeek) {
+							$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"	
+						}				
+					}
+					break;
+
+				case "day":
+
+					if (dateDisplayed <= todayPlus30days) {
+
+						dateDisplayed.setDate(dateDisplayed.getDate() + 1);
+						datesArray = getDayArray(dateDisplayed);
+						updateDayCalendar(dateDisplayed, datesArray);
+						
+						$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
+
+						if (dateDisplayed >= todayPlus30days) {
+							$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond "today + 30 days"	
+						}				
+					}			
+					break;
+			}		
+
+		});
+
+
+		// Slot "click" event
+		$(".hd-schedule").on('click','td', function() {    
+
+			var response;
+			var numberOfSlots = 1;
+
+			if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
+
+				if ($(this).find("div").text() === "") {
+					if (isSlotAvailable($(this))) {
+						// book/add slot only if slot is available
+						displayPopup($(this), datesArray, room, userEmail);				
+					}
+				} else {
+					// delete reservation
+					if (isUserPartOfMeeting($(this))) {	
+						numberOfSlots = $(this).attr("rowspan");	
+
+						// call displayDeleteConfirmation only if numberOfSlots is a valid number
+						if (!isNaN(numberOfSlots)) {						
+						displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
+						}
+					} else {
+						// display error message
+						errorMessage("Cannot delete slots from different owner");
+					}			
+				}
+			}	
+		});
+
+		// Slot "click" event
+		//$("td").on("hover", function() {  
+
+		$("td").hover(function() {  
+
+			//alert("hover event is triggered!!!");
+			var datahour = $(this).closest("tr").attr("data-hour");
+			var timeStr = getTimeFromSlotNum(datahour);
+			$(this).attr("title", timeStr);
+		},
+		function() {
+			$(this).attr("title", "");		
+		});
+
+
+		// Initialize scrollable calendar - carousel
+	/*
+		var calendarNav = new calendarSlider();
+		calendarNav.initialize({
+
+			currentDayClassName: "custom-currentday",  
+			dayToDisplayNextOrPrevWeek: "mon",
+			afterInitialize: function() {
+	          // action can be passed by user			
+			},      
+	        prevPress: function () {
+	          // action can be passed by user
+	        },
+	        nextPress: function () {
+	          // action can be passed by user
+	        },
+	        dayPress: function() {
+	            // Triggered when user clicks on a day of the scrollable calendar. "this" is the date object returned by the calendar carousel
+	            var momentDate = this;
+
+	            var DateDate = Date.parse(momentDate.format("MM-DD-YYYY"), "MM-DD-YYYY");
+	            dateDisplayed = DateDate;
+				datesArray = getDayArray(DateDate);
+				updateDayCalendar(DateDate, datesArray);
+	        }
+		});	
+	*/
+	}
 	
