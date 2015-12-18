@@ -1,7 +1,7 @@
 # conferenceroom
 <span class="s1">Genee Conference Room Setup Instructions</span>
 
-<span class="s1"></span>\
+<span class="s1"></span>
 
 
 
@@ -69,7 +69,6 @@ default app for one specific room)
 <span class="s3"><span class="Apple-tab-span"> </span></span>( Example
 hackerdojo-room-3 ) for a third room.
 
-\
 
 *Current there is:*<span class="s3"><span
 class="Apple-converted-space"> </span></span>
