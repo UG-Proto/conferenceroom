@@ -1,5 +1,5 @@
 # Genee Conference Room
-<span class="s1">Genee Conference Room Setup Instructions</span>
+<span class="s1">Setup Instructions</span>
 
 <span class="s1"></span>
 
