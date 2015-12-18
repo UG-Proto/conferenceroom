@@ -1,4 +1,4 @@
-# conferenceroom
+# Genee Conference Room
 <span class="s1">Genee Conference Room Setup Instructions</span>
 
 <span class="s1"></span>
@@ -170,7 +170,7 @@ HYPERLINK "http://appspot.com"appspot.com</span>
 class="Apple-converted-space"> </span></span><span class="s1"> HYPERLINK
 "http://hackerdojo-room-3.appspot.com"http://hackerdojo-room-3.appspot.com</span>
 
-<span class="s1"></span>\
+<span class="s1"></span>
 
 
 
