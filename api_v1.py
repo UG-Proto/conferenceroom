@@ -581,7 +581,8 @@ class getHours(ApiHandler):
     url = MAIN_URL + "/gethours/"
     print "Before calling gethours API.. url:" + url
 
-    getHours_json = {"userid": int(ROOM_NUMBER)}
+    getHours_json = { "userid": int(ROOM_NUMBER),
+                      "app_engine_id": appname }
     print "gethours_input_json: " + str(getHours_json)
  
     response=requests.post(url, data=json.dumps(getHours_json))
