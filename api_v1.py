@@ -44,7 +44,7 @@ MAIN_PROD_URL = "http://prod.genee.me/production-py/api/v1"  # Note for producto
 
 
 #MAIN_URL = MAIN_PROD_URL
-MAIN_URL = MAIN_DEV_URL
+MAIN_URL = MAIN_PROD_URL
 ROOM_NUMBER = None # By default.
 
 
