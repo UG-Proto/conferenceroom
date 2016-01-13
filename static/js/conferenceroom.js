@@ -1420,26 +1420,33 @@
 								var inviteesArray = resp[i].invitees;
 								var inviteesArrayLength = inviteesArray.length;
 
-								for (j=0;j<inviteesArrayLength;j++) {
-									// concatenation of attendees names
-									if (slotOwner === "") {
-										slotOwner = inviteesArray[j].name;  
-									} else {
-										slotOwner = slotOwner + ", " + inviteesArray[j].name;  
+								if (inviteesArrayLength === 0) {
+
+									slotOwner = resp[i].meetingtitle;
+
+								} else {
+
+									for (j=0;j<inviteesArrayLength;j++) {
+										// concatenation of attendees names
+										if (slotOwner === "") {
+											slotOwner = inviteesArray[j].name;  
+										} else {
+											slotOwner = slotOwner + ", " + inviteesArray[j].name;  
+										}
+										// concatenation of attendees emails
+										if (attendees === "") {
+											attendees = inviteesArray[j].email;  
+										} else {
+											attendees = attendees + "," + inviteesArray[j].email;  
+										}
+										// concatenation of attendees ids
+										if (attendeesUserIds === "") {
+											attendeesUserIds = inviteesArray[j].userid;  
+										} else {
+											attendeesUserIds = attendeesUserIds + "," + inviteesArray[j].userid;  
+										}
 									}
-									// concatenation of attendees emails
-									if (attendees === "") {
-										attendees = inviteesArray[j].email;  
-									} else {
-										attendees = attendees + "," + inviteesArray[j].email;  
-									}
-									// concatenation of attendees ids
-									if (attendeesUserIds === "") {
-										attendeesUserIds = inviteesArray[j].userid;  
-									} else {
-										attendeesUserIds = attendeesUserIds + "," + inviteesArray[j].userid;  
-									}
-								}	
+								}		
 								$slotObj.find("div").text(slotOwner);
 								$slotObj.attr("data-attendees", attendees);
 								$slotObj.attr("data-userids", attendeesUserIds);
@@ -1992,27 +1999,31 @@
 			var response;
 			var numberOfSlots = 1;
 
+			console.log("data-userids attribute:" + $(this).attr("data-userids") + "---");
 			if (!$(this).hasClass("displayDisabledSlot")) { // Allow click event only if slot is NOT disabled
 
-				if ($(this).find("div").text() === "") {
-					if (isSlotAvailable($(this))) {
-						// book/add slot only if slot is available
-						displayPopup($(this), datesArray, room, userEmail);				
-					}
-				} else {
-					// delete reservation
-					if (isUserPartOfMeeting($(this))) {	
-						numberOfSlots = $(this).attr("rowspan");	
+				if ($(this).attr("data-userids") !== "") {  // Allow click event only if the slot has at least one Genee attendee
 
-						// call displayDeleteConfirmation only if numberOfSlots is a valid number
-						if (!isNaN(numberOfSlots)) {						
-						displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
+					if ($(this).find("div").text() === "") {
+						if (isSlotAvailable($(this))) {
+							// book/add slot only if slot is available
+							displayPopup($(this), datesArray, room, userEmail);				
 						}
 					} else {
-						// display error message
-						errorMessage("Cannot delete slots from different owner");
-					}			
-				}
+						// delete reservation
+						if (isUserPartOfMeeting($(this))) {	
+							numberOfSlots = $(this).attr("rowspan");	
+
+							// call displayDeleteConfirmation only if numberOfSlots is a valid number
+							if (!isNaN(numberOfSlots)) {						
+							displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
+							}
+						} else {
+							// display error message
+							errorMessage("Cannot delete slots from different owner");
+						}			
+					}
+				}	
 			}	
 		});
 
