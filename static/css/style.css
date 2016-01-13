@@ -182,6 +182,10 @@ th, td {
     text-align: center;
 }
 
+td[data-userids=""] {
+    cursor: not-allowed;
+}
+
 th {
     height: 1.7em !important;
     font-weight: normal;
