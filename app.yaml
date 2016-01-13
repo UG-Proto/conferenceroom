@@ -26,6 +26,7 @@ handlers:
 
 - url: /login
   script: api_v1.app
+#  script: api_v1.py
 
 - url: /logout
   script: api_v1.app
