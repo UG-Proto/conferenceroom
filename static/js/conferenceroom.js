@@ -353,9 +353,10 @@
 */
 		switch ( slotTypeBasedOnTime($slotObject) ) {
 			case "past":
-			case "current":
+//			case "current":  
 				return false;
 				break;
+			case "current": // We want to make current slot clickable, so the owner can delete it (if he/she does no longer need it) and make it available for someone else.
 			case "future":
 				return true;
 				break;		
@@ -373,6 +374,7 @@
 		if (slotDateObj !== undefined && slotDateObj !== "") {
 
 			var compareDate = Date.compare(Date.today().clearTime(), slotDateObj.clearTime());
+			//var compareDate = Date.compare(Date.parse("Mon,29 February 2016 15:00").clearTime(), slotDateObj.clearTime()); // For testing only
 
 			if (compareDate === 1) { // slot is in the past 
 				return "past";
@@ -386,6 +388,7 @@
 					if (slotRowSpan === undefined || isNaN(slotRowSpan) ) {slotRowSpan = 0;};
 
 					var slotNumForCurrentTime = Number(getSlotNumFromDateTime(moment()));	
+					//var slotNumForCurrentTime = Number(getSlotNumFromDateTime(moment("2016-02-29 16:30"))); // For testing only	 
 					var slotNumberSum = Number(slotNum) + Number(slotRowSpan) - 1;
 
 					//console.log("slotNum:" + slotNum + ", slotRowSpan:" + slotRowSpan + ", slotNumForCurrentTime:" + slotNumForCurrentTime + ", slotNumberSum:" + slotNumberSum);
@@ -499,26 +502,7 @@
 			case "delete":
 			case "display":
 
-/*				if (isSlotAvailable($slotObject)) { // slot is available for booking 
-					if ($slotObject.find("div").text() === "" ) { 						
-							$slotObject.attr("class", "");	
-							$slotObject.addClass("displayEmptySlot");	
-					} else {
-						if (isUserPartOfMeeting($slotObject)) {								
-							$slotObject.attr("class", "");	
-							$slotObject.addClass("displayBookedSlot");
-						} else {
-							$slotObject.attr("class", "");	
-							$slotObject.addClass("displayBookedOtherOwnerSlot");	
-						}
-					}
-				} else {
-					// slot is disabled - slot selected is in the past
-					$slotObject.attr("class", "");	
-					$slotObject.addClass("displayDisabledSlot");							
-				}						
-				break;
-*/
+/*
 				var slotType = slotTypeBasedOnTime($slotObject);
 				if ( slotType === "future") { // slot is available for booking 	
 					if ($slotObject.find("div").text() === "" ) { 						
@@ -565,7 +549,47 @@
 					}								
 				}						
 				break;
+*/
 
+				var slotType = slotTypeBasedOnTime($slotObject);
+				if ( slotType === "future" || slotType === "current") { // slot is available for booking 	
+					if ($slotObject.find("div").text() === "" ) { 						
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayEmptySlot");	
+					} else {
+						if (isUserPartOfMeeting($slotObject)) {								
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedSlot");
+						} else {
+							$slotObject.attr("class", "");	
+							$slotObject.addClass("displayBookedOtherOwnerSlot");	
+						}
+					}
+				} else { // slot is disabled - slot selected is in the past
+					
+					$slotObject.attr("class", "");	
+					$slotObject.addClass("displayDisabledSlot");
+
+				} 
+
+				if (slotType === "current") { // current slot so highlight it
+
+					if (userEmail === conferenceRoomEmail) {  // if login user is meet@hackerdojo.com (console view)
+
+						// Highlight the corresponding time under the "time" column
+						var now = new moment();
+						var slotNum = getSlotNumFromDateTime(now);
+
+						var trElem = $("tr[data-hour='" + slotNum + "']");
+						var thElem = trElem.find("th");
+						if (thElem.length !== 0) {
+							thElem.find("div").css("color","#40AB49").css("font-weight","bold");
+						} else {
+							trElem.prev().find("th div").css("color","#40AB49").css("font-weight","bold");
+						}
+					}								
+				}						
+				break;
 		}					
 	}
 
@@ -785,8 +809,6 @@
 		buildCalendarDOM();
 
 		// Format style of slots		
-		//$("table.hd-schedule td").text("").each( function() {
-		// $("table.hd-schedule td").each( function() {
 		$(".hd-table-body-wrapper table td").each( function() {
 			updateSlotStyle($(this), 1, "display");
 		}); 
@@ -856,357 +878,381 @@
 	
 	}
 
+	// -------------------------------------------------- //
+	// getLengthOfMeetingInHours function
+	// -------------------------------------------------- //
+	function getLengthOfMeetingInHours(numberOfSlots) {
+
+		switch (parseInt(numberOfSlots)) {
+			case 1:
+				return "1/2 hour";
+				break;
+			case 2:
+				return "1 hour";
+				break;
+			case 3:
+				return "1.5 hours";
+				break;
+			case 4:
+				return "2 hours";
+				break;
+			default:	
+				return "more than 2 hours";
+		}
+
+	}
+
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++ P O P U P   W I N D O W S +++++++++++++++++++++++++++++++++++++++++
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-  // -------------------------------------------------- //
-  // Light Box
-  // -------------------------------------------------- //
-  function errorMessage(message){
-    popupMessage(message);
-  }
-
-
-  // -------------------------------------------------- //
-  // Light Box
-  // -------------------------------------------------- //
-  function popupMessage(message){
-    $('<div class="lightboxError container">' +
-        '<div class="lightboxOverlay"></div>' +
-        '<div class="lightboxError">' +
-            '<p class="hd-popup-message"></p>' +
-            '<div class="row custom-elem-row">' + 
-	          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default hidden-md hidden-lg">Close</button>' +  //smaller button displayed for phones only
-	          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default btn-lg hidden-xs hidden-sm">Close</button>' + // large button displayed for ipad & desktops
-	        '</div>' +  
-        '</div>' +
-      '</div>'
-    ).appendTo('body');
-    $(".lightboxError p").text(message);
-  }
-
-
-  // -------------------------------------------------- //
-  // Booking popup window
-  // -------------------------------------------------- //
-  function displayPopup($slotObj, datesArray, room, userEmail){
-
- 	// get weekday and slotnumber from the selected slot
-	var dayNum = $slotObj.data("day");
-	var slotNum = $slotObj.closest("tr").data("hour");
-	var slotCountBetweeMeetings = 0;
-	var displayPopUp = true;
-
-  	// Check that the same user didn't book previous slot
-  	for (n=1; n<=8; n++) {
-
-  		var slotNumToCheck = Number(slotNum) - n;
-		var $slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
-
-		if ($slotObjToCheck.length > 0) {
-
-			if (!$slotObjToCheck.hasClass("displayEmptySlot")) { //if slot is NOT empty
-
-				if (isUserPartOfMeeting($slotObjToCheck) === true) {								
-
-					// Check when previous meeting ends, there should be at least 2 hours gap btw prev and this mtg
-					if (n <=4) {
-						displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
-						errorMessage(two_hour_gap_error_msg);
-						break;												
-					} else {
-						slotCountBetweeMeetings = n - Number($slotObjToCheck.attr("rowspan"));
-
-						if (slotCountBetweeMeetings >= 4) {
-							displayPopUp = true;  // more than 4 slots were left as a gap
-							break;							
-						} else{
-							displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
-							errorMessage(two_hour_gap_error_msg);
-							break;																		
-						}
-					}
-				} else {
-					displayPopUp = true;
-					break;							
-				}
-			}		
-		}
+	// -------------------------------------------------- //
+	// Light Box
+	// -------------------------------------------------- //
+	function errorMessage(message){
+	    popupMessage(message);
 	}
 
-	if (displayPopUp) {
 
-	  	// Logic to determine how many hours the user can book at this time
-	 
-		// Check up to 7 slots down to determine how long the user can book the room
-		var lastSlotToCheck = slotNum + 7;
-		var availableSlotsCount = 0;
-		var options = "";
-		var dropdownHTML = "";
-		var isUserPartOfNextMeeting;
-
-
-		var dropdownHTML_upTo30mins = '<select class="selectpicker input-lg">' +
-						    			'<option value="0.5">1/2 hour</option>' +
-					    			'</select>';
-
-		var dropdownHTML_upTo60mins = '<select class="selectpicker input-lg">' +
-						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1" selected>1 hour</option>' +
-					    			'</select>';
-
-		var dropdownHTML_upTo90mins = '<select class="selectpicker input-lg">' +
-						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1" selected>1 hour</option>' +
-						    			'<option value="1.5">1 1/2 hours</option>' +
-					    			'</select>';
-
-		var dropdownHTML_upTo120mins = '<select class="selectpicker input-lg">' +
-						    			'<option value="0.5">1/2 hour</option>' +
-						    			'<option value="1" selected>1 hour</option>' +
-						    			'<option value="1.5">1 1/2 hours</option>' +
-						    			'<option value="2">2 hours</option>' +    	
-					    			'</select>';
+  	// -------------------------------------------------- //
+  	// Light Box
+  	// -------------------------------------------------- //
+	function popupMessage(message){
+	    $('<div class="lightboxError container">' +
+	        '<div class="lightboxOverlay"></div>' +
+	        '<div class="lightboxError">' +
+	            '<p class="hd-popup-message"></p>' +
+	            '<div class="row custom-elem-row">' + 
+		          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default hidden-md hidden-lg">Close</button>' +  //smaller button displayed for phones only
+		          '<button onclick="$(this).parents(\'.lightboxError\').remove();return false;" class="okButton btn btn-default btn-lg hidden-xs hidden-sm">Close</button>' + // large button displayed for ipad & desktops
+		        '</div>' +  
+	        '</div>' +
+	      '</div>'
+	    ).appendTo('body');
+	    $(".lightboxError p").html(message);
+	}
 
 
-		// Loop up to 7 slots down to determine how may slots the user will be able to book (user will be able to book up to 4 slots + 4 slots gap between this and next meeting)		    
-		for (s=slotNum+1; s<=lastSlotToCheck; s++) {
-			$slotObjToCheck = $("tr[data-hour='" + s + "']").find("td[data-day='" + dayNum + "']");
-			//if ($slotObjToCheck.text() === "" ) { 	
-			if ($slotObjToCheck.find("div").text() === "" ) { 	
-				availableSlotsCount++;
-			} else {
-				isUserPartOfNextMeeting = isUserPartOfMeeting($slotObjToCheck);
-				break;
-			}	
+	// -------------------------------------------------- //
+	// Booking popup window
+	// -------------------------------------------------- //
+	function displayPopup($slotObj, datesArray, room, userEmail){
+
+	 	// get weekday and slotnumber from the selected slot
+		var dayNum = $slotObj.data("day");
+		var slotNum = $slotObj.closest("tr").data("hour");
+		var slotCountBetweeMeetings = 0;
+		var displayPopUp = true;
+
+	  	// Check that the same user didn't book previous slot
+	  	for (n=1; n<=8; n++) {
+
+	  		var slotNumToCheck = Number(slotNum) - n;
+			var $slotObjToCheck = $("tr[data-hour='" + slotNumToCheck + "']").find("td[data-day='" + dayNum + "']");
+
+			if ($slotObjToCheck.length > 0) {
+
+				if (!$slotObjToCheck.hasClass("displayEmptySlot")) { //if slot is NOT empty
+
+					if (isUserPartOfMeeting($slotObjToCheck) === true) {								
+
+						// Check when previous meeting ends, there should be at least 2 hours gap btw prev and this mtg
+						if (n <=4) {
+							displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
+							errorMessage(two_hour_gap_error_msg);
+							break;												
+						} else {
+							slotCountBetweeMeetings = n - Number($slotObjToCheck.attr("rowspan"));
+
+							if (slotCountBetweeMeetings >= 4) {
+								displayPopUp = true;  // more than 4 slots were left as a gap
+								break;							
+							} else{
+								displayPopUp = false; // 4 or less slots are not enough to leave as a gap 
+								errorMessage(two_hour_gap_error_msg);
+								break;																		
+							}
+						}
+					} else {
+						displayPopUp = true;
+						break;							
+					}
+				}		
+			}
 		}
-
-		if (availableSlotsCount < 4 ) { 
-			if (isUserPartOfNextMeeting) {
-				errorMessage(two_hour_gap_error_msg);
-				displayPopUp = false;
-			} else { // user is not part of the next meeting so he/she can book as many slots as available	
-				switch(availableSlotsCount) {
-					case 0: // User can only book 1 slot (1/2 hr) 
-						dropdownHTML = 	dropdownHTML_upTo30mins;				
-						break;	
-					case 1: // User can only book up to 2 slots (1 hr) 
-						dropdownHTML = 	dropdownHTML_upTo60mins;
-						break;	
-					case 2: // User can only book 3 slots (1.5 hrs) 
-						dropdownHTML = 	dropdownHTML_upTo90mins;
-						break;	
-					case 3: // user can book up to 2 hrs without restriction
-						dropdownHTML = 	dropdownHTML_upTo120mins;
-						break;
-				}
-			}
-
-		} else {
-			if (availableSlotsCount === 4 ) { // User can only book 1/2 hr
-				if (isUserPartOfNextMeeting) {	// User can only book 1 slot (1/2 hr) to leave 4 slots (2hrs) gap 
-					dropdownHTML = 	dropdownHTML_upTo30mins;
-				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
-					dropdownHTML = 	dropdownHTML_upTo120mins;
-				}	    			
-
-		  	} else if (availableSlotsCount === 5) { 
-				if (isUserPartOfNextMeeting) {	// User can only book up to 2 slots (1 hr) to leave 4 slots (2hrs) gap 
-					dropdownHTML = 	dropdownHTML_upTo60mins;
-
-				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
-					dropdownHTML = 	dropdownHTML_upTo120mins;
-				}	
-
-			} else if (availableSlotsCount === 6) { 	
-				if (isUserPartOfNextMeeting) {	// User can only book 3 slots (1.5 hrs) to leave 4 slots (2hrs) gap 
-					dropdownHTML = 	dropdownHTML_upTo90mins;
-
-				} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction	
-					dropdownHTML = 	dropdownHTML_upTo120mins;
-				}    			
-
-			} else if (availableSlotsCount >= 7) { // User can book up to 2 hrs
-				dropdownHTML = 	dropdownHTML_upTo120mins;
-			}
-		}	
 
 		if (displayPopUp) {
 
-			var userNamePromptHTML = "";
-			var attendeesPromptHTML = "";
-
-			if (userEmail === conferenceRoomEmail) {  // if login user is meet@hackerdojo.com
-
-				// request user to enter his/her email address
-				userNamePromptHTML = '<div class="row custom-elem-row">' + 
-			    						'<p class="hd-popup-text">Please enter your HackerDojo email id: </p>' +
-										'<input type="text" name="emailAddress" class="form-control hd-email-input col-sm-6" id="hd-emailAddress">' + 
-										'<span class="form-control-static col-sm-6">@hackerdojo.com</span>' +
-										'<p class="hd-errorMessageEmail hd-error-text col-sm-12 hd-hide"></p>' + 
-									'</div>';
+		  	// Logic to determine how many hours the user can book at this time
+		 
+			// Check up to 7 slots down to determine how long the user can book the room
+			var lastSlotToCheck = slotNum + 7;
+			var availableSlotsCount = 0;
+			var options = "";
+			var dropdownHTML = "";
+			var isUserPartOfNextMeeting;
 
 
-			} else {
+			var dropdownHTML_upTo30mins = '<select class="selectpicker input-lg">' +
+							    			'<option value="0.5">1/2 hour</option>' +
+						    			'</select>';
 
-				// request user to enter attendees email address
-				attendeesPromptHTML = '<div class="row custom-elem-row">' + 
-			    						'<p class="hd-popup-text">Invite others to the meeting (email addresses separated by commas): </p>' +
-										'<input type="text" name="attendeesEmailAddress" class="form-control hd-attendees-email-input col-sm-6" id="hd-attendeesEmail">' + 
-										'<p class="hd-errorMessageEmailList hd-error-text col-sm-12 hd-hide"></p>' + 
-									'</div>';
+			var dropdownHTML_upTo60mins = '<select class="selectpicker input-lg">' +
+							    			'<option value="0.5">1/2 hour</option>' +
+							    			'<option value="1" selected>1 hour</option>' +
+						    			'</select>';
 
-			}		    				
+			var dropdownHTML_upTo90mins = '<select class="selectpicker input-lg">' +
+							    			'<option value="0.5">1/2 hour</option>' +
+							    			'<option value="1" selected>1 hour</option>' +
+							    			'<option value="1.5">1 1/2 hours</option>' +
+						    			'</select>';
 
-			// Create complete HTML content for the popup window
-		    $('<div class="lightboxPopup container">' +
-		        '<div class="lightboxOverlayPopup"></div>' +
-		        '<div class="lightboxPopup">' +
-					'<div class="row custom-elem-row">' + 
-
-/*			    		'<p class="hd-popup-text">' + 'Time selected: ' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
-			        	'</p>' + 
-*/
-			    		'<p class="hd-popup-text">' + 'Time selected: ' + 
-			        	'</p>' + 
-			        	'<p class="hd-popup-text">' + getDateString(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
-			        	'</p>' + 
-
-			        '</div>' +	 
-
-		        	userNamePromptHTML +
-		        	
-		        	'<div class="row custom-elem-row">' +
-		    			'<p>How long do you need the room for? </p>' +
-					    dropdownHTML +
-				    '</div>' +
-
-				    attendeesPromptHTML + 
-
-		        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
-		        		'<div class="col-md-3 col-md-offset-3">' + 
-		          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
-		          		'</div>' +	
-		        		'<div class="col-md-3">' + 
-		          			'<button class="hd-add-ok-btn okButton btn btn-default btn-lg">Ok</button>' +          	
-						'</div>' +          		
-		          	'</div>' +		    
-		        	'<div class="row custom-elem-row hd-buttons-section hidden-md hidden-lg">' + // phones
-		        		'<div class="col-xs-3 col-xs-offset-2">' + 
-		          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
-		          		'</div>' +	
-		        		'<div class="col-xs-3 col-xs-offset-1">' + 
-		          			'<button class="hd-add-ok-btn okButton btn btn-default">Ok</button>' +          	
-						'</div>' +          		
-		          	'</div>' +		    
-				'</div>' +
-			'</div>'	   
-		    ).appendTo('body');
-		    $(".selectpicker").selectpicker();
+			var dropdownHTML_upTo120mins = '<select class="selectpicker input-lg">' +
+							    			'<option value="0.5">1/2 hour</option>' +
+							    			'<option value="1" selected>1 hour</option>' +
+							    			'<option value="1.5">1 1/2 hours</option>' +
+							    			'<option value="2">2 hours</option>' +    	
+						    			'</select>';
 
 
-		    $(".lightboxPopup").on('click','.hd-add-ok-btn', function() {
+			// Loop up to 7 slots down to determine how may slots the user will be able to book (user will be able to book up to 4 slots + 4 slots gap between this and next meeting)		    
+			for (s=slotNum+1; s<=lastSlotToCheck; s++) {
+				$slotObjToCheck = $("tr[data-hour='" + s + "']").find("td[data-day='" + dayNum + "']");
+				//if ($slotObjToCheck.text() === "" ) { 	
+				if ($slotObjToCheck.find("div").text() === "" ) { 	
+					availableSlotsCount++;
+				} else {
+					isUserPartOfNextMeeting = isUserPartOfMeeting($slotObjToCheck);
+					break;
+				}	
+			}
 
-		    	// create an array with slots corresponding to the duration selected by the user
-				// var slotObjArray = [];
-				var slotCount = 0;
-
-				// obtain selected value
-				switch ($(".selectpicker").val()) {
-					case "0.5":
-						slotCount = 1;					
-						break;
-					case "1":
-						slotCount = 2;					
-						break;
-					case "1.5":
-						slotCount = 3;					
-						break;
-					case "2":
-						slotCount = 4;					
-						break;
+			if (availableSlotsCount < 4 ) { 
+				if (isUserPartOfNextMeeting) {
+					errorMessage(two_hour_gap_error_msg);
+					displayPopUp = false;
+				} else { // user is not part of the next meeting so he/she can book as many slots as available	
+					switch(availableSlotsCount) {
+						case 0: // User can only book 1 slot (1/2 hr) 
+							dropdownHTML = 	dropdownHTML_upTo30mins;				
+							break;	
+						case 1: // User can only book up to 2 slots (1 hr) 
+							dropdownHTML = 	dropdownHTML_upTo60mins;
+							break;	
+						case 2: // User can only book 3 slots (1.5 hrs) 
+							dropdownHTML = 	dropdownHTML_upTo90mins;
+							break;	
+						case 3: // user can book up to 2 hrs without restriction
+							dropdownHTML = 	dropdownHTML_upTo120mins;
+							break;
+					}
 				}
 
-				if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
+			} else {
+				if (availableSlotsCount === 4 ) { // User can only book 1/2 hr
+					if (isUserPartOfNextMeeting) {	// User can only book 1 slot (1/2 hr) to leave 4 slots (2hrs) gap 
+						dropdownHTML = 	dropdownHTML_upTo30mins;
+					} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
+						dropdownHTML = 	dropdownHTML_upTo120mins;
+					}	    			
 
-					// Validate that the user entered his/her email address
-		 			var userEmailInput = $("#hd-emailAddress").val();
-		 			var attendeesEmail = " ";
+			  	} else if (availableSlotsCount === 5) { 
+					if (isUserPartOfNextMeeting) {	// User can only book up to 2 slots (1 hr) to leave 4 slots (2hrs) gap 
+						dropdownHTML = 	dropdownHTML_upTo60mins;
 
-		 			if (userEmailInput === "") {
-		 				$(".hd-errorMessageEmail").text("* This is a required field").removeClass("hd-hide");
-		 			}
+					} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction
+						dropdownHTML = 	dropdownHTML_upTo120mins;
+					}	
 
-		 			else { 
+				} else if (availableSlotsCount === 6) { 	
+					if (isUserPartOfNextMeeting) {	// User can only book 3 slots (1.5 hrs) to leave 4 slots (2hrs) gap 
+						dropdownHTML = 	dropdownHTML_upTo90mins;
 
-		 				// Hide any error message that could have been displayed previously
-		 				$(".hd-errorMessageEmail").text("").addClass("hd-hide");
-		 				userEmailInput = userEmailInput + "@hackerdojo.com";
+					} else { // user is not part of next meeting so he/she can book up to 2 hrs without restriction	
+						dropdownHTML = 	dropdownHTML_upTo120mins;
+					}    			
 
-						response = updateSlot($slotObj, slotCount, room, userEmailInput, " ", "geneeCommand");
-						
-						// close poup window
-				    	$(".lightboxPopup").remove();
-		 			}	
+				} else if (availableSlotsCount >= 7) { // User can book up to 2 hrs
+					dropdownHTML = 	dropdownHTML_upTo120mins;
+				}
+			}	
 
-		 		} else { 
+			if (displayPopUp) {
+
+				var userNamePromptHTML = "";
+				var attendeesPromptHTML = "";
+
+				if (userEmail === conferenceRoomEmail) {  // if login user is meet@hackerdojo.com
+
+					// request user to enter his/her email address
+					userNamePromptHTML = '<div class="row custom-elem-row">' + 
+				    						'<p class="hd-popup-text">Please enter your HackerDojo email id: </p>' +
+											'<input type="text" name="emailAddress" class="form-control hd-email-input col-sm-6" id="hd-emailAddress">' + 
+											'<span class="form-control-static col-sm-6">@hackerdojo.com</span>' +
+											'<p class="hd-errorMessageEmail hd-error-text col-sm-12 hd-hide"></p>' + 
+										'</div>';
 
 
-	 				// Capture attendees email addresses
-	 				attendeesEmail = $("#hd-attendeesEmail").val();
+				} else {
 
-	 				//console.log("Inside displayPopup... attendeesEmail:" + attendeesEmail);
+					// request user to enter attendees email address
+					attendeesPromptHTML = '<div class="row custom-elem-row">' + 
+				    						'<p class="hd-popup-text">Invite others to the meeting (email addresses separated by commas): </p>' +
+											'<input type="text" name="attendeesEmailAddress" class="form-control hd-attendees-email-input col-sm-6" id="hd-attendeesEmail">' + 
+											'<p class="hd-errorMessageEmailList hd-error-text col-sm-12 hd-hide"></p>' + 
+										'</div>';
 
-	 				if ($.trim(attendeesEmail) === "") {
+				}		    				
 
-			 			// Call "addGenee API to create room reservation in Genee"	
-						response = updateSlot($slotObj, slotCount, room, userEmail, " ", "add");
-							
-						// close poup window
-				    	$(".lightboxPopup").remove();
+				// Create complete HTML content for the popup window
+			    $('<div class="lightboxPopup container">' +
+			        '<div class="lightboxOverlayPopup"></div>' +
+			        '<div class="lightboxPopup">' +
+						'<div class="row custom-elem-row">' + 
 
-	 				} else {
+	/*			    		'<p class="hd-popup-text">' + 'Time selected: ' + getDateColumnTitle(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
+				        	'</p>' + 
+	*/
+				    		'<p class="hd-popup-text">' + 'Time selected: ' + 
+				        	'</p>' + 
+				        	'<p class="hd-popup-text">' + getDateString(getDateFromWeekDayNum(dayNum)) + " - " + getTimeFromSlotNum(slotNum) +
+				        	'</p>' + 
 
-						//var emailArray = attendeesEmail.split(/\s|[,;]/);
-						var emailArray = attendeesEmail.split(/[,;]\s*|\s+/);
-						//console.log("emailArray:" + emailArray);
+				        '</div>' +	 
 
-						var response = validateMultipleEmails(emailArray);
-						//console.log("response:" + response);
+			        	userNamePromptHTML +
+			        	
+			        	'<div class="row custom-elem-row">' +
+			    			'<p>How long do you need the room for? </p>' +
+						    dropdownHTML +
+					    '</div>' +
 
-						if (response === false) {
+					    attendeesPromptHTML + 
 
-							// display error message below the email input text
-	 						$(".hd-errorMessageEmailList").text("* Invalid email address").removeClass("hd-hide");
+			        	'<div class="row custom-elem-row hd-buttons-section hidden-xs hidden-sm">' + // ipad & desktop
+			        		'<div class="col-md-3 col-md-offset-3">' + 
+			          			'<button class="cancelButton btn btn-default btn-lg" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+			          		'</div>' +	
+			        		'<div class="col-md-3">' + 
+			          			'<button class="hd-add-ok-btn okButton btn btn-default btn-lg">Ok</button>' +          	
+							'</div>' +          		
+			          	'</div>' +		    
+			        	'<div class="row custom-elem-row hd-buttons-section hidden-md hidden-lg">' + // phones
+			        		'<div class="col-xs-3 col-xs-offset-2">' + 
+			          			'<button class="cancelButton btn btn-default" onclick="$(this).parents(\'.lightboxPopup\').remove();return false;">Cancel</button>' + 
+			          		'</div>' +	
+			        		'<div class="col-xs-3 col-xs-offset-1">' + 
+			          			'<button class="hd-add-ok-btn okButton btn btn-default">Ok</button>' +          	
+							'</div>' +          		
+			          	'</div>' +		    
+					'</div>' +
+				'</div>'	   
+			    ).appendTo('body');
+			    $(".selectpicker").selectpicker();
 
-						} else {
+
+			    $(".lightboxPopup").on('click','.hd-add-ok-btn', function() {
+
+			    	// create an array with slots corresponding to the duration selected by the user
+					// var slotObjArray = [];
+					var slotCount = 0;
+
+					// obtain selected value
+					switch ($(".selectpicker").val()) {
+						case "0.5":
+							slotCount = 1;					
+							break;
+						case "1":
+							slotCount = 2;					
+							break;
+						case "1.5":
+							slotCount = 3;					
+							break;
+						case "2":
+							slotCount = 4;					
+							break;
+					}
+
+					if (userEmail === conferenceRoomEmail) { // the login user is "meet@hackerdojo.com" 
+
+						// Validate that the user entered his/her email address
+			 			var userEmailInput = $("#hd-emailAddress").val();
+			 			var attendeesEmail = " ";
+
+			 			if (userEmailInput === "") {
+			 				$(".hd-errorMessageEmail").text("* This is a required field").removeClass("hd-hide");
+			 			}
+
+			 			else { 
 
 			 				// Hide any error message that could have been displayed previously
-			 				$(".hd-errorMessageEmailList").text("").addClass("hd-hide");
+			 				$(".hd-errorMessageEmail").text("").addClass("hd-hide");
+			 				userEmailInput = userEmailInput + "@hackerdojo.com";
 
-							// Convert the array of emails into string joined by "," only.
-							attendeesEmail = emailArray.join(", ");
+							response = updateSlot($slotObj, slotCount, room, userEmailInput, " ", "geneeCommand");
+							
+							// close poup window
+					    	$(".lightboxPopup").remove();
+			 			}	
 
-							// call a different API to create reservation through Genee functionality
-							response = updateSlot($slotObj, slotCount, room, userEmail, attendeesEmail, "add");
+			 		} else { 
 
+
+		 				// Capture attendees email addresses
+		 				attendeesEmail = $("#hd-attendeesEmail").val();
+
+		 				//console.log("Inside displayPopup... attendeesEmail:" + attendeesEmail);
+
+		 				if ($.trim(attendeesEmail) === "") {
+
+				 			// Call "addGenee API to create room reservation in Genee"	
+							response = updateSlot($slotObj, slotCount, room, userEmail, " ", "add");
+								
 							// close poup window
 					    	$(".lightboxPopup").remove();
 
-						}							
+		 				} else {
 
-					}
+							//var emailArray = attendeesEmail.split(/\s|[,;]/);
+							var emailArray = attendeesEmail.split(/[,;]\s*|\s+/);
+							//console.log("emailArray:" + emailArray);
 
-			    }	
-		    });
-			  
+							var response = validateMultipleEmails(emailArray);
+							//console.log("response:" + response);
+
+							if (response === false) {
+
+								// display error message below the email input text
+		 						$(".hd-errorMessageEmailList").text("* Invalid email address").removeClass("hd-hide");
+
+							} else {
+
+				 				// Hide any error message that could have been displayed previously
+				 				$(".hd-errorMessageEmailList").text("").addClass("hd-hide");
+
+								// Convert the array of emails into string joined by "," only.
+								attendeesEmail = emailArray.join(", ");
+
+								// call a different API to create reservation through Genee functionality
+								response = updateSlot($slotObj, slotCount, room, userEmail, attendeesEmail, "add");
+
+								// close poup window
+						    	$(".lightboxPopup").remove();
+
+							}							
+
+						}
+
+				    }	
+			    });
+				  
+			}
+
 		}
-
-	}
-  }
+  	}
 
 
   	// -------------------------------------------------- //
@@ -2016,11 +2062,29 @@
 
 							// call displayDeleteConfirmation only if numberOfSlots is a valid number
 							if (!isNaN(numberOfSlots)) {						
-							displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
+								displayDeleteConfirmation($(this), numberOfSlots, room, userEmail);				
 							}
 						} else {
 							// display error message
-							errorMessage("Cannot delete slots from different owner");
+							var attendees = $(this).find("div").text();
+
+							// get date and time of this specific meeting/slot
+							var dayNum = $(this).data("day");
+							var slotNum = $(this).closest("tr").data("hour");
+
+							var dateScheduled = getDateString(getDateFromWeekDayNum(dayNum)); 
+							var timeScheduled = getTimeFromSlotNum(slotNum);
+							var length = getLengthOfMeetingInHours($(this).attr("rowspan"));
+
+							console.log("When slot is clicked...");
+							console.log("dateScheduled: " + dateScheduled);
+							console.log("timeScheduled: " + timeScheduled);
+							console.log("length: " + length);
+
+							//errorMessage("Cannot delete slots from different owner.");
+
+							errorMessage("<span><span>This slot has been reserved by " + attendees + " at " + timeScheduled + " for " + length + ".</span>");
+							//errorMessage("<span>Cannot delete slots from different owner.</span><br/><span>This slot has been reserved by " + attendees + "</span>");
 						}			
 					}
 				}	
@@ -2040,6 +2104,33 @@
 		function() {
 			$(this).attr("title", "");		
 		});
+
+
+		// Trying to create a DIV on top o the row that is hovered
+/*
+		$("td").hover(function() {
+
+			var trWidth = $(this).closest("tr").css("width");
+			var trHeight = $(this).closest("tr").css("height");
+			var trTop = $(this).closest("tr").css("top");
+			var trSCrollTop = $(this).closest("tr").scrollTop();
+
+			console.log("trSCrollTop:" + trSCrollTop);
+
+			$(".hoverDiv").remove();
+			$("tr").css("position","initial");
+			$(this).closest("tr").css("position", "relative");
+			$(this).closest(".table-responsive").append("<div class='hoverDiv'></div>");
+			$(".hoverDiv").css("position", "absolute");
+			$(".hoverDiv").css("z-index", "100");
+			$(".hoverDiv").css("width", trWidth);
+			$(".hoverDiv").css("height", trHeight);
+			$(".hoverDiv").css("top", trTop);
+			//$(".hoverDiv").scrollTop(trSCrollTop);
+			$(".hoverDiv").css("background-color", "#D9EEDB");
+			$(".hoverDiv").css("opacity", 0.5);			
+		})		
+*/
 
 
 		// Initialize scrollable calendar - carousel
