@@ -223,18 +223,25 @@ th {
     height: 2em !important;
 }
 
-/* Hover calendar cells but ONLY empty and disabled slots */
-tr:hover td.displayEmptySlot { 
-/*.hd-table-body-wrapper tr:hover td.displayEmptySlot { */
-     background-color: #D9EEDB;  /* Very light green */
+/* Hover calendar cells */
+
+tr:hover td.displayEmptySlot, tr:hover td.displayDisabledSlot, tr:hover td.displayBookedOtherOwnerSlot { 
+     background-color: #D9EEDB; /* Very light green */
+
 }
 
-tr:hover td.displayDisabledSlot { 
-/*.hd-table-body-wrapper tr:hover td.displayDisabledSlot { */
-     background-color: #D9EEDB;  
+tr {
+/*    position: relative;  */
+}
+/*
+.hoverDiv { 
+    position: absolute;
 }
 
-
+tr:hover {
+   background-color: #D9EEDB; 
+}
+*/
 .displayEmptySlot {
     background-color: #FFFFFF;  /* white */
     cursor: default;
